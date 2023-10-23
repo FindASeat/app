@@ -1,4 +1,4 @@
-// LoginView.js
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 
@@ -7,11 +7,7 @@ const LoginView = () => {
   const [password, setPassword] = useState("");
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      // behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <View style={styles.container}>
         {/* Logo or App Name */}
         <View>
@@ -34,7 +30,7 @@ const LoginView = () => {
         />
 
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={() => router.replace("/map")}>
           <Text style={styles.buttonText}>Log in</Text>
         </TouchableOpacity>
 
