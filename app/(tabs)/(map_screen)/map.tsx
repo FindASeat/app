@@ -1,13 +1,9 @@
-import { Link, router } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
-import MapView, { type LatLng, Marker } from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
+import { StyleSheet } from "react-native";
+import { Building } from "../../../types";
+import { router } from "expo-router";
 
-const buildings: {
-  title: string;
-  code: string;
-  coordinate: LatLng;
-  availability?: number;
-}[] = [
+const buildings: Building[] = [
   {
     title: "Fertitta Hall",
     code: "JFF",
@@ -104,19 +100,5 @@ const map = () => {
     </MapView>
   );
 };
-
-const styles = StyleSheet.create({
-  calloutView: {
-    flexDirection: "column",
-    alignSelf: "flex-start",
-    padding: 10,
-    backgroundColor: "blue",
-  },
-  calloutTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  // ... add more styles if needed
-});
 
 export default map;
