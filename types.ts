@@ -12,8 +12,15 @@ export type BuildingResponse = {
   code: string;
   description: string;
 
-  availability_inside: number[][];
-  availability_outside: number[][];
+  inside: RoomSeats;
+  outside: RoomSeats;
 
-  imageUrl: string;
+  image_url: string;
+};
+
+export type RoomSeats = {
+  num_cols: number;
+  num_rows: number;
+  current_taken: number;
+  availability: boolean[][];
 };
