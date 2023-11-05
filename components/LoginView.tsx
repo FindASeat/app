@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 
 const LoginView = () => {
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [name, setName] = useState("");
+  const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -13,6 +16,20 @@ const LoginView = () => {
         <View>
           <Text style={styles.logo}>FindASeat</Text>
         </View>
+
+        {/* Sign Up Input Fields */}
+        {mode == "signup" && (
+          <>
+            <TextInput style={styles.inputField} placeholder="Name" value={name} onChangeText={text => setName(text)} />
+            <TextInput
+              style={styles.inputField}
+              placeholder="USC ID"
+              value={uscId}
+              keyboardType="number-pad"
+              onChangeText={text => setUscId(text)}
+            />
+          </>
+        )}
 
         {/* Input Fields */}
         <TextInput
@@ -31,7 +48,11 @@ const LoginView = () => {
 
         {/* Login Button */}
         <TouchableOpacity style={styles.loginButton} onPress={() => router.replace("/map")}>
-          <Text style={styles.buttonText}>Log in</Text>
+          {mode == "login" ? (
+            <Text style={styles.buttonText}>Log in</Text>
+          ) : (
+            <Text style={styles.buttonText}>Sign up</Text>
+          )}
         </TouchableOpacity>
 
         {/* OR Text */}
@@ -42,8 +63,15 @@ const LoginView = () => {
         </View>
 
         {/* Signup */}
-        <TouchableOpacity style={styles.signupButton}>
-          <Text style={styles.signupText}>Sign up</Text>
+        <TouchableOpacity
+          style={styles.signupButton}
+          onPress={() => setMode(prev => (prev == "login" ? "signup" : "login"))}
+        >
+          {mode == "login" ? (
+            <Text style={styles.signupText}>Sign up</Text>
+          ) : (
+            <Text style={styles.signupText}>Log in</Text>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
