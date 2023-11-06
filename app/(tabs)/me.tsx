@@ -1,44 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
 import { addReservation, cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
-import ReservationBubble from "../../components/ReservationBubble"; // Import the custom component
-const sampleReservations = [
-  {
-    buildingCode: "LVL",
-    seat: "4-6",
-    date: "11/6/23",
-    startTime: "10:00 AM",
-    endTime: "12:00 PM",
-    indoor: true,
-  },
-  {
-    buildingCode: "ABC",
-    seat: "2-3",
-    date: "11/6/23",
-    startTime: "2:00 PM",
-    endTime: "4:00 PM",
-    indoor: false,
-  },
-  {
-    buildingCode: "XYZ",
-    seat: "5-8",
-    date: "11/6/23",
-    startTime: "3:30 PM",
-    endTime: "5:30 PM",
-    indoor: true,
-  },
-];
+import ReservationBubble from "../../components/ReservationBubble";
 
-const Me = ({ username }) => {
+const Me = () => {
 
-  username = 'rohkal'
+  const username = 'rohkal'
   const [name, setName] = useState('');
   const [reservations, setReservations] = useState([]);
 
   const testFunction = async () => {
-    // await addReservation("ania", "LVL", "inside-2-2", "today", "haha")
-    await cancelReservation("LVL", "ania", "-NiabmyjqG6qnsflELjb");
+    await addReservation("rohkal", "LVL", "inside-2-2", "today", "haha")
+    // await cancelReservation("LVL", "ania", "-NiabmyjqG6qnsflELjb");
   } 
+
+  const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
+    await cancelReservation(buildingCode, username, reservationId);
+    const updatedReservations = await getUserReservations(username);
+    setReservations(updatedReservations);
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,16 +33,17 @@ const Me = ({ username }) => {
   return (
     
     <View style={styles.container}>
-
       <Text style={styles.title}>User Information:</Text>
       <Text style={styles.name}>Name: {name}</Text>
       <Text style={styles.title}>Active Reservations:</Text>
+      <Button title="Test Button" onPress={() => testFunction()} />
       <ScrollView>
-        {sampleReservations.map((reservation, index) => (
+        {reservations.map((reservation, index) => (
           <ReservationBubble
             key={index}
             reservation={reservation}
-            onCancel={() => console.log("Cancel Clicked")}
+            username={username}
+            onCancel={cancelAndFetchReservations}
           />
         ))}
       </ScrollView>
@@ -80,7 +61,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   aroundname: {
-    backgroundColor: '#990000', // Button background color
+    backgroundColor: '#990000',
     borderRadius: 5,
     padding: 10,
     marginTop: 20,

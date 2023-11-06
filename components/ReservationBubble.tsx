@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { cancelReservation } from '../app/firebaseFunctions';
 
-const ReservationBubble = ({ reservation, onCancel }) => {
+const ReservationBubble = ({ reservation, username, onCancel }) => {
   return (
     <View style={styles.container}>
       <View style={styles.infoContainer}>
         <View style={styles.verticalInfo}>
           <Text style={styles.label}>Building Code:</Text>
-          <Text style={styles.value}>{reservation.buildingCode}</Text>
+          <Text style={styles.value}>{reservation.code}</Text>
         </View>
         <View style={styles.verticalInfo}>
           <Text style={styles.label}>Seat:</Text>
@@ -15,16 +16,20 @@ const ReservationBubble = ({ reservation, onCancel }) => {
         </View>
         <View style={styles.verticalInfo}>
           <Text style={styles.label}>Date/Time:</Text>
-          <Text style={styles.value}>{reservation.date} {reservation.startTime} - {reservation.endTime}</Text>
+          {/* <Text style={styles.value}>{reservation.date} {reservation.startTime} - {reservation.endTime}</Text> */}
+           <Text style={styles.value}>{reservation.start} - {reservation.end}</Text>
         </View>
-        <View style={styles.verticalInfo}>
+        {/* <View style={styles.verticalInfo}>
           <Text style={styles.label}>Location:</Text>
           <Text style={styles.value}>{reservation.indoor ? 'Indoor' : 'Outdoor'}</Text>
-        </View>
+        </View> */}
       </View>
-      <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-        <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
-      </TouchableOpacity>
+    <TouchableOpacity 
+      style={styles.cancelButton} 
+      onPress={() => onCancel(reservation.code, username, reservation.id)}
+    >
+      <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
+    </TouchableOpacity>
     </View>
   );
 };

@@ -124,9 +124,10 @@ export async function isSeatAvailable(buildingCode, seat, startTime, endTime) {
   return true;
 }
 
-export async function addReservation(username, code,seat, start, end) {
+export async function addReservation(username, code, seat, start, end) {
   const reservation = {
     user: username.toLowerCase(),
+    code,
     seat,
     start,
     end,
@@ -164,6 +165,7 @@ export async function cancelReservation(buildingCode, user, reservationId) {
     console.error(`Error cancelling reservation: ${error}`);
   }
 }
+
 
 export async function getUserInfo(username) {
   const usernameLower = username.toLowerCase();
