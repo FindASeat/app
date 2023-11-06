@@ -12,7 +12,6 @@ const building = () => {
     title: "Test Building Hall",
     code: "TES",
     description: "This is a test building who was created for testing purposes during the development of the app.",
-
     inside: {
       rows: 3,
       cols: 4,
@@ -22,6 +21,10 @@ const building = () => {
         [true, false, true, false],
       ],
       availability: 9 / 12, // calculated on server
+    },
+
+    open_hours: {
+      "Mon – Fri": ["8:00AM", "8:30PM"],
     },
 
     outside: {

@@ -9,10 +9,10 @@ const SeatingChartView = ({
   selectedSeat,
   setSelectedSeat,
 }: {
-  constant?: boolean;
   seats: RoomData["seats"];
-  selectedSeat: string;
-  setSelectedSeat: Dispatch<SetStateAction<string>>;
+  constant?: boolean;
+  selectedSeat?: string;
+  setSelectedSeat?: Dispatch<SetStateAction<string>>;
 }) => {
   const handleSeatSelect = (row: number, col: number) => {
     if (constant) return;
