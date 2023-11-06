@@ -1,55 +1,50 @@
-import { Keyboard, SafeAreaView, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
+import { Keyboard, SafeAreaView, TouchableWithoutFeedback, View, StyleSheet, Text } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import BuildingView from "../../../../components/BuildingView";
 import { useLocalSearchParams } from "expo-router";
 import type { Building } from "../../../../types";
+import React, { useEffect, useState } from "react";
+import { fetchBuilding } from "../../../firebaseFunctions";
 
 const building = () => {
   const { code } = useLocalSearchParams<{ code: string }>();
+  console.log(code)
   const insets = useSafeAreaInsets();
+  
+  const [currentBuilding, setBuilding] = useState<Building | null>(null);
 
-  const building: Building = {
-    title: "Test Building Hall",
-    code: "TES",
-    description: "This is a test building who was created for testing purposes during the development of the app.",
+  useEffect(() => {
+    fetchBuilding(code).then(fetchedBuilding => {
+      setBuilding(fetchedBuilding);
+    });
+  }, [code]);
 
-    inside: {
-      rows: 3,
-      cols: 4,
-      seats: [
-        [true, false, true, true],
-        [true, true, true, true],
-        [true, false, true, false],
-      ],
-      availability: 9 / 12, // calculated on server
-    },
-
-    outside: {
-      rows: 3,
-      cols: 4,
-      seats: [
-        [false, false, true, true],
-        [false, true, true, false],
-        [false, false, false, false],
-      ],
-      availability: 4 / 12, // calculated on server
-    },
-
-    total_availability: 13 / 24, // calculated on server
-
-    image_url: "https://dailytrojan.com/wp-content/uploads/2022/01/gfsstock_celinevazquez_e-3192-scaled.jpg",
-  };
+  if (!building) {
+    return <View style={styles.loadingContainer}><Text>Loading...</Text></View>;
+  }
 
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
-        <View style={{ height: insets.top, backgroundColor: "#990000" }} />
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-          <BuildingView building={building} />
+        <View style={{ height: insets.top, backgroundColor: '#990000' }} />
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+              <BuildingView building={currentBuilding} />
+            </View>
+          </TouchableWithoutFeedback>
         </SafeAreaView>
       </View>
     </SafeAreaProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default building;

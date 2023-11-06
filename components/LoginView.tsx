@@ -2,6 +2,8 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 
+import { validateCredentials, createUser } from "../app/firebaseFunctions";
+
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
@@ -47,13 +49,22 @@ const LoginView = () => {
         />
 
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton} onPress={() => router.replace("/map")}>
-          {mode == "login" ? (
-            <Text style={styles.buttonText}>Log in</Text>
-          ) : (
-            <Text style={styles.buttonText}>Sign up</Text>
-          )}
-        </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.loginButton}
+      onPress={async () => {
+        if (mode == "login") {
+          const isValid = await validateCredentials(username, password);
+          if (isValid) {
+            router.replace("/map");
+          } else {
+            alert("Invalid username or password!");
+          }
+        }
+      }}
+    >
+      <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
+    </TouchableOpacity>
+
 
         {/* OR Text */}
         <View style={styles.orContainer}>
@@ -64,15 +75,27 @@ const LoginView = () => {
 
         {/* Signup */}
         <TouchableOpacity
-          style={styles.signupButton}
-          onPress={() => setMode(prev => (prev == "login" ? "signup" : "login"))}
-        >
-          {mode == "login" ? (
-            <Text style={styles.signupText}>Sign up</Text>
-          ) : (
-            <Text style={styles.signupText}>Log in</Text>
-          )}
-        </TouchableOpacity>
+  style={styles.signupButton}
+  onPress={async () => {
+    if (mode === "login") {
+      setMode("signup");
+    } else {
+      const isCreated = await createUser(name, uscId, username, password);
+      if (isCreated) {
+        alert("Account created successfully! Please login!");
+        setMode("login");
+      } else {
+        alert("Failed to create account. Please try again.");
+      }
+    }
+  }}
+>
+  {mode === "login" ? (
+    <Text style={styles.signupText}>Sign up</Text>
+  ) : (
+    <Text style={styles.signupText}>Log in</Text>
+  )}
+</TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );

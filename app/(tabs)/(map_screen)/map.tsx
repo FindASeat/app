@@ -2,83 +2,23 @@ import MapView, { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
 import { MapMarker } from "../../../types";
 import { router } from "expo-router";
-
-const buildings: MapMarker[] = [
-  {
-    title: "Fertitta Hall",
-    code: "JFF",
-    coordinate: { latitude: 34.01873, longitude: -118.28266 },
-    availability: 0.2,
-  },
-  {
-    title: "Center for Public Affairs",
-    code: "DMC",
-    coordinate: { latitude: 34.02121, longitude: -118.28405 },
-    availability: 0.2,
-  },
-  {
-    title: "Tutor Hall",
-    code: "THH",
-    coordinate: { latitude: 34.02242, longitude: -118.28441 },
-    availability: 0.3,
-  },
-  {
-    title: "Zumbridge Hall",
-    code: "ZHS",
-    coordinate: { latitude: 34.01921, longitude: -118.2864 },
-    availability: 0.3,
-  },
-  {
-    title: "Tutor Campus Center",
-    code: "TCC",
-    coordinate: { latitude: 34.02028, longitude: -118.28612 },
-    availability: 0.2,
-  },
-  {
-    title: "Salvatori Computer Science Center",
-    code: "SAL",
-    coordinate: { latitude: 34.01951, longitude: -118.28946 },
-    availability: 0.1,
-  },
-  {
-    title: "Seeley G. Mudd Building",
-    code: "SGM",
-    coordinate: { latitude: 34.02133, longitude: -118.28894 },
-    availability: 0.45,
-  },
-  {
-    title: "Vivian Hall of Engineering",
-    code: "VHE",
-    coordinate: { latitude: 34.02016, longitude: -118.28825 },
-    availability: 0.7,
-  },
-  {
-    title: "Kaprielian Hall",
-    code: "KAP",
-    coordinate: { latitude: 34.02239, longitude: -118.291 },
-    availability: 0.5,
-  },
-  {
-    title: "Gloria Kaufman International Dance Center",
-    code: "KDC",
-    coordinate: { latitude: 34.0238, longitude: -118.28505 },
-    availability: 0.6,
-  },
-  {
-    title: "Doheny Memorial Library",
-    code: "DML",
-    coordinate: { latitude: 34.02014, longitude: -118.28373 },
-    availability: 0.25,
-  },
-  {
-    title: "Leavey Library",
-    code: "LVL",
-    coordinate: { latitude: 34.02178, longitude: -118.28282 },
-    availability: 0.15,
-  },
-];
+import { useEffect, useState } from "react";
+import { getBuildings } from "../../firebaseFunctions";
+import React from "react";
 
 const map = () => {
+
+  const [buildings, setBuildings] = useState([]);
+
+  useEffect(() => {
+    const fetchBuildings = async () => {
+      const buildingsFromDB = await getBuildings();
+      setBuildings(buildingsFromDB);
+    };
+
+    fetchBuildings().catch(console.error);
+  }, []);
+
   return (
     <MapView
       region={{

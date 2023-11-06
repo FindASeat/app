@@ -4,9 +4,14 @@ import Icon from "react-native-vector-icons/Octicons";
 import type { Building } from "../types";
 import HoursAccordion from "./HoursAccordion";
 import { useNavigation } from "expo-router";
+import React from "react";
 
 const BuildingView = ({ building }: { building: Building }) => {
   const nav = useNavigation();
+
+    if (!building) {
+    return null;
+  }
 
   return (
     <View style={{ flex: 1 }}>
