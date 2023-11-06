@@ -33,7 +33,8 @@ const map = () => {
         <Marker
           key={idx}
           coordinate={building.coordinate}
-          pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
+          // pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
+          pinColor={"red"}
           onPress={() => router.push("/(tabs)/(map_screen)/building/" + building.code)}
         />
       ))}
