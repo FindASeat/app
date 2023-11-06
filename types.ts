@@ -4,7 +4,7 @@ export type MapMarker = {
   code: string; // building code
   coordinate: LatLng; // lat/long of building
 
-  availability: number; // percentage (0 to 1)
+  total_availability: number; // percentage (0 to 1) of availability of inside & outside
 };
 
 export type Building = {
