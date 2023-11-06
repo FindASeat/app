@@ -66,7 +66,6 @@ const updateSeatsAndAvailability = (rows, cols) => {
   return { seats, availability };
 };
 
-// TODO: Currently randomly produces availability. Need to check reservations for true availability of building.
 export async function fetchBuilding(buildingCode) {
   try {
     const buildingSnapshot = await get(child(ref(FIREBASE_DB), `buildings/${buildingCode}`));
@@ -76,8 +75,6 @@ export async function fetchBuilding(buildingCode) {
       let reservations = reservationsSnapshot.exists() ? reservationsSnapshot.val() : {};
       building.inside.seats = Array(building.inside.rows).fill(undefined).map(() => Array(building.inside.cols).fill(true));
       building.outside.seats = Array(building.outside.rows).fill(undefined).map(() => Array(building.outside.cols).fill(true));
-      
-       // Update seats based on reservations
       for (let reservationId in reservations) {
         let reservation = reservations[reservationId];
         let [type, row, col] = reservation.seat.split('-');
@@ -90,8 +87,6 @@ export async function fetchBuilding(buildingCode) {
           building.outside.seats[row][col] = false;
         }
       }
-      // Calculate availability
-      // Calculate availability
       building.inside.availability = building.inside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.inside.rows * building.inside.cols);
       building.outside.availability = building.outside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.outside.rows * building.outside.cols);const totalSeats = (building.inside.rows * building.inside.cols) + (building.outside.rows * building.outside.cols);
       const totalAvailableSeats = (building.inside.availability * building.inside.rows * building.inside.cols) + (building.outside.availability * building.outside.rows * building.outside.cols);
