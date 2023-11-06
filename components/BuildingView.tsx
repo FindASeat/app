@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
 import Icon from "react-native-vector-icons/Octicons";
 import type { Building } from "../types";
