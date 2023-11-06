@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { useGlobal } from "../context/GlobalContext";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -8,6 +9,8 @@ const LoginView = () => {
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setUser } = useGlobal();
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -47,7 +50,13 @@ const LoginView = () => {
         />
 
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton} onPress={() => router.replace("/map")}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => {
+            setUser({ username, name, usc_id: uscId, reservation: null, affiliation: "student", image_url: "" });
+            router.replace("/map");
+          }}
+        >
           {mode == "login" ? (
             <Text style={styles.buttonText}>Log in</Text>
           ) : (
@@ -62,7 +71,7 @@ const LoginView = () => {
           <View style={styles.divider} />
         </View>
 
-        {/* Signup */}
+        {/* Switch to Signup  */}
         <TouchableOpacity
           style={styles.signupButton}
           onPress={() => setMode(prev => (prev == "login" ? "signup" : "login"))}

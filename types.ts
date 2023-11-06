@@ -32,6 +32,7 @@ export type RoomData = {
 export type User = {
   usc_id: string;
   name: string;
+  affiliation: "student" | "faculty" | "staff";
 
   username: string;
   image_url: string | null;
