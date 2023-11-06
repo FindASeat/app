@@ -5,8 +5,8 @@ import { addReservation, cancelReservation } from "../firebaseFunctions";
 const me = () => {
 
   const testFunction = async () => {
-    // addReservation("rohkal", "JFF", "4-6", "today", "haha")
-    await cancelReservation("JFF", "rohkal", "-NiXtsSjbqi934Kerie-");
+    // await addReservation("rohkal", "JFF", "4-6", "today", "haha")
+    await cancelReservation("JFF", "rohkal", "-NiXx_PBocyqp_CPrppS");
   } 
 
   return (

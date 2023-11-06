@@ -1,6 +1,7 @@
 import { Redirect } from "expo-router";
 import { View, Text, TouchableWithoutFeedback, Keyboard, SafeAreaView } from "react-native";
 import LoginView from "../components/LoginView";
+import React from "react";
 
 const index = () => {
   // is user logged in?
