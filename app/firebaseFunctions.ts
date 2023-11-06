@@ -1,4 +1,4 @@
-import { ref, set, child, get } from "firebase/database";
+import { ref, set, child, get, push, remove } from "firebase/database";
 import { FIREBASE_DB } from '../firebaseConfig';
 
 export async function validateCredentials(inputUsername, inputPassword) {
@@ -31,9 +31,10 @@ export async function createUser(name, id, username, password) {
   }
 }
 
-function hashPassword(password) {
+async function hashPassword(password) {
   return password;
 }
+
 
 export async function getBuildings() {
   const buildingsSnapshot = await get(child(ref(FIREBASE_DB), 'buildings'));
@@ -65,13 +66,12 @@ const updateSeatsAndAvailability = (rows, cols) => {
   return { seats, availability };
 };
 
-// Currently randomly produces availability.
+// TODO: Currently randomly produces availability. Need to check reservations for true availability of building.
 export async function fetchBuilding(buildingCode) {
   try {
     const buildingSnapshot = await get(child(ref(FIREBASE_DB), `buildings/${buildingCode}`));
     if (buildingSnapshot.exists()) {
       let building = buildingSnapshot.val();
-
       building.inside = {
         ...building.inside,
         ...updateSeatsAndAvailability(building.inside.rows, building.inside.cols),
@@ -80,16 +80,13 @@ export async function fetchBuilding(buildingCode) {
         ...building.outside,
         ...updateSeatsAndAvailability(building.outside.rows, building.outside.cols),
       };
-
       const totalSeats = (building.inside.rows * building.inside.cols) + (building.outside.rows * building.outside.cols);
       const totalAvailableSeats = (building.inside.availability * building.inside.rows * building.inside.cols) + (building.outside.availability * building.outside.rows * building.outside.cols);
       building.total_availability = totalAvailableSeats / totalSeats;
-
       return {
         ...building,
         code: buildingCode,
       };
-
     } else {
       console.error(`Building with code ${buildingCode} does not exist.`);
       return null;
@@ -100,40 +97,60 @@ export async function fetchBuilding(buildingCode) {
   }
 }
 
-// // export async function reserveSeat(userId: string, buildingId: number, seatCode: string, reservationStart: Date, reservationEnd: Date): Promise<boolean> {
-// //   // Check if the seat is already taken
-// //   const reservationSnapshot = await get(child(ref(FIREBASE_DB), 'reservations'));
-// //   const reservations = reservationSnapshot.val();
-// //   for (const reservationKey in reservations) {
-// //     const reservation = reservations[reservationKey];
-// //     if (reservation.seat_code === seatCode && reservation.building_id === buildingId) {
-// //       return false; // Seat is already taken
-// //     }
-// //   }
+export async function isSeatAvailable(buildingCode, seat, startTime, endTime) {
+  const reservationsSnapshot = await get(child(ref(FIREBASE_DB), `reservations/${buildingCode}`));
+  if (reservationsSnapshot.exists()) {
+    const reservations = reservationsSnapshot.val();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    for (const reservation of reservations) {
+      const reservationStart = new Date(reservation.start);
+      const reservationEnd = new Date(reservation.end);
+      if (reservation.seat === seat && start < reservationEnd && end > reservationStart) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
-// //   // Create a new reservation
-// //   const newReservationKey = ref(FIREBASE_DB, 'reservations').push().key;
-// //   set(ref(FIREBASE_DB, `reservations/${newReservationKey}`), {
-// //     seat_code: seatCode,
-// //     reservation_start: reservationStart.toISOString(),
-// //     reservation_end: reservationEnd.toISOString(),
-// //     building_id: buildingId,
-// //     user_id: userId
-// //   });
+export async function addReservation(username, code, seat, start, end) {
+  const reservation = {
+    user: username.toLowerCase(),
+    seat,
+    start,
+    end,
+  };
+  try {
+    const seatAvailable = await isSeatAvailable(code, seat, start, end);
+    if (!seatAvailable) {
+      console.error('This seat is already reserved for the given time period.');
+      return;
+    }
 
-// //   return true; // Seat reservation successful
-// // }
+    const newReservationRef = push(child(ref(FIREBASE_DB), 'reservations'));
+    const reservationId = newReservationRef.key;
 
-// export async function cancelReservation(userId: string, seatCode: string): Promise<boolean> {
-//   const reservationSnapshot = await get(child(ref(FIREBASE_DB), 'reservations'));
-//   const reservations = reservationSnapshot.val();
-//   for (const reservationKey in reservations) {
-//     const reservation = reservations[reservationKey];
-//     if (reservation.seat_code === seatCode && reservation.user_id === userId) {
-//       set(ref(FIREBASE_DB, `reservations/${reservationKey}`), null);
-//       return true; // Reservation canceled successfully
-//     }
-//   }
+    await set(ref(FIREBASE_DB, `reservations/${code}/${reservationId}`), reservation);
+    await set(ref(FIREBASE_DB, `reservations/${username}/${reservationId}`), reservation);
 
-//   return false; // Reservation not found or user does not have permission to cancel
-// }
+    alert("Successfully added reservation!");
+    return true;
+  } catch (error) {
+    console.error("ERROR: ", error);
+    alert("Error adding reservation! Please try again!");
+    return false;
+  }
+}
+
+export async function cancelReservation(buildingCode, user, reservationId) {
+  try {
+    const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
+    const reservationUserRef = ref(FIREBASE_DB, `reservations/${user}/${reservationId}`);
+    await remove(reservationCodeRef);
+    await remove(reservationUserRef)
+    console.log(`Reservation ${reservationId} has been cancelled.`);
+  } catch (error) {
+    console.error(`Error cancelling reservation: ${error}`);
+  }
+}

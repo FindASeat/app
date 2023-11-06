@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text, Button } from "react-native";
-import { writeUserData, getUserById } from "../firebaseFunctions";
+import { addReservation, cancelReservation } from "../firebaseFunctions";
 
 const me = () => {
 
   const testFunction = async () => {
-    await writeUserData("0", "Student", "now", "Rohan", "something.png", "24351342");
+    // addReservation("rohkal", "JFF", "4-6", "today", "haha")
+    await cancelReservation("JFF", "rohkal", "-NiXtsSjbqi934Kerie-");
   } 
 
   return (
@@ -15,7 +16,5 @@ const me = () => {
     </View>
   );
 };
-
-
 
 export default me;
