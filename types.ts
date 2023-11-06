@@ -12,6 +12,7 @@ export type Building = {
   code: string; // building code
   description: string; // description of building (can be from usc maps website)
 
+  open_hours: Record<string, string>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = open hours (like "8:00 AM - 5:00 PM")
   inside: RoomData;
   outside: RoomData;
 
@@ -32,6 +33,7 @@ export type RoomData = {
 export type User = {
   usc_id: string;
   name: string;
+  affiliation: "student" | "faculty" | "staff";
 
   username: string;
   image_url: string | null;

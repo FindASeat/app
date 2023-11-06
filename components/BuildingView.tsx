@@ -5,6 +5,8 @@ import type { Building } from "../types";
 import HoursAccordion from "./HoursAccordion";
 import { useNavigation } from "expo-router";
 import React from "react";
+import { router } from "expo-router";
+
 
 const BuildingView = ({ building }: { building: Building }) => {
   const nav = useNavigation();
@@ -17,7 +19,7 @@ const BuildingView = ({ building }: { building: Building }) => {
     <View style={{ flex: 1 }}>
       {/* Back Arrow */}
       <View style={{ backgroundColor: "#990000", paddingVertical: 5, paddingLeft: 5 }}>
-        <TouchableOpacity onPress={() => nav.goBack()}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Icon name="arrow-left" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -85,6 +87,9 @@ const BuildingView = ({ building }: { building: Building }) => {
           height: 45,
           justifyContent: "center",
           alignItems: "center",
+        }}
+        onPress={() => {
+          router.push("/(tabs)/(map_screen)/building/reserve");
         }}
       >
         <Text style={{ fontSize: 16, color: "white", fontWeight: "700" }}>Reserve a Seat</Text>
