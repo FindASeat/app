@@ -1,7 +1,7 @@
-import { Keyboard, SafeAreaView, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import BuildingView from "../../../../components/BuildingView";
 import { useLocalSearchParams } from "expo-router";
+import { SafeAreaView, View } from "react-native";
 import type { Building } from "../../../../types";
 
 const building = () => {

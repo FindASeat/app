@@ -3,7 +3,7 @@ import Icon from "react-native-vector-icons/Octicons";
 import type { RoomData } from "../types";
 import { useState } from "react";
 
-const SeatingChartView = ({ seats, constant }: { constant: boolean; seats: RoomData["seats"] }) => {
+const SeatingChartView = ({ seats, constant }: { constant?: boolean; seats: RoomData["seats"] }) => {
   const [selectedSeat, setSelectedSeat] = useState("");
 
   const handleSeatSelect = (row: number, col: number) => {
