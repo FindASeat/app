@@ -3,7 +3,7 @@ import Accordion from "./Accordion";
 
 const HoursAccordion = () => {
   return (
-    <Accordion headerText="Hours" iconName="clock-outline">
+    <Accordion headerText="Hours" iconName="clock">
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View>
           <Text style={styles.hoursText}>Mon – Thu</Text>

@@ -1,8 +1,9 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Octicons";
+import type { RoomData } from "../types";
 import { useState } from "react";
 
-const SeatingChartView = ({ availability, constant }: { constant: boolean; availability: boolean[][] }) => {
+const SeatingChartView = ({ seats, constant }: { constant: boolean; seats: RoomData["seats"] }) => {
   const [selectedSeat, setSelectedSeat] = useState("");
 
   const handleSeatSelect = (row: number, col: number) => {
@@ -14,9 +15,9 @@ const SeatingChartView = ({ availability, constant }: { constant: boolean; avail
 
   return (
     <View style={styles.container}>
-      {availability.map((avs, row) => (
+      {seats.map((cols, row) => (
         <View key={row} style={styles.seatRow}>
-          {avs.map((a, col) => {
+          {cols.map((a, col) => {
             const seatId = `${row}-${col}`;
 
             return (

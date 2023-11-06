@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/Octicons";
 import { useState } from "react";
 
 const Accordion = ({
@@ -21,7 +21,7 @@ const Accordion = ({
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleExpanded} style={styles.header}>
         <View style={{ justifyContent: "flex-start", flexDirection: "row" }}>
-          <Icon name={iconName} size={24} color="white" style={styles.icon} />
+          <Icon name={iconName} size={20} color="white" style={styles.icon} />
           <Text style={styles.headerText}>{headerText}</Text>
         </View>
         <Icon name={expanded ? "chevron-up" : "chevron-down"} size={24} color="white" style={styles.icon} />

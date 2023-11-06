@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image } from "react-native";
 import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
 import Icon from "react-native-vector-icons/Octicons";
-import type { BuildingResponse } from "../types";
+import type { Building } from "../types";
 import HoursAccordion from "./HoursAccordion";
 import { useNavigation } from "expo-router";
 
-const BuildingView = ({ building }: { building: BuildingResponse }) => {
+const BuildingView = ({ building }: { building: Building }) => {
   const nav = useNavigation();
 
   return (
@@ -55,13 +55,7 @@ const BuildingView = ({ building }: { building: BuildingResponse }) => {
               color: "black",
             }}
           >
-            {(
-              ((building.inside.current_taken + building.outside.current_taken) * 100) /
-              (building.inside.num_cols +
-                building.inside.num_rows +
-                building.outside.num_cols +
-                building.outside.num_rows)
-            ).toFixed(0) + "% Full"}
+            {(building.total_availability * 100).toFixed(0) + "% Full"}
           </Text>
 
           {/* Description */}

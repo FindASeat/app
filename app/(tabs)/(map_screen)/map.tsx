@@ -1,9 +1,9 @@
 import MapView, { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
-import { Building } from "../../../types";
+import { MapMarker } from "../../../types";
 import { router } from "expo-router";
 
-const buildings: Building[] = [
+const buildings: MapMarker[] = [
   {
     title: "Fertitta Hall",
     code: "JFF",

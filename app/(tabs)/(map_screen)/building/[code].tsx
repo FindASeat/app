@@ -1,40 +1,42 @@
 import { Keyboard, SafeAreaView, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import BuildingView from "../../../../components/BuildingView";
-import type { BuildingResponse } from "../../../../types";
 import { useLocalSearchParams } from "expo-router";
+import type { Building } from "../../../../types";
 
 const building = () => {
   const { code } = useLocalSearchParams<{ code: string }>();
   const insets = useSafeAreaInsets();
 
-  const building: BuildingResponse = {
-    code: "TES",
+  const building: Building = {
     title: "Test Building Hall",
+    code: "TES",
+    description: "This is a test building who was created for testing purposes during the development of the app.",
 
     inside: {
-      num_rows: 3,
-      num_cols: 4,
-      availability: [
+      rows: 3,
+      cols: 4,
+      seats: [
         [true, false, true, true],
         [true, true, true, true],
         [true, false, true, false],
       ],
-      current_taken: 9,
+      availability: 9 / 12, // calculated on server
     },
 
     outside: {
-      num_rows: 3,
-      num_cols: 4,
-      availability: [
+      rows: 3,
+      cols: 4,
+      seats: [
         [false, false, true, true],
         [false, true, true, false],
         [false, false, false, false],
       ],
-      current_taken: 4,
+      availability: 4 / 12, // calculated on server
     },
 
-    description: "This is a test building who was created for testing purposes during the development of the app.",
+    total_availability: 13 / 24, // calculated on server
+
     image_url: "https://dailytrojan.com/wp-content/uploads/2022/01/gfsstock_celinevazquez_e-3192-scaled.jpg",
   };
 
