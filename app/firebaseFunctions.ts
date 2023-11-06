@@ -154,3 +154,30 @@ export async function cancelReservation(buildingCode, user, reservationId) {
     console.error(`Error cancelling reservation: ${error}`);
   }
 }
+
+export async function getUserInfo(username) {
+  const usernameLower = username.toLowerCase();
+  const userSnapshot = await get(child(ref(FIREBASE_DB), `users/${usernameLower}`));
+  if (userSnapshot.exists()) {
+    return userSnapshot.val();
+  } else {
+    console.error(`User with username ${username} does not exist.`);
+    return null;
+  }
+}
+
+export async function getUserReservations(username) {
+  const usernameLower = username.toLowerCase();
+  const reservationsSnapshot = await get(child(ref(FIREBASE_DB), `reservations/${usernameLower}`));
+  if (reservationsSnapshot.exists()) {
+    const reservationsObject = reservationsSnapshot.val();
+    const reservationsArray = Object.keys(reservationsObject).map((id) => ({
+      ...reservationsObject[id],
+      id
+    }));
+    return reservationsArray;
+  } else {
+    console.error(`No reservations found for user ${username}.`);
+    return [];
+  }
+}
