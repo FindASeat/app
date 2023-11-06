@@ -20,7 +20,7 @@ export async function createUser(name, id, username, password) {
   const userData = {
     id,
     name,
-    password: hashPassword(password),
+    password: password,
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);
@@ -31,9 +31,9 @@ export async function createUser(name, id, username, password) {
   }
 }
 
-async function hashPassword(password) {
-  return password;
-}
+// async function hashPassword(password) {
+//   return password;
+// }
 
 
 export async function getBuildings() {

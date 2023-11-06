@@ -9,8 +9,8 @@ const me = ( {username} ) => {
   const [reservations, setReservations] = useState([]);
 
   const testFunction = async () => {
-    await addReservation("rohkal", "LVL", "inside-2-2", "today", "haha")
-    // await cancelReservation("JFF", "rohkal", "-NiaEL5nThaMp4hoL6d8");
+    // await addReservation("ania", "LVL", "inside-2-2", "today", "haha")
+    await cancelReservation("LVL", "ania", "-NiabmyjqG6qnsflELjb");
   } 
 
   useEffect(() => {

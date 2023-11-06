@@ -49,21 +49,29 @@ const LoginView = () => {
         />
 
         {/* Login Button */}
-    <TouchableOpacity
-      style={styles.loginButton}
-      onPress={async () => {
-        if (mode == "login") {
-          const isValid = await validateCredentials(username, password);
-          if (isValid) {
-            router.replace("/map");
-          } else {
-            alert("Invalid username or password!");
-          }
-        }
-      }}
-    >
-      <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
-    </TouchableOpacity>
+<TouchableOpacity
+  style={styles.loginButton}
+  onPress={async () => {
+    if (mode == "login") {
+      const isValid = await validateCredentials(username, password);
+      if (isValid) {
+        router.replace("/map");
+      } else {
+        alert("Invalid username or password!");
+      }
+    } else if (mode == "signup") {
+      const isCreated = await createUser(name, uscId, username, password);
+      if (isCreated) {
+        alert("Account created successfully! Please login!");
+        setMode("login");
+      } else {
+        alert("Failed to create account. Please try again.");
+      }
+    }
+  }}
+>
+  <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
+</TouchableOpacity>
 
 
         {/* OR Text */}
@@ -74,19 +82,13 @@ const LoginView = () => {
         </View>
 
         {/* Signup */}
-        <TouchableOpacity
+<TouchableOpacity
   style={styles.signupButton}
-  onPress={async () => {
+  onPress={() => {
     if (mode === "login") {
       setMode("signup");
-    } else {
-      const isCreated = await createUser(name, uscId, username, password);
-      if (isCreated) {
-        alert("Account created successfully! Please login!");
-        setMode("login");
-      } else {
-        alert("Failed to create account. Please try again.");
-      }
+    } else if (mode === "signup") {
+      setMode("login");
     }
   }}
 >
