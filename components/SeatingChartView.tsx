@@ -1,11 +1,19 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { type Dispatch, type SetStateAction } from "react";
 import Icon from "react-native-vector-icons/Octicons";
 import type { RoomData } from "../types";
-import { useState } from "react";
 
-const SeatingChartView = ({ seats, constant }: { constant?: boolean; seats: RoomData["seats"] }) => {
-  const [selectedSeat, setSelectedSeat] = useState("");
-
+const SeatingChartView = ({
+  seats,
+  constant,
+  selectedSeat,
+  setSelectedSeat,
+}: {
+  constant?: boolean;
+  seats: RoomData["seats"];
+  selectedSeat: string;
+  setSelectedSeat: Dispatch<SetStateAction<string>>;
+}) => {
   const handleSeatSelect = (row: number, col: number) => {
     if (constant) return;
 

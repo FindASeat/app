@@ -1,7 +1,9 @@
-import { View, Text } from "react-native";
 import SeatingChartView from "../../../../components/SeatingChartView";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useState } from "react";
 
 const reserve = () => {
+  const [selectedSeat, setSelectedSeat] = useState("");
   const test_seats = [
     [true, false, true, true],
     [true, true, true, true],
@@ -20,9 +22,15 @@ const reserve = () => {
       {/* Pick a time  */}
 
       {/* The grid */}
-      <SeatingChartView seats={test_seats} />
+      <SeatingChartView seats={test_seats} selectedSeat={selectedSeat} setSelectedSeat={setSelectedSeat} />
+
+      <TouchableOpacity>
+        <Text>Reserve</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 export default reserve;
+
+const styles = StyleSheet.create({});
