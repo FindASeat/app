@@ -60,7 +60,7 @@ const BuildingView = ({ building }: { building: Building }) => {
               color: "black",
             }}
           >
-            {(building.total_availability * 100).toFixed(0) + "% Full"}
+            {(building.total_availability * 100).toFixed(0) + "% Available"}
           </Text>
 
           {/* Description */}
