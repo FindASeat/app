@@ -10,6 +10,7 @@ const LoginView = () => {
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [affiliation, setAffiliation] = useState("");
 
   const { setUser } = useGlobal();
 
@@ -31,6 +32,12 @@ const LoginView = () => {
               value={uscId}
               keyboardType="number-pad"
               onChangeText={text => setUscId(text)}
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Affiliation"
+              value={affiliation}
+              onChangeText={text => setAffiliation(text)}
             />
           </>
         )}
@@ -65,15 +72,12 @@ const LoginView = () => {
                   affiliation: "student",
                   image_url: "",
                 });
-
                 router.replace("/map");
               } else {
                 alert("Invalid username or password!");
               }
-            }
-
-            if (mode == "signup") {
-              const isCreated = await createUser(name, uscId, username, password);
+            } else if (mode == "signup") {
+              const isCreated = await createUser(name, uscId, affiliation, username, password);
               if (isCreated) {
                 alert("Account created successfully! Please login!");
                 setMode("login");
@@ -93,21 +97,12 @@ const LoginView = () => {
           <View style={styles.divider} />
         </View>
 
-        {/* Signup */}
+        {/* Switch to Signup */}
         <TouchableOpacity
           style={styles.signupButton}
           onPress={async () => {
-            if (mode === "login") {
-              setMode("signup");
-            } else {
-              const isCreated = await createUser(name, uscId, username, password);
-              if (isCreated) {
-                alert("Account created successfully! Please login!");
-                setMode("login");
-              } else {
-                alert("Failed to create account. Please try again.");
-              }
-            }
+            if (mode === "login") setMode("signup");
+            else if (mode === "signup") setMode("login");
           }}
         >
           {mode === "login" ? (

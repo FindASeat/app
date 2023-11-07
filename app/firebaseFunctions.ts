@@ -1,4 +1,4 @@
-import { ref, set, child, get, push, remove } from "firebase/database";
+import { ref, set, child, get, push, remove, update } from "firebase/database";
 import { FIREBASE_DB } from "../firebaseConfig";
 
 export async function validateCredentials(inputUsername, inputPassword) {
@@ -15,12 +15,14 @@ export async function validateCredentials(inputUsername, inputPassword) {
   return false;
 }
 
-export async function createUser(name, id, username, password) {
+export async function createUser(name, id, affiliation, username, password) {
   const usernameKey = username.toLowerCase();
   const userData = {
     id,
     name,
     password: password,
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+    affiliation,
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);
@@ -141,6 +143,8 @@ export async function addReservation(username, code, seat, start, end) {
     seat,
     start,
     end,
+    type: "valid",
+    createdAt: new Date().toISOString(),
   };
   try {
     const seatAvailable = await isSeatAvailable(code, seat, start, end);
@@ -164,14 +168,27 @@ export async function addReservation(username, code, seat, start, end) {
   }
 }
 
+// export async function cancelReservation(buildingCode, user, reservationId) {
+//   const userLower = user.toLowerCase();
+//   try {
+//     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
+//     const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
+//     await remove(reservationCodeRef);
+//     await remove(reservationUserRef);
+//     console.log(`Reservation ${reservationId} has been cancelled.`);
+//   } catch (error) {
+//     console.error(`Error cancelling reservation: ${error}`);
+//   }
+// }
+
 export async function cancelReservation(buildingCode, user, reservationId) {
   const userLower = user.toLowerCase();
   try {
     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
     const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
     await remove(reservationCodeRef);
-    await remove(reservationUserRef);
-    console.log(`Reservation ${reservationId} has been cancelled.`);
+    await update(reservationUserRef, { type: "invalid" });
+    console.log(`Reservation ${reservationId} has been marked as invalid.`);
   } catch (error) {
     console.error(`Error cancelling reservation: ${error}`);
   }
