@@ -2,12 +2,13 @@ import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-cont
 import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import BuildingView from "../../../../components/BuildingView";
 import { useGlobal } from "../../../../context/GlobalContext";
+import { fetchBuilding } from "../../../firebaseFunctions";
 import type { Building } from "../../../../types";
-import React from "react";
+import React, { useEffect } from "react";
 
 const building = () => {
   const insets = useSafeAreaInsets();
-  const { selectedBuilding } = useGlobal();
+  const { selectedBuilding, setSelectedBuilding } = useGlobal();
 
   const mock_build: Building = {
     title: "Test Building Hall",
@@ -43,6 +44,20 @@ const building = () => {
 
     image_url: "https://dailytrojan.com/wp-content/uploads/2022/01/gfsstock_celinevazquez_e-3192-scaled.jpg",
   };
+
+  useEffect(() => {
+    fetchBuilding(selectedBuilding?.code).then(
+      fetchedBuilding => {
+        setSelectedBuilding(prev => ({
+          ...prev,
+          total_availability: fetchedBuilding.total_availability,
+          inside: fetchedBuilding.inside,
+          outside: fetchedBuilding.outside,
+        }));
+      },
+      [selectedBuilding?.code]
+    );
+  });
 
   return (
     <SafeAreaProvider>

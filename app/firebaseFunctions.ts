@@ -1,15 +1,15 @@
 import { ref, set, child, get, push, remove } from "firebase/database";
-import { FIREBASE_DB } from '../firebaseConfig';
+import { FIREBASE_DB } from "../firebaseConfig";
 
 export async function validateCredentials(inputUsername, inputPassword) {
   const usernameLower = inputUsername.toLowerCase();
   const usersSnapshot = await get(child(ref(FIREBASE_DB), `users`));
   if (usersSnapshot.exists()) {
     const users = usersSnapshot.val();
-    const userKey = Object.keys(users).find((key) => key.toLowerCase() === usernameLower);
+    const userKey = Object.keys(users).find(key => key.toLowerCase() === usernameLower);
     if (userKey) {
       const userData = users[userKey];
-            return userData.password === inputPassword;
+      return userData.password === inputPassword;
     }
   }
   return false;
@@ -24,7 +24,7 @@ export async function createUser(name, id, username, password) {
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);
-    return true; 
+    return true;
   } catch (error) {
     console.error("Error creating user:", error);
     return false;
@@ -35,14 +35,13 @@ export async function createUser(name, id, username, password) {
 //   return password;
 // }
 
-
 export async function getBuildings() {
-  const buildingsSnapshot = await get(child(ref(FIREBASE_DB), 'buildings'));
+  const buildingsSnapshot = await get(child(ref(FIREBASE_DB), "buildings"));
   if (buildingsSnapshot.exists()) {
     const buildingsObject = buildingsSnapshot.val();
-    const buildingsArray = Object.keys(buildingsObject).map((code) => ({
+    const buildingsArray = Object.keys(buildingsObject).map(code => ({
       ...buildingsObject[code],
-      code
+      code,
     }));
     return buildingsArray;
   }
@@ -73,23 +72,34 @@ export async function fetchBuilding(buildingCode) {
     if (buildingSnapshot.exists()) {
       let building = buildingSnapshot.val();
       let reservations = reservationsSnapshot.exists() ? reservationsSnapshot.val() : {};
-      building.inside.seats = Array(building.inside.rows).fill(undefined).map(() => Array(building.inside.cols).fill(true));
-      building.outside.seats = Array(building.outside.rows).fill(undefined).map(() => Array(building.outside.cols).fill(true));
+      building.inside.seats = Array(building.inside.rows)
+        .fill(undefined)
+        .map(() => Array(building.inside.cols).fill(true));
+      building.outside.seats = Array(building.outside.rows)
+        .fill(undefined)
+        .map(() => Array(building.outside.cols).fill(true));
       for (let reservationId in reservations) {
         let reservation = reservations[reservationId];
-        let [type, row, col] = reservation.seat.split('-');
+        let [type, row, col] = reservation.seat.split("-");
         row = parseInt(row);
         col = parseInt(col);
-        console.log(row, col)
-        if (type === 'inside') {
+        console.log(row, col);
+        if (type === "inside") {
           building.inside.seats[row][col] = false;
-        } else if (type === 'outside') {
+        } else if (type === "outside") {
           building.outside.seats[row][col] = false;
         }
       }
-      building.inside.availability = building.inside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.inside.rows * building.inside.cols);
-      building.outside.availability = building.outside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.outside.rows * building.outside.cols);const totalSeats = (building.inside.rows * building.inside.cols) + (building.outside.rows * building.outside.cols);
-      const totalAvailableSeats = (building.inside.availability * building.inside.rows * building.inside.cols) + (building.outside.availability * building.outside.rows * building.outside.cols);
+      building.inside.availability =
+        building.inside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length /
+        (building.inside.rows * building.inside.cols);
+      building.outside.availability =
+        building.outside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length /
+        (building.outside.rows * building.outside.cols);
+      const totalSeats = building.inside.rows * building.inside.cols + building.outside.rows * building.outside.cols;
+      const totalAvailableSeats =
+        building.inside.availability * building.inside.rows * building.inside.cols +
+        building.outside.availability * building.outside.rows * building.outside.cols;
       building.total_availability = totalAvailableSeats / totalSeats;
 
       return {
@@ -135,11 +145,11 @@ export async function addReservation(username, code, seat, start, end) {
   try {
     const seatAvailable = await isSeatAvailable(code, seat, start, end);
     if (!seatAvailable) {
-      console.error('This seat is already reserved for the given time period.');
+      console.error("This seat is already reserved for the given time period.");
       return;
     }
 
-    const newReservationRef = push(child(ref(FIREBASE_DB), 'reservations'));
+    const newReservationRef = push(child(ref(FIREBASE_DB), "reservations"));
     const reservationId = newReservationRef.key;
 
     await set(ref(FIREBASE_DB, `reservations/${code}/${reservationId}`), reservation);
@@ -167,7 +177,6 @@ export async function cancelReservation(buildingCode, user, reservationId) {
   }
 }
 
-
 export async function getUserInfo(username) {
   const usernameLower = username.toLowerCase();
   const userSnapshot = await get(child(ref(FIREBASE_DB), `users/${usernameLower}`));
@@ -184,9 +193,9 @@ export async function getUserReservations(username) {
   const reservationsSnapshot = await get(child(ref(FIREBASE_DB), `reservations/${usernameLower}`));
   if (reservationsSnapshot.exists()) {
     const reservationsObject = reservationsSnapshot.val();
-    const reservationsArray = Object.keys(reservationsObject).map((id) => ({
+    const reservationsArray = Object.keys(reservationsObject).map(id => ({
       ...reservationsObject[id],
-      id
+      id,
     }));
     return reservationsArray;
   } else {

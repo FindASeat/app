@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import type { Building } from "../types";
 import Accordion from "./Accordion";
+import React from "react";
 
 const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
   return (
@@ -8,12 +9,16 @@ const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View>
           {Object.entries(hours).map(([day]) => (
-            <Text style={styles.hoursText}>{day}</Text>
+            <Text key={day} style={styles.hoursText}>
+              {day}
+            </Text>
           ))}
         </View>
         <View style={{ alignItems: "flex-end" }}>
-          {Object.entries(hours).map(([_, time]) => (
-            <Text style={styles.hoursText}>{typeof time === "string" ? time : `${time[0]} – ${time[1]}`}</Text>
+          {Object.entries(hours).map(([day, time]) => (
+            <Text key={day} style={styles.hoursText}>
+              {typeof time === "string" ? time : `${time[0]} – ${time[1]}`}
+            </Text>
           ))}
         </View>
       </View>
