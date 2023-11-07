@@ -1,16 +1,16 @@
 import SeatingChartView from "../../../../components/SeatingChartView";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import LocationPicker from "../../../../components/LocationPicker";
+import { useGlobal } from "../../../../context/GlobalContext";
 import TimePicker from "../../../../components/TimePicker";
-import LocationSelect from "../../../../components/LocationSelect";
 import Icon from "react-native-vector-icons/Octicons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { useGlobal } from "../../../../context/GlobalContext";
 
 const reserve = () => {
   const { selectedBuilding } = useGlobal();
 
-  const [area, setArea] = useState(0);
+  const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
   const [selectedSeat, setSelectedSeat] = useState("");
   const [pickedTime, setPickedTime] = useState("");
 
@@ -22,30 +22,51 @@ const reserve = () => {
 
   return (
     <View style={styles.container}>
-      {/* Cancel Button */}
-      <View style={{ backgroundColor: "#990000", paddingVertical: 5, paddingRight: 15, alignItems: "flex-end" }}>
-        <TouchableOpacity onPress={() => router.back()}>
+      <View
+        style={{
+          position: "relative",
+          backgroundColor: "#990000",
+          paddingVertical: 10,
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
+        {/* Title */}
+        <Text style={styles.title}>Reserve a Seat</Text>
+
+        {/* Cancel Button */}
+        <TouchableOpacity style={{ position: "absolute", right: 15, top: 10 }} onPress={() => router.back()}>
           <Icon name="x" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
-
-      {/* The title */}
-      <Text style={styles.title}>Reserve A Seat!</Text>
 
       {/* Time picker */}
       <Text style={{ fontSize: 18, fontWeight: "400", color: "#333", paddingBottom: 1, paddingHorizontal: 5 }}>
         Start Time
       </Text>
       <TimePicker openTime={"08:00"} closeTime={"20:30"} setPickedTime={setPickedTime} pickedTime={pickedTime} />
-      {/* Indoor or Outdoor */}
-      <Text style={{ fontSize: 18, paddingTop: 20, fontWeight: "400", color: "#333", paddingBottom: 1, paddingHorizontal: 5 }}>
+
+      {/* Location Picker */}
+      <Text
+        style={[
+          {
+            fontSize: 18,
+            fontWeight: "400",
+            color: "#333",
+            paddingHorizontal: 5,
+            paddingTop: 20,
+            paddingBottom: 1,
+          },
+          pickedTime == "" && { opacity: 0.25 },
+        ]}
+      >
         Location
       </Text>
-      <View style={styles.loccontainer}>
-        {/* Render the LocationSelect component */}
-      <LocationSelect location={area} onLocationChange={setArea}  />
+      <View style={[styles.locContainer, pickedTime == "" && { opacity: 0.25 }]}>
+        <LocationPicker location={area} setLocation={setArea} />
       </View>
-      {/* The grid */}
+
+      {/* Seat Grid */}
       <Text
         style={[
           {
@@ -70,8 +91,13 @@ const reserve = () => {
         />
       </View>
 
+      {/* TODO: If we have time do a seat confirmation with day and time */}
+
       {/* Reserve button */}
-      <TouchableOpacity style={styles.reserveButton}>
+      <TouchableOpacity
+        disabled={pickedTime === "" || selectedSeat === ""}
+        style={[styles.reserveButton, selectedSeat === "" && { opacity: 0.25 }]}
+      >
         <Text style={styles.buttonText}>Reserve</Text>
       </TouchableOpacity>
     </View>
@@ -81,46 +107,44 @@ const reserve = () => {
 export default reserve;
 
 const styles = StyleSheet.create({
-  loccontainer: {
+  locContainer: {
     paddingVertical: 10,
     backgroundColor: "#BBB",
   },
   locButton: {
-    // Styles for the time buttons
-    backgroundColor: "#F0F0F0", // a soft color that's easy on the eyes
+    backgroundColor: "#F0F0F0",
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginHorizontal: 5,
-    borderRadius: 10, // rounded corners
-    elevation: 2, // slight shadow for a "lifted" effect
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFF", // assuming a light theme
+    backgroundColor: "#FFF",
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    paddingVertical: 10,
+    fontWeight: "600",
+    color: "white",
     textAlign: "center",
+    backgroundColor: "#990000",
+    flexGrow: 1,
   },
   reserveButton: {
-    backgroundColor: "#990000", // dark red color from your previous styles
+    backgroundColor: "#990000",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginHorizontal: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20, // space above the button
+    marginTop: 20,
   },
   buttonText: {
-    color: "#333", // darker color for readability
+    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
-  // You can continue styling other components like SeatingChartView as needed
-  // ...
 });
