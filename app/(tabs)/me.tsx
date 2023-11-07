@@ -106,10 +106,12 @@ const Me = () => {
   return (
     <View style={styles.container}>
     <View style={styles.userInfo}>
-          <Image 
-            source={{uri: imageUrl}} 
-            style={styles.profilePicture} 
-          />
+    {imageUrl && (
+      <Image 
+        source={{uri: imageUrl}} 
+        style={styles.profilePicture} 
+      />
+    )}
           <View>
             <Text style={styles.title}>User Information:</Text>
             <Text style={styles.name}>Name: {name}</Text>
