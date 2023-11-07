@@ -9,7 +9,6 @@ import React from "react";
 
 const BuildingView = ({ building }: { building: Building }) => {
   const { user } = useGlobal();
-  console.log(user);
 
   return (
     <View style={{ flex: 1 }}>
