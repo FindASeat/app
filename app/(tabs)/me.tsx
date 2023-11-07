@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
 import { addReservation, cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
 import ReservationBubble from "../../components/ReservationBubble";
-
+import { useFocusEffect } from "expo-router";
 import { useGlobal } from "../../context/GlobalContext";
 
 
@@ -25,22 +25,24 @@ const Me = () => {
     setReservations(updatedReservations);
   }
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const user = await getUserInfo(username);
-      const userReservations = await getUserReservations(username);
-      setName(user.name);
-      setReservations(userReservations);
-    }
-    fetchUserData();
-  }, [username]);
+    useFocusEffect(
+      React.useCallback(() => {
+        const fetchUserData = async () => {
+          const user = await getUserInfo(username);
+          const userReservations = await getUserReservations(username);
+          setName(user.name);
+          setReservations(userReservations);
+        }
+        fetchUserData();
+      }, [username])
+    );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Information:</Text>
       <Text style={styles.name}>Name: {name}</Text>
       <Text style={styles.title}>Active Reservations:</Text>
-      <Button title="Test Button" onPress={() => testFunction()} />
+      {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
       <ScrollView>
         {reservations.map((reservation, index) => (
           <ReservationBubble

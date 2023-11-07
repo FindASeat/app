@@ -19,17 +19,15 @@ const reserve = () => {
     [true, false, true, false],
   ];
 
-  const { selectedBuilding } = useGlobal();
-  console.log("trying to reserve", selectedBuilding?.code)
+  const { selectedBuilding, user } = useGlobal();
   
   const reserveSeat = async () => {
-
-    const username = "rohkal";
-    const buildingCode = "LVL";
-    const seat = "inside-2-2";
-    const date = "today";
-    const time = "haha";
-
+    const username = user.username.toLowerCase();
+    const buildingCode = selectedBuilding?.code;
+    const seat = selectedSeat;
+    const currentDate = new Date();
+    const date = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
+    const time = pickedTime;
     await addReservation(username, buildingCode, seat, date, time);
   };
 
