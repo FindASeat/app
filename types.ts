@@ -38,7 +38,7 @@ export type User = {
   username: string;
   image_url: string | null;
 
-  reservation: Reservation | null;
+  reservations: Reservation[];
 };
 
 export type Reservation = {

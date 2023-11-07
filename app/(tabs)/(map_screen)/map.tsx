@@ -1,11 +1,13 @@
-import MapView, { Marker } from "react-native-maps";
-import { StyleSheet } from "react-native";
-import { MapMarker } from "../../../types";
-import { router } from "expo-router";
 import { useGlobal } from "../../../context/GlobalContext";
+import { getBuildings } from "../../firebaseFunctions";
+import MapView, { Marker } from "react-native-maps";
+import React, { useEffect, useState } from "react";
+import { MapMarker } from "../../../types";
+import { StyleSheet } from "react-native";
+import { router } from "expo-router";
 
 const map = () => {
-  const { buildings: not_used, setSelectedBuilding } = useGlobal();
+  const { buildings: not_used, setSelectedBuilding, setBuildings } = useGlobal();
 
   const buildings: MapMarker[] = [
     {
@@ -81,6 +83,15 @@ const map = () => {
       total_availability: 0.15,
     },
   ];
+
+  useEffect(() => {
+    const fetchBuildings = async () => {
+      const buildingsFromDB = await getBuildings();
+      setBuildings(buildingsFromDB);
+    };
+
+    fetchBuildings().catch(console.error);
+  }, []);
 
   return (
     <MapView

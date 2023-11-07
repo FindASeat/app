@@ -1,11 +1,16 @@
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
 import Icon from "react-native-vector-icons/Octicons";
-import type { Building } from "../types";
 import HoursAccordion from "./HoursAccordion";
+import type { Building } from "../types";
 import { router } from "expo-router";
+import React from "react";
 
 const BuildingView = ({ building }: { building: Building }) => {
+  if (!building) {
+    return null;
+  }
+
   return (
     <View style={{ flex: 1 }}>
       {/* Back Arrow */}
@@ -53,7 +58,7 @@ const BuildingView = ({ building }: { building: Building }) => {
               color: "black",
             }}
           >
-            {(building.total_availability * 100).toFixed(0) + "% Full"}
+            {(building.total_availability * 100).toFixed(0) + "% Available"}
           </Text>
 
           {/* Description */}

@@ -1,7 +1,9 @@
-import { router } from "expo-router";
-import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { useGlobal } from "../context/GlobalContext";
+import React, { useState } from "react";
+import { router } from "expo-router";
+
+import { validateCredentials, createUser } from "../app/firebaseFunctions";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -52,16 +54,29 @@ const LoginView = () => {
         {/* Login Button */}
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => {
-            setUser({ username, name, usc_id: uscId, reservation: null, affiliation: "student", image_url: "" });
-            router.replace("/map");
+          onPress={async () => {
+            if (mode == "login") {
+              const isValid = await validateCredentials(username, password);
+              if (isValid) {
+                // TODO: setUser({ username, name, usc_id: uscId, reservation: null, affiliation: "student", image_url: "" });
+                router.replace("/map");
+              } else {
+                alert("Invalid username or password!");
+              }
+            }
+
+            if (mode == "signup") {
+              const isCreated = await createUser(name, uscId, username, password);
+              if (isCreated) {
+                alert("Account created successfully! Please login!");
+                setMode("login");
+              } else {
+                alert("Failed to create account. Please try again.");
+              }
+            }
           }}
         >
-          {mode == "login" ? (
-            <Text style={styles.buttonText}>Log in</Text>
-          ) : (
-            <Text style={styles.buttonText}>Sign up</Text>
-          )}
+          <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
         </TouchableOpacity>
 
         {/* OR Text */}
@@ -76,11 +91,7 @@ const LoginView = () => {
           style={styles.signupButton}
           onPress={() => setMode(prev => (prev == "login" ? "signup" : "login"))}
         >
-          {mode == "login" ? (
-            <Text style={styles.signupText}>Sign up</Text>
-          ) : (
-            <Text style={styles.signupText}>Log in</Text>
-          )}
+          <Text style={styles.signupText}>{mode === "login" ? "Sign up" : "Log in"}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

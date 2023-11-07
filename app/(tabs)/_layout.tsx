@@ -1,4 +1,5 @@
 import { Tabs } from "expo-router";
+import React from "react";
 
 const tab_layout = () => {
   return (
