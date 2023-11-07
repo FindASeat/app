@@ -11,13 +11,17 @@ const Me = () => {
   const { user } = useGlobal();
   const username = user?.username
   const [name, setName] = useState('');
-  const [reservations, setReservations] = useState([]);
+  const [validReservations, setValidReservations] = useState([]);
+  const [invalidReservations, setInvalidReservations] = useState([]);
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
     console.log("user: ", username)
     await cancelReservation(buildingCode, username, reservationId);
     const updatedReservations = await getUserReservations(username);
-    setReservations(updatedReservations);
+    const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
+    const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
+    setValidReservations(validRes);
+    setInvalidReservations(invalidRes);
   }
 
   const pastReservations = [
@@ -87,9 +91,12 @@ const Me = () => {
       React.useCallback(() => {
         const fetchUserData = async () => {
           const user = await getUserInfo(username);
-          const userReservations = await getUserReservations(username);
           setName(user.name);
-          setReservations(userReservations);
+          const updatedReservations = await getUserReservations(username);
+          const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
+          const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
+          setValidReservations(validRes);
+          setInvalidReservations(invalidRes);
         }
         fetchUserData();
       }, [username])
@@ -102,7 +109,7 @@ const Me = () => {
       <Text style={styles.title}>Active Reservations:</Text>
       {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
       <ScrollView>
-        {reservations.map((reservation, index) => (
+        {validReservations.map((reservation, index) => (
           <ReservationBubble
             key={index}
             reservation={reservation}
@@ -110,6 +117,15 @@ const Me = () => {
             showCancel={true}
           />
         ))}
+      <Text style={styles.title}>Canceled Reservations:</Text>
+      {invalidReservations.map((reservation, index) => (
+          <ReservationBubble
+            key={index}
+            reservation={reservation}
+            onCancel={cancelAndFetchReservations}
+            showCancel={false}
+          />
+        ))}  
       <Text style={styles.title}>Past Reservations:</Text>
       {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
         {pastReservations.map((reservation, index) => (

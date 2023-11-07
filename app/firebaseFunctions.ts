@@ -1,4 +1,4 @@
-import { ref, set, child, get, push, remove } from "firebase/database";
+import { ref, set, child, get, push, remove, update } from "firebase/database";
 import { FIREBASE_DB } from '../firebaseConfig';
 
 export async function validateCredentials(inputUsername, inputPassword) {
@@ -131,6 +131,7 @@ export async function addReservation(username, code, seat, start, end) {
     seat,
     start,
     end,
+    type: "valid"
   };
   try {
     const seatAvailable = await isSeatAvailable(code, seat, start, end);
@@ -154,19 +155,31 @@ export async function addReservation(username, code, seat, start, end) {
   }
 }
 
+// export async function cancelReservation(buildingCode, user, reservationId) {
+//   const userLower = user.toLowerCase();
+//   try {
+//     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
+//     const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
+//     await remove(reservationCodeRef);
+//     await remove(reservationUserRef);
+//     console.log(`Reservation ${reservationId} has been cancelled.`);
+//   } catch (error) {
+//     console.error(`Error cancelling reservation: ${error}`);
+//   }
+// }
+
 export async function cancelReservation(buildingCode, user, reservationId) {
   const userLower = user.toLowerCase();
   try {
     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
     const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
     await remove(reservationCodeRef);
-    await remove(reservationUserRef);
-    console.log(`Reservation ${reservationId} has been cancelled.`);
+    await update(reservationUserRef, { type: "invalid" });
+    console.log(`Reservation ${reservationId} has been marked as invalid.`);
   } catch (error) {
     console.error(`Error cancelling reservation: ${error}`);
   }
 }
-
 
 export async function getUserInfo(username) {
   const usernameLower = username.toLowerCase();
