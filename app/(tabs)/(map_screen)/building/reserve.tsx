@@ -36,7 +36,7 @@ const reserve = () => {
   }, [area, selectedBuilding]);
 
   const reserveSeat = async () => {
-    if (selectedSeat === "" || pickedTime === "" || area === "outdoor") {
+    if (selectedSeat === "" || pickedTime === "") {
       console.log(selectedSeat, pickedTime, area);
       alert("Please select both a time and a seat.");
       return;
