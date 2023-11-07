@@ -21,7 +21,7 @@ export async function createUser(name, id, username, password) {
     id,
     name,
     password: password,
-    image_url: "https://pfps.gg/assets/pfps/8543-flower-majesty.png"
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);

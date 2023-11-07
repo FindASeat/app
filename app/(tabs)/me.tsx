@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
 import ReservationBubble from "../../components/ReservationBubble";
 import { useFocusEffect } from "expo-router";
@@ -13,9 +13,9 @@ const Me = () => {
   const [name, setName] = useState('');
   const [validReservations, setValidReservations] = useState([]);
   const [invalidReservations, setInvalidReservations] = useState([]);
+  const [imageUrl, setImageUrl] = useState('');
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
-    console.log("user: ", username)
     await cancelReservation(buildingCode, username, reservationId);
     const updatedReservations = await getUserReservations(username);
     const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
@@ -87,27 +87,35 @@ const Me = () => {
   },
 ];
 
-    useFocusEffect(
-      React.useCallback(() => {
-        const fetchUserData = async () => {
-          const user = await getUserInfo(username);
-          setName(user.name);
-          const updatedReservations = await getUserReservations(username);
-          const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
-          const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
-          setValidReservations(validRes);
-          setInvalidReservations(invalidRes);
-        }
-        fetchUserData();
-      }, [username])
-    );
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUserData = async () => {
+        const user = await getUserInfo(username);
+        setName(user.name);
+        setImageUrl(user.image_url)
+        const updatedReservations = await getUserReservations(username);
+        const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
+        const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
+        setValidReservations(validRes);
+        setInvalidReservations(invalidRes);
+      }
+      fetchUserData();
+    }, [username])
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>User Information:</Text>
-      <Text style={styles.name}>Name: {name}</Text>
+    <View style={styles.userInfo}>
+          <Image 
+            source={{uri: imageUrl}} 
+            style={styles.profilePicture} 
+          />
+          <View>
+            <Text style={styles.title}>User Information:</Text>
+            <Text style={styles.name}>Name: {name}</Text>
+          </View>
+        </View>
       <Text style={styles.title}>Active Reservations:</Text>
-      {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
       <ScrollView>
         {validReservations.map((reservation, index) => (
           <ReservationBubble
@@ -186,6 +194,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profilePicture: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
   },
 });
 
