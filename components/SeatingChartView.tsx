@@ -2,6 +2,7 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { type Dispatch, type SetStateAction } from "react";
 import Icon from "react-native-vector-icons/Octicons";
 import type { RoomData } from "../types";
+import React from "react";
 
 const SeatingChartView = ({
   seats,

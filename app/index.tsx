@@ -3,8 +3,7 @@ import LoginView from "../components/LoginView";
 import React from "react";
 
 const index = () => {
-  // is user logged in?
-
+ 
   const logged_in = false;
 
   if (!logged_in)

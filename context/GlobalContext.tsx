@@ -1,5 +1,6 @@
 import { type Dispatch, type SetStateAction, createContext, useState, useContext } from "react";
 import type { Building, User } from "../types";
+import React from "react";
 
 const GlobalContext = createContext<ContextProps>(null);
 

@@ -3,7 +3,7 @@ import { useGlobal } from "../context/GlobalContext";
 import React, { useState } from "react";
 import { router } from "expo-router";
 
-import { validateCredentials, createUser } from "../app/firebaseFunctions";
+import { validateCredentials, createUser, getUserInfo } from "../app/firebaseFunctions";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -58,7 +58,7 @@ const LoginView = () => {
             if (mode == "login") {
               const isValid = await validateCredentials(username, password);
               if (isValid) {
-                // TODO: setUser({ username, name, usc_id: uscId, reservation: null, affiliation: "student", image_url: "" });
+                setUser({ username, name: null, usc_id: null, reservations: [], affiliation: null, image_url: "" });
                 router.replace("/map");
               } else {
                 alert("Invalid username or password!");
@@ -86,12 +86,28 @@ const LoginView = () => {
           <View style={styles.divider} />
         </View>
 
-        {/* Switch to Signup  */}
+        {/* Signup */}
         <TouchableOpacity
           style={styles.signupButton}
-          onPress={() => setMode(prev => (prev == "login" ? "signup" : "login"))}
+          onPress={async () => {
+            if (mode === "login") {
+              setMode("signup");
+            } else {
+              const isCreated = await createUser(name, uscId, username, password);
+              if (isCreated) {
+                alert("Account created successfully! Please login!");
+                setMode("login");
+              } else {
+                alert("Failed to create account. Please try again.");
+              }
+            }
+          }}
         >
-          <Text style={styles.signupText}>{mode === "login" ? "Sign up" : "Log in"}</Text>
+          {mode === "login" ? (
+            <Text style={styles.signupText}>Sign up</Text>
+          ) : (
+            <Text style={styles.signupText}>Log in</Text>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

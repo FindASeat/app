@@ -20,7 +20,7 @@ export async function createUser(name, id, username, password) {
   const userData = {
     id,
     name,
-    password: hashPassword(password),
+    password: password,
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);
@@ -31,9 +31,9 @@ export async function createUser(name, id, username, password) {
   }
 }
 
-async function hashPassword(password) {
-  return password;
-}
+// async function hashPassword(password) {
+//   return password;
+// }
 
 
 export async function getBuildings() {
@@ -66,23 +66,32 @@ const updateSeatsAndAvailability = (rows, cols) => {
   return { seats, availability };
 };
 
-// TODO: Currently randomly produces availability. Need to check reservations for true availability of building.
 export async function fetchBuilding(buildingCode) {
   try {
     const buildingSnapshot = await get(child(ref(FIREBASE_DB), `buildings/${buildingCode}`));
+    const reservationsSnapshot = await get(child(ref(FIREBASE_DB), `reservations/${buildingCode}`));
     if (buildingSnapshot.exists()) {
       let building = buildingSnapshot.val();
-      building.inside = {
-        ...building.inside,
-        ...updateSeatsAndAvailability(building.inside.rows, building.inside.cols),
-      };
-      building.outside = {
-        ...building.outside,
-        ...updateSeatsAndAvailability(building.outside.rows, building.outside.cols),
-      };
-      const totalSeats = (building.inside.rows * building.inside.cols) + (building.outside.rows * building.outside.cols);
+      let reservations = reservationsSnapshot.exists() ? reservationsSnapshot.val() : {};
+      building.inside.seats = Array(building.inside.rows).fill(undefined).map(() => Array(building.inside.cols).fill(true));
+      building.outside.seats = Array(building.outside.rows).fill(undefined).map(() => Array(building.outside.cols).fill(true));
+      for (let reservationId in reservations) {
+        let reservation = reservations[reservationId];
+        let [type, row, col] = reservation.seat.split('-');
+        row = parseInt(row);
+        col = parseInt(col);
+        console.log(row, col)
+        if (type === 'inside') {
+          building.inside.seats[row][col] = false;
+        } else if (type === 'outside') {
+          building.outside.seats[row][col] = false;
+        }
+      }
+      building.inside.availability = building.inside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.inside.rows * building.inside.cols);
+      building.outside.availability = building.outside.seats.reduce((acc, val) => acc.concat(val), []).filter(seat => seat).length / (building.outside.rows * building.outside.cols);const totalSeats = (building.inside.rows * building.inside.cols) + (building.outside.rows * building.outside.cols);
       const totalAvailableSeats = (building.inside.availability * building.inside.rows * building.inside.cols) + (building.outside.availability * building.outside.rows * building.outside.cols);
       building.total_availability = totalAvailableSeats / totalSeats;
+
       return {
         ...building,
         code: buildingCode,
@@ -103,7 +112,8 @@ export async function isSeatAvailable(buildingCode, seat, startTime, endTime) {
     const reservations = reservationsSnapshot.val();
     const start = new Date(startTime);
     const end = new Date(endTime);
-    for (const reservation of reservations) {
+    for (const reservationId in reservations) {
+      const reservation = reservations[reservationId];
       const reservationStart = new Date(reservation.start);
       const reservationEnd = new Date(reservation.end);
       if (reservation.seat === seat && start < reservationEnd && end > reservationStart) {
@@ -117,6 +127,7 @@ export async function isSeatAvailable(buildingCode, seat, startTime, endTime) {
 export async function addReservation(username, code, seat, start, end) {
   const reservation = {
     user: username.toLowerCase(),
+    code,
     seat,
     start,
     end,
@@ -144,16 +155,18 @@ export async function addReservation(username, code, seat, start, end) {
 }
 
 export async function cancelReservation(buildingCode, user, reservationId) {
+  const userLower = user.toLowerCase();
   try {
     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
-    const reservationUserRef = ref(FIREBASE_DB, `reservations/${user}/${reservationId}`);
+    const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
     await remove(reservationCodeRef);
-    await remove(reservationUserRef)
+    await remove(reservationUserRef);
     console.log(`Reservation ${reservationId} has been cancelled.`);
   } catch (error) {
     console.error(`Error cancelling reservation: ${error}`);
   }
 }
+
 
 export async function getUserInfo(username) {
   const usernameLower = username.toLowerCase();
@@ -177,7 +190,7 @@ export async function getUserReservations(username) {
     }));
     return reservationsArray;
   } else {
-    console.error(`No reservations found for user ${username}.`);
+    console.log(`No reservations found for user ${username}.`);
     return [];
   }
 }

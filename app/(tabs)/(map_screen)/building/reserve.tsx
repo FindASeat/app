@@ -1,24 +1,54 @@
-import SeatingChartView from "../../../../components/SeatingChartView";
+import { addReservation, fetchBuilding } from "../../../firebaseFunctions";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import SeatingChartView from "../../../../components/SeatingChartView";
 import LocationPicker from "../../../../components/LocationPicker";
 import { useGlobal } from "../../../../context/GlobalContext";
 import TimePicker from "../../../../components/TimePicker";
 import Icon from "react-native-vector-icons/Octicons";
+import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { useState } from "react";
 
 const reserve = () => {
-  const { selectedBuilding } = useGlobal();
+  const { selectedBuilding, user } = useGlobal();
 
   const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
   const [selectedSeat, setSelectedSeat] = useState("");
   const [pickedTime, setPickedTime] = useState("");
 
-  const mock_seats = [
-    [true, false, true, true],
-    [true, true, true, true],
-    [true, false, true, false],
-  ];
+  const [mock_seats, setMockSeats] = useState([]);
+  // const mock_seats = [
+  //   [true, false, true, true],
+  //   [true, true, true, true],
+  //   [true, false, true, false],
+  // ];
+
+  useEffect(() => {
+    fetchBuilding(selectedBuilding.code)
+      .then(building => {
+        if (building) {
+          const seats = area === "indoor" ? building.inside.seats : building.outside.seats;
+          if (seats) {
+            setMockSeats(seats);
+          }
+        }
+      })
+      .catch(error => console.error(error));
+  }, [area, selectedBuilding]);
+
+  const reserveSeat = async () => {
+    if (selectedSeat === "" || pickedTime === "" || area === "outdoor") {
+      console.log(selectedSeat, pickedTime, area);
+      alert("Please select both a time and a seat.");
+      return;
+    }
+    const username = user.username.toLowerCase();
+    const buildingCode = selectedBuilding?.code;
+    const seat = (area === "indoor" ? "inside-" : "outside-") + selectedSeat;
+    const currentDate = new Date();
+    const date = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
+    const time = pickedTime;
+    await addReservation(username, buildingCode, seat, date, time);
+  };
 
   return (
     <View style={styles.container}>
@@ -97,6 +127,7 @@ const reserve = () => {
       <TouchableOpacity
         disabled={pickedTime === "" || selectedSeat === ""}
         style={[styles.reserveButton, selectedSeat === "" && { opacity: 0.25 }]}
+        onPress={reserveSeat}
       >
         <Text style={styles.buttonText}>Reserve</Text>
       </TouchableOpacity>

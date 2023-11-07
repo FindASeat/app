@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { Dispatch, SetStateAction } from "react";
+import React from "react";
 
 const TimePicker = ({
   openTime,
@@ -14,7 +15,7 @@ const TimePicker = ({
 }) => {
   const formatTime = hour => {
     const isPM = hour >= 12;
-    const adjustedHour = hour % 12 || 12; // Converts "0" hours to "12"
+    const adjustedHour = hour % 12 || 12;
     return `${adjustedHour}:00${isPM ? " PM" : " AM"}`;
   };
 
@@ -56,25 +57,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#BBB",
   },
   timeButton: {
-    // Styles for the time buttons
-    backgroundColor: "#F0F0F0", // a soft color that's easy on the eyes
+    backgroundColor: "#F0F0F0",
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginHorizontal: 5,
-    borderRadius: 10, // rounded corners
-    elevation: 2, // slight shadow for a "lifted" effect
+    borderRadius: 10,
+    elevation: 2,
     justifyContent: "center",
     alignItems: "center",
   },
   selectedTimeButton: {
-    // Styles for the selected time
-    backgroundColor: "#990000", // using the loginButton color for consistency
+    backgroundColor: "#990000",
   },
   timeText: {
-    // Styles for the time text
-    color: "#333", // darker color for readability
+    color: "#333",
     fontSize: 16,
-    fontWeight: "bold", // consistency with buttonText style
+    fontWeight: "bold",
   },
-  // ... Add other styles that you might need here
 });

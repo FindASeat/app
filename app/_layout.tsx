@@ -1,6 +1,6 @@
 import { GlobalStateProvider } from "../context/GlobalContext";
 import { Stack } from "expo-router";
-import React from 'react';
+import React from "react";
 
 const stack_layout = () => {
   return (
