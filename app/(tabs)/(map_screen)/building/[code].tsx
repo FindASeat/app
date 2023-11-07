@@ -15,7 +15,10 @@ const building = () => {
 
   useEffect(() => {
     fetchBuilding(code).then(fetchedBuilding => {
-      setBuilding(fetchedBuilding);
+      setBuilding({
+        ...fetchedBuilding,
+        open_hours: { "Mon – Fri": ["8:00AM", "8:30PM"] },
+      });
     });
   }, [code]);
 

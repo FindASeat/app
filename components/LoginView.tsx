@@ -2,7 +2,9 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 
-import { validateCredentials, createUser } from "../app/firebaseFunctions";
+import { validateCredentials, createUser, getUserInfo } from "../app/firebaseFunctions";
+
+import { useGlobal } from "../context/GlobalContext";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -10,6 +12,8 @@ const LoginView = () => {
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setUser } = useGlobal();
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -55,6 +59,7 @@ const LoginView = () => {
     if (mode == "login") {
       const isValid = await validateCredentials(username, password);
       if (isValid) {
+        setUser({ username, name: null, usc_id: null, reservation: null, affiliation: null, image_url: ""});
         router.replace("/map");
       } else {
         alert("Invalid username or password!");

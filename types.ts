@@ -12,7 +12,7 @@ export type Building = {
   code: string; // building code
   description: string; // description of building (can be from usc maps website)
 
-  open_hours: Record<string, string>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = open hours (like "8:00 AM - 5:00 PM")
+  open_hours: Record<string, [string, string]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [time (like '8:00 AM'), time (like '5:00 PM'))]
   inside: RoomData;
   outside: RoomData;
 
@@ -44,7 +44,7 @@ export type User = {
 export type Reservation = {
   seat_id: string; // should be `${row}-${col}`
   building_code: string;
-
+  area: "inside" | "outside";
   start_time: string; // datetime
   end_time: string; // datetime
 };

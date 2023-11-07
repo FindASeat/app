@@ -3,9 +3,13 @@ import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
 import { addReservation, cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
 import ReservationBubble from "../../components/ReservationBubble";
 
+import { useGlobal } from "../../context/GlobalContext";
+
+
 const Me = () => {
 
-  const username = 'rohkal'
+  const { user } = useGlobal();
+  const username = user?.username
   const [name, setName] = useState('');
   const [reservations, setReservations] = useState([]);
 
