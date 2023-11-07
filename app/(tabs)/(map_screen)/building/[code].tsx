@@ -46,18 +46,15 @@ const building = () => {
   };
 
   useEffect(() => {
-    fetchBuilding(selectedBuilding?.code).then(
-      fetchedBuilding => {
-        setSelectedBuilding(prev => ({
-          ...prev,
-          total_availability: fetchedBuilding.total_availability,
-          inside: fetchedBuilding.inside,
-          outside: fetchedBuilding.outside,
-        }));
-      },
-      [selectedBuilding?.code]
-    );
-  });
+    fetchBuilding(selectedBuilding?.code).then(fetchedBuilding => {
+      setSelectedBuilding(prev => ({
+        ...prev,
+        total_availability: fetchedBuilding.total_availability,
+        inside: fetchedBuilding.inside,
+        outside: fetchedBuilding.outside,
+      }));
+    });
+  }, []);
 
   return (
     <SafeAreaProvider>

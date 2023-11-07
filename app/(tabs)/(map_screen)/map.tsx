@@ -1,18 +1,21 @@
 import { useGlobal } from "../../../context/GlobalContext";
-import { getBuildings } from "../../firebaseFunctions";
+import { getBuildings, getUserReservations } from "../../firebaseFunctions";
 import MapView, { Marker } from "react-native-maps";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 
 const map = () => {
-  const { buildings, setSelectedBuilding, setBuildings } = useGlobal();
+  const { buildings, setSelectedBuilding, setBuildings, user, setUser } = useGlobal();
 
   useEffect(() => {
     const fetchBuildings = async () => {
       const buildingsFromDB = await getBuildings();
-      // console.log(JSON.stringify(buildingsFromDB, null, 2));
       setBuildings(buildingsFromDB);
+
+      const userReservations = await getUserReservations(user?.username);
+      console.log("userReservations: ", userReservations);
+      setUser(prev => ({ ...prev, reservations: userReservations }));
     };
 
     fetchBuildings().catch(console.error);

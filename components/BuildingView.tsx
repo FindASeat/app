@@ -1,12 +1,16 @@
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
 import Icon from "react-native-vector-icons/Octicons";
+import { useGlobal } from "../context/GlobalContext";
 import HoursAccordion from "./HoursAccordion";
 import type { Building } from "../types";
 import { router } from "expo-router";
 import React from "react";
 
 const BuildingView = ({ building }: { building: Building }) => {
+  const { user } = useGlobal();
+  console.log(user);
+
   return (
     <View style={{ flex: 1 }}>
       {/* Back Arrow */}
@@ -19,7 +23,7 @@ const BuildingView = ({ building }: { building: Building }) => {
       <ScrollView style={{ flex: 1 }}>
         {/* Image + Title */}
         <Image
-          source={{ uri: building.image_url }}
+          source={{ uri: building.image_url || "" }}
           style={{
             height: 150,
           }}
@@ -78,17 +82,27 @@ const BuildingView = ({ building }: { building: Building }) => {
 
       {/* Action Button If Not Registered */}
       <TouchableOpacity
-        style={{
-          backgroundColor: "#990000",
-          height: 45,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={[
+          {
+            backgroundColor: "#990000",
+            height: 45,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          // user!.reservations.filter(r => r.type === "valid" && r.end_time.getTime() > Date.now()).length > 0 && {
+          //   opacity: 0.25,
+          // },
+        ]}
+        // disabled={user!.reservations.filter(r => r.type === "valid" && r.end_time.getTime() > Date.now()).length > 0}
         onPress={() => {
           router.push("/(tabs)/(map_screen)/building/reserve");
         }}
       >
+        {/* {user!.reservations.filter(r => r.type === "valid" && r.end_time.getTime() > Date.now()).length > 0 ? ( */}
+        {/* <Text style={{ fontSize: 16, color: "white", fontWeight: "500" }}>You already have a reservation</Text> */}
+        {/* ) : ( */}
         <Text style={{ fontSize: 16, color: "white", fontWeight: "700" }}>Reserve a Seat</Text>
+        {/* )} */}
       </TouchableOpacity>
     </View>
   );

@@ -40,8 +40,8 @@ export type Reservation = {
   seat_id: string; // should be `${row}-${col}`
   building_code: string;
   area: "inside" | "outside";
-  status: "active" | "cancelled" | "completed";
+  type: "valid" | "invalid";
 
-  start_time: string; // datetime
-  end_time: string; // datetime
+  start_time: Date;
+  end_time: Date;
 };

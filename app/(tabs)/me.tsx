@@ -18,22 +18,22 @@ const me = () => {
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserData = async () => {
-        const user_res = await getUserInfo(user.username);
-        const userReservations = await getUserReservations(user.username);
+        const user_res = await getUserInfo(user?.username);
+        const userReservations = await getUserReservations(user?.username);
         setUser(prev => ({ ...prev, reservations: userReservations, name: user_res.name }));
       };
       fetchUserData();
-    }, [user.username])
+    }, [user?.username])
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Information:</Text>
-      <Text style={styles.name}>Name: {user.name}</Text>
+      <Text style={styles.name}>Name: {user?.name}</Text>
       <Text style={styles.title}>Active Reservations:</Text>
-      {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
+
       <ScrollView>
-        {user.reservations.map((reservation, index) => (
+        {user?.reservations.map((reservation, index) => (
           <ReservationBubble key={index} reservation={reservation} onCancel={cancelAndFetchReservations} />
         ))}
       </ScrollView>

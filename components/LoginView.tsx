@@ -1,9 +1,8 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { validateCredentials, createUser } from "../app/firebaseFunctions";
 import { useGlobal } from "../context/GlobalContext";
 import React, { useState } from "react";
 import { router } from "expo-router";
-
-import { validateCredentials, createUser, getUserInfo } from "../app/firebaseFunctions";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -58,7 +57,15 @@ const LoginView = () => {
             if (mode == "login") {
               const isValid = await validateCredentials(username, password);
               if (isValid) {
-                setUser({ username, name: null, usc_id: null, reservations: [], affiliation: null, image_url: "" });
+                setUser({
+                  username,
+                  name: name,
+                  usc_id: uscId,
+                  reservations: [],
+                  affiliation: "student",
+                  image_url: "",
+                });
+
                 router.replace("/map");
               } else {
                 alert("Invalid username or password!");

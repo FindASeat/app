@@ -16,11 +16,6 @@ const reserve = () => {
   const [pickedTime, setPickedTime] = useState("");
 
   const [mock_seats, setMockSeats] = useState([]);
-  // const mock_seats = [
-  //   [true, false, true, true],
-  //   [true, true, true, true],
-  //   [true, false, true, false],
-  // ];
 
   useEffect(() => {
     fetchBuilding(selectedBuilding.code)
@@ -41,13 +36,15 @@ const reserve = () => {
       alert("Please select both a time and a seat.");
       return;
     }
-    const username = user.username.toLowerCase();
+    const username = user?.username.toLowerCase();
     const buildingCode = selectedBuilding?.code;
     const seat = (area === "indoor" ? "inside-" : "outside-") + selectedSeat;
     const currentDate = new Date();
     const date = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
     const time = pickedTime;
     await addReservation(username, buildingCode, seat, date, time);
+
+    router.push("/(tabs)/(map_screen)/map");
   };
 
   return (
@@ -114,7 +111,7 @@ const reserve = () => {
       </Text>
       <View style={[{ backgroundColor: "#CCC", paddingVertical: 30 }, pickedTime == "" && { opacity: 0.25 }]}>
         <SeatingChartView
-          readonly={pickedTime == null}
+          readonly={pickedTime === ""}
           seats={mock_seats}
           selectedSeat={selectedSeat}
           setSelectedSeat={setSelectedSeat}
