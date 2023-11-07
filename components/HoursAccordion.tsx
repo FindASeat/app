@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import Accordion from "./Accordion";
+import React from "react";
 
 const HoursAccordion = () => {
   return (

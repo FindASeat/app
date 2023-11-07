@@ -133,7 +133,8 @@ export async function addReservation(username, code, seat, start, end) {
     seat,
     start,
     end,
-    type: "valid"
+    type: "valid",
+    createdAt: new Date().toISOString(),
   };
   try {
     const seatAvailable = await isSeatAvailable(code, seat, start, end);

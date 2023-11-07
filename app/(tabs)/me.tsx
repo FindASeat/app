@@ -26,6 +26,7 @@ const Me = () => {
     setInvalidReservations(invalidRes);
   }
 
+  // TODO: Hardcoded past reservations. We already have all past reservations, so we just need to check against the current time and make sure its "valid"
   const pastReservations = [
   {
     code: "LVL",

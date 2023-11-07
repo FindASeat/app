@@ -8,11 +8,10 @@ import { fetchBuilding } from "../../../firebaseFunctions";
 
 const building = () => {
   const { code } = useLocalSearchParams<{ code: string }>();
-  console.log(code)
   const insets = useSafeAreaInsets();
   
   const [currentBuilding, setBuilding] = useState<Building | null>(null);
-
+  
   useEffect(() => {
     fetchBuilding(code).then(fetchedBuilding => {
       setBuilding({
