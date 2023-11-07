@@ -12,6 +12,8 @@ const LoginView = () => {
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [affiliation, setAffiliation] = useState("");
+
 
   const { setUser } = useGlobal();
 
@@ -33,6 +35,12 @@ const LoginView = () => {
               value={uscId}
               keyboardType="number-pad"
               onChangeText={text => setUscId(text)}
+            />
+            <TextInput
+              style={styles.inputField}
+              placeholder="Affiliation"
+              value={affiliation}
+              onChangeText={text => setAffiliation(text)}
             />
           </>
         )}
@@ -65,7 +73,7 @@ const LoginView = () => {
         alert("Invalid username or password!");
       }
     } else if (mode == "signup") {
-      const isCreated = await createUser(name, uscId, username, password);
+      const isCreated = await createUser(name, uscId, affiliation, username, password);
       if (isCreated) {
         alert("Account created successfully! Please login!");
         setMode("login");

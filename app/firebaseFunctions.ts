@@ -15,13 +15,14 @@ export async function validateCredentials(inputUsername, inputPassword) {
   return false;
 }
 
-export async function createUser(name, id, username, password) {
+export async function createUser(name, id, affiliation, username, password) {
   const usernameKey = username.toLowerCase();
   const userData = {
     id,
     name,
     password: password,
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+    affiliation
   };
   try {
     await set(ref(FIREBASE_DB, `users/${usernameKey}`), userData);

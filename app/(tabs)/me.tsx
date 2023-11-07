@@ -14,6 +14,7 @@ const Me = () => {
   const [validReservations, setValidReservations] = useState([]);
   const [invalidReservations, setInvalidReservations] = useState([]);
   const [imageUrl, setImageUrl] = useState('');
+  const [affiliation, setAffiliation] = useState('');
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
     await cancelReservation(buildingCode, username, reservationId);
@@ -93,6 +94,7 @@ const Me = () => {
         const user = await getUserInfo(username);
         setName(user.name);
         setImageUrl(user.image_url)
+        setAffiliation(user.affiliation)
         const updatedReservations = await getUserReservations(username);
         const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
         const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
@@ -115,6 +117,7 @@ const Me = () => {
           <View>
             <Text style={styles.title}>User Information:</Text>
             <Text style={styles.name}>Name: {name}</Text>
+            <Text style={styles.name}>Affiliation: {affiliation}</Text>
           </View>
         </View>
       <Text style={styles.title}>Active Reservations:</Text>
