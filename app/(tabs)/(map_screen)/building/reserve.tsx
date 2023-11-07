@@ -4,8 +4,11 @@ import TimePicker from "../../../../components/TimePicker";
 import Icon from "react-native-vector-icons/Octicons";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useGlobal } from "../../../../context/GlobalContext";
 
 const reserve = () => {
+  const { selectedBuilding } = useGlobal();
+
   const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
   const [selectedSeat, setSelectedSeat] = useState("");
   const [pickedTime, setPickedTime] = useState("");
