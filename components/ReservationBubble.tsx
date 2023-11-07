@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { cancelReservation } from '../app/firebaseFunctions';
 import { useGlobal } from '../context/GlobalContext';
 
-const ReservationBubble = ({ reservation, onCancel }) => {
+const ReservationBubble = ({ reservation, onCancel, showCancel }) => {
   const { user } = useGlobal();
   return (
     <View style={styles.container}>
@@ -18,16 +18,17 @@ const ReservationBubble = ({ reservation, onCancel }) => {
         </View>
         <View style={styles.verticalInfo}>
           <Text style={styles.label}>Date/Time:</Text>
-          {/* <Text style={styles.value}>{reservation.date} {reservation.startTime} - {reservation.endTime}</Text> */}
            <Text style={styles.value}>{reservation.start} - {reservation.end}</Text>
         </View>
       </View>
-    <TouchableOpacity 
-      style={styles.cancelButton} 
-      onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
-    >
-      <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
-    </TouchableOpacity>
+      {showCancel && (
+        <TouchableOpacity 
+          style={styles.cancelButton} 
+          onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
+        >
+          <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -41,8 +42,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: 'column',
     marginBottom: 10,
-  },
-  
+  }, 
   infoContainer: {
     flexDirection: 'row',
   },
