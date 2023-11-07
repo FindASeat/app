@@ -37,7 +37,7 @@ const map = () => {
           onPress={() => {
             setSelectedBuilding({
               ...building,
-              open_hours: { "Mon – Fri": ["8:00AM", "8:30PM"] }, // TODO
+              open_hours: { "Mon – Thu": ["5:30 AM", "9:30 PM"], Fri: ["5:30 AM", "8:30 PM"], "Sat – Sun": "Closed" }, // TODO
               total_availability: 9 / 13, // TODO
             });
             router.push("/(tabs)/(map_screen)/building/" + building.code);

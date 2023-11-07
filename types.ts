@@ -7,7 +7,7 @@ export type Building = {
 
   coordinate: LatLng; // lat/long of building
 
-  open_hours: Record<string, [string, string]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [time (like '8:00 AM'), time (like '5:00 PM'))]
+  open_hours: Record<string, "Closed" | [`${string} AM`, `${string} PM`]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [time (like '8:00 AM'), time (like '5:00 PM'))]
   inside: RoomData;
   outside: RoomData;
 

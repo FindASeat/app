@@ -7,10 +7,6 @@ import { router } from "expo-router";
 import React from "react";
 
 const BuildingView = ({ building }: { building: Building }) => {
-  if (!building) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1 }}>
       {/* Back Arrow */}
@@ -19,6 +15,7 @@ const BuildingView = ({ building }: { building: Building }) => {
           <Icon name="arrow-left" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
+
       <ScrollView style={{ flex: 1 }}>
         {/* Image + Title */}
         <Image
@@ -68,7 +65,7 @@ const BuildingView = ({ building }: { building: Building }) => {
         {/* User's Registration If Exists */}
 
         {/* Open Hours */}
-        <HoursAccordion />
+        <HoursAccordion hours={building.open_hours} />
 
         {/* Availability Outside */}
         <CurrentAvailableAccordion header="Outside" room_info={building.outside} />

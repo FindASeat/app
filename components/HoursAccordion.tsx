@@ -1,19 +1,20 @@
 import { View, Text, StyleSheet } from "react-native";
+import type { Building } from "../types";
 import Accordion from "./Accordion";
 
-const HoursAccordion = () => {
+const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
   return (
     <Accordion headerText="Hours" iconName="clock">
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View>
-          <Text style={styles.hoursText}>Mon – Thu</Text>
-          <Text style={styles.hoursText}>Friday</Text>
-          <Text style={styles.hoursText}>Sat – Sun</Text>
+          {Object.entries(hours).map(([day]) => (
+            <Text style={styles.hoursText}>{day}</Text>
+          ))}
         </View>
         <View style={{ alignItems: "flex-end" }}>
-          <Text style={styles.hoursText}>5:30 AM – 9:30 PM</Text>
-          <Text style={styles.hoursText}>6:00 AM – 8:00 PM</Text>
-          <Text style={styles.hoursText}>Closed</Text>
+          {Object.entries(hours).map(([_, time]) => (
+            <Text style={styles.hoursText}>{typeof time === "string" ? time : `${time[0]} – ${time[1]}`}</Text>
+          ))}
         </View>
       </View>
     </Accordion>

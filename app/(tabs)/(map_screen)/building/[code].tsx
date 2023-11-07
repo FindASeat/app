@@ -6,7 +6,6 @@ import type { Building } from "../../../../types";
 import React from "react";
 
 const building = () => {
-  // const { code } = useLocalSearchParams<{ code: string }>();
   const insets = useSafeAreaInsets();
   const { selectedBuilding } = useGlobal();
 
@@ -26,7 +25,7 @@ const building = () => {
     },
 
     open_hours: {
-      "Mon – Fri": ["8:00AM", "8:30PM"],
+      "Mon – Fri": ["8:00 AM", "8:30 PM"],
     },
 
     outside: {
@@ -45,14 +44,6 @@ const building = () => {
     image_url: "https://dailytrojan.com/wp-content/uploads/2022/01/gfsstock_celinevazquez_e-3192-scaled.jpg",
   };
 
-  if (!building) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
@@ -64,13 +55,5 @@ const building = () => {
     </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default building;
