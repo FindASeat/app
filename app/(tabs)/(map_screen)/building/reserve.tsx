@@ -7,9 +7,10 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { useGlobal } from "../../../../context/GlobalContext";
 import { addReservation, fetchBuilding } from "../../../firebaseFunctions";
+import LocationSelect from "../../../../components/LocationSelect";
 
 const reserve = () => {
-  const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
+  const [area, setArea] = useState(1);
   const [selectedSeat, setSelectedSeat] = useState("");
   const [pickedTime, setPickedTime] = useState("");
 
@@ -18,23 +19,27 @@ const reserve = () => {
   const { selectedBuilding, user } = useGlobal();
 
   useEffect(() => {
-    fetchBuilding(selectedBuilding.code)
-      .then((building) => {
-        if (building && building.inside && building.inside.seats) {
-          setMockSeats(building.inside.seats);
+  fetchBuilding(selectedBuilding.code)
+    .then((building) => {
+      if (building) {
+        const seats = area === 1 ? building.inside.seats : building.outside.seats;
+        if (seats) {
+          setMockSeats(seats);
         }
-      })
-      .catch((error) => console.error(error));
-  }, []);
+      }
+    })
+    .catch((error) => console.error(error));
+}, [area, selectedBuilding]);
 
   const reserveSeat = async () => {
-    if (selectedSeat === "" || pickedTime === "") {
+    if (selectedSeat === "" || pickedTime === "" || area === 0) {
+      console.log(selectedSeat, pickedTime, area)
       alert("Please select both a time and a seat.")
       return;
     }
     const username = user.username.toLowerCase();
     const buildingCode = selectedBuilding?.code;
-    const seat = "inside-" + selectedSeat;
+    const seat = (area === 1 ? "inside-" : "outside-") + selectedSeat;
     const currentDate = new Date();
     const date = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
     const time = pickedTime;
@@ -60,6 +65,15 @@ const reserve = () => {
         Start Time
       </Text>
       <TimePicker openTime={"08:00"} closeTime={"20:30"} setPickedTime={setPickedTime} pickedTime={pickedTime} />
+
+      {/* Indoor or Outdoor */}
+      <Text style={{ fontSize: 18, paddingTop: 20, fontWeight: "400", color: "#333", paddingBottom: 1, paddingHorizontal: 5 }}>
+        Location
+      </Text>
+      <View style={styles.loccontainer}>
+        {/* Render the LocationSelect component */}
+      <LocationSelect location={area} onLocationChange={setArea}  />
+      </View>
 
       {/* The grid */}
       <Text
@@ -97,6 +111,22 @@ const reserve = () => {
 export default reserve;
 
 const styles = StyleSheet.create({
+   loccontainer: {
+    paddingVertical: 10,
+    backgroundColor: "#BBB",
+  },
+  locButton: {
+    // Styles for the time buttons
+    backgroundColor: "#F0F0F0", // a soft color that's easy on the eyes
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: 5,
+    borderRadius: 10, // rounded corners
+    elevation: 2, // slight shadow for a "lifted" effect
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#FFF", // assuming a light theme
@@ -118,7 +148,7 @@ const styles = StyleSheet.create({
     marginTop: 20, // space above the button
   },
   buttonText: {
-    color: "#FFF",
+    color: "#333",
     fontSize: 16,
     fontWeight: "bold",
   },
