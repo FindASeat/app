@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { cancelReservation } from '../app/firebaseFunctions';
+import { useGlobal } from '../context/GlobalContext';
 
-const ReservationBubble = ({ reservation, username, onCancel }) => {
+const ReservationBubble = ({ reservation, onCancel }) => {
+  const { user } = useGlobal();
   return (
     <View style={styles.container}>
       <View style={styles.infoContainer}>
@@ -19,14 +21,10 @@ const ReservationBubble = ({ reservation, username, onCancel }) => {
           {/* <Text style={styles.value}>{reservation.date} {reservation.startTime} - {reservation.endTime}</Text> */}
            <Text style={styles.value}>{reservation.start} - {reservation.end}</Text>
         </View>
-        {/* <View style={styles.verticalInfo}>
-          <Text style={styles.label}>Location:</Text>
-          <Text style={styles.value}>{reservation.indoor ? 'Indoor' : 'Outdoor'}</Text>
-        </View> */}
       </View>
     <TouchableOpacity 
       style={styles.cancelButton} 
-      onPress={() => onCancel(reservation.code, username, reservation.id)}
+      onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
     >
       <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
     </TouchableOpacity>

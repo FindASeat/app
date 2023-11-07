@@ -155,11 +155,12 @@ export async function addReservation(username, code, seat, start, end) {
 }
 
 export async function cancelReservation(buildingCode, user, reservationId) {
+  const userLower = user.toLowerCase();
   try {
     const reservationCodeRef = ref(FIREBASE_DB, `reservations/${buildingCode}/${reservationId}`);
-    const reservationUserRef = ref(FIREBASE_DB, `reservations/${user}/${reservationId}`);
+    const reservationUserRef = ref(FIREBASE_DB, `reservations/${userLower}/${reservationId}`);
     await remove(reservationCodeRef);
-    await remove(reservationUserRef)
+    await remove(reservationUserRef);
     console.log(`Reservation ${reservationId} has been cancelled.`);
   } catch (error) {
     console.error(`Error cancelling reservation: ${error}`);

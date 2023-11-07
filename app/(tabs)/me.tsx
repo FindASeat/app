@@ -19,6 +19,7 @@ const Me = () => {
   } 
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
+    console.log("user: ", username)
     await cancelReservation(buildingCode, username, reservationId);
     const updatedReservations = await getUserReservations(username);
     setReservations(updatedReservations);
@@ -35,7 +36,6 @@ const Me = () => {
   }, [username]);
 
   return (
-    
     <View style={styles.container}>
       <Text style={styles.title}>User Information:</Text>
       <Text style={styles.name}>Name: {name}</Text>
@@ -46,7 +46,6 @@ const Me = () => {
           <ReservationBubble
             key={index}
             reservation={reservation}
-            username={username}
             onCancel={cancelAndFetchReservations}
           />
         ))}

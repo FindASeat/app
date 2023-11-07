@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import React from "react";
 import { useGlobal } from "../../../../context/GlobalContext";
+import { addReservation } from "../../../firebaseFunctions";
 
 const reserve = () => {
   const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
@@ -20,6 +21,17 @@ const reserve = () => {
 
   const { selectedBuilding } = useGlobal();
   console.log("trying to reserve", selectedBuilding?.code)
+  
+  const reserveSeat = async () => {
+
+    const username = "rohkal";
+    const buildingCode = "LVL";
+    const seat = "inside-2-2";
+    const date = "today";
+    const time = "haha";
+
+    await addReservation(username, buildingCode, seat, date, time);
+  };
 
   return (
     <View style={styles.container}>
@@ -67,9 +79,9 @@ const reserve = () => {
       </View>
 
       {/* Reserve button */}
-      <TouchableOpacity style={styles.reserveButton}>
-        <Text style={styles.buttonText}>Reserve</Text>
-      </TouchableOpacity>
+    <TouchableOpacity style={styles.reserveButton} onPress={reserveSeat}>
+      <Text style={styles.buttonText}>Reserve</Text>
+    </TouchableOpacity>
     </View>
   );
 };
@@ -102,6 +114,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  // You can continue styling other components like SeatingChartView as needed
-  // ...
 });
