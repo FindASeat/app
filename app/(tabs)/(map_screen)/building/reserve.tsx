@@ -3,28 +3,38 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import TimePicker from "../../../../components/TimePicker";
 import Icon from "react-native-vector-icons/Octicons";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { useGlobal } from "../../../../context/GlobalContext";
-import { addReservation } from "../../../firebaseFunctions";
+import { addReservation, fetchBuilding } from "../../../firebaseFunctions";
 
 const reserve = () => {
   const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
   const [selectedSeat, setSelectedSeat] = useState("");
   const [pickedTime, setPickedTime] = useState("");
 
-  const mock_seats = [
-    [true, false, true, true],
-    [true, true, true, true],
-    [true, false, true, false],
-  ];
+  const [mock_seats, setMockSeats] = useState([]);
 
   const { selectedBuilding, user } = useGlobal();
-  
+
+  useEffect(() => {
+    fetchBuilding(selectedBuilding.code)
+      .then((building) => {
+        if (building && building.inside && building.inside.seats) {
+          setMockSeats(building.inside.seats);
+        }
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
   const reserveSeat = async () => {
+    if (selectedSeat === "" || pickedTime === "") {
+      alert("Please select both a time and a seat.")
+      return;
+    }
     const username = user.username.toLowerCase();
     const buildingCode = selectedBuilding?.code;
-    const seat = selectedSeat;
+    const seat = "inside-" + selectedSeat;
     const currentDate = new Date();
     const date = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
     const time = pickedTime;

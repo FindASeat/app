@@ -39,7 +39,7 @@ const map = () => {
           key={idx}
           coordinate={building.coordinate}
           // pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
-          pinColor={"red"}
+          pinColor={"#990000"}
           onPress={() => {
             setSelectedBuilding({
               title: building.title,

@@ -3,8 +3,8 @@ import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
 import Icon from "react-native-vector-icons/Octicons";
 import type { Building } from "../types";
 import HoursAccordion from "./HoursAccordion";
-import { useNavigation } from "expo-router";
-import React from "react";
+import { useNavigation, } from "expo-router";
+import React, {useState, useEffect} from "react";
 import { router } from "expo-router";
 
 

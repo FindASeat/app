@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
-import { addReservation, cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
+import React, { useState } from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
 import ReservationBubble from "../../components/ReservationBubble";
 import { useFocusEffect } from "expo-router";
 import { useGlobal } from "../../context/GlobalContext";
@@ -12,11 +12,6 @@ const Me = () => {
   const username = user?.username
   const [name, setName] = useState('');
   const [reservations, setReservations] = useState([]);
-
-  const testFunction = async () => {
-    await addReservation("rohkal", "LVL", "inside-2-2", "today", "haha")
-    // await cancelReservation("LVL", "ania", "-NiabmyjqG6qnsflELjb");
-  } 
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
     console.log("user: ", username)

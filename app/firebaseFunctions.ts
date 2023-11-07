@@ -190,7 +190,7 @@ export async function getUserReservations(username) {
     }));
     return reservationsArray;
   } else {
-    console.error(`No reservations found for user ${username}.`);
+    console.log(`No reservations found for user ${username}.`);
     return [];
   }
 }

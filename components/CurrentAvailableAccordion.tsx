@@ -1,3 +1,4 @@
+import React from "react";
 import type { RoomData } from "../types";
 import Accordion from "./Accordion";
 import SeatingChartView from "./SeatingChartView";
