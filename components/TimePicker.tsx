@@ -1,6 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { Dispatch, SetStateAction } from "react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 const TimePicker = ({
   openTime,
@@ -13,19 +12,27 @@ const TimePicker = ({
   setPickedTime: Dispatch<SetStateAction<string>>;
   pickedTime: string;
 }) => {
-  const formatTime = hour => {
+  // Function to format the time in 12-hour format with AM/PM
+  const formatTime = (hour, minute) => {
     const isPM = hour >= 12;
     const adjustedHour = hour % 12 || 12;
-    return `${adjustedHour}:00${isPM ? " PM" : " AM"}`;
+    // Ensure minutes are formatted as two digits
+    const formattedMinute = minute < 10 ? `0${minute}` : minute;
+    return `${adjustedHour}:${formattedMinute}${isPM ? " PM" : " AM"}`;
   };
 
+  // Function to generate an array of time intervals
   const generateTimes = (open, close) => {
-    let startTime = parseInt(open.split(":")[0], 10);
-    const endTime = parseInt(close.split(":")[0], 10);
+    let [startHour, startMinute] = open.split(":").map(Number);
+    const [endHour, endMinute] = close.split(":").map(Number);
+    let currentTime = new Date(0, 0, 0, startHour, startMinute);
+    const endTime = new Date(0, 0, 0, endHour, endMinute);
     const times = [];
-    while (startTime <= endTime) {
-      times.push(formatTime(startTime));
-      startTime++;
+
+    while (currentTime <= endTime) {
+      times.push(formatTime(currentTime.getHours(), currentTime.getMinutes()));
+      // Increment by 30 minutes
+      currentTime.setMinutes(currentTime.getMinutes() + 30);
     }
     return times;
   };
@@ -41,7 +48,7 @@ const TimePicker = ({
             style={[styles.timeButton, pickedTime === time && styles.selectedTimeButton]}
             onPress={() => setPickedTime(time)}
           >
-            <Text style={[styles.timeText, pickedTime === time && { color: "white" }]}>{time}</Text>
+            <Text style={[styles.timeText, pickedTime === time && styles.selectedTimeText]}>{time}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -68,6 +75,9 @@ const styles = StyleSheet.create({
   },
   selectedTimeButton: {
     backgroundColor: "#990000",
+  },
+  selectedTimeText: {
+    color: "white",
   },
   timeText: {
     color: "#333",

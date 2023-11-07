@@ -40,6 +40,7 @@ export type Reservation = {
   seat_id: string; // should be `${row}-${col}`
   building_code: string;
   area: "inside" | "outside";
+  status: "active" | "cancelled" | "completed";
 
   start_time: string; // datetime
   end_time: string; // datetime
