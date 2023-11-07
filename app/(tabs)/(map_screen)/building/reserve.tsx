@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/Octicons";
 import { router } from "expo-router";
 import { useState } from "react";
 import React from "react";
+import { useGlobal } from "../../../../context/GlobalContext";
 
 const reserve = () => {
   const [area, setArea] = useState<"indoor" | "outdoor">("indoor");
@@ -16,6 +17,9 @@ const reserve = () => {
     [true, true, true, true],
     [true, false, true, false],
   ];
+
+  const { selectedBuilding } = useGlobal();
+  console.log("trying to reserve", selectedBuilding?.code)
 
   return (
     <View style={styles.container}>

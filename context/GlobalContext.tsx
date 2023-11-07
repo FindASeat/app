@@ -10,13 +10,17 @@ type ContextProps = {
 
   buildings: Record<Building["code"], Building>;
   setBuildings: Dispatch<SetStateAction<Record<Building["code"], Building>>>;
+
+  selectedBuilding: Building | null;
+  setSelectedBuilding: Dispatch<SetStateAction<Building | null>>;
 };
 
 export const GlobalStateProvider = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [buildings, setBuildings] = useState<Record<Building["code"], Building>>({});
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
 
-  const value = { user, setUser, buildings, setBuildings };
+  const value = { user, setUser, buildings, setBuildings, selectedBuilding, setSelectedBuilding };
   return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;
 };
 
