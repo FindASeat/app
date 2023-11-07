@@ -45,6 +45,7 @@ const BuildingView = ({ building }: { building: Building }) => {
             }}
           >
             {"Open" + " until 8:30PM"}
+            {/* TODO ^ */}
           </Text>
 
           {/* % Full */}
@@ -63,6 +64,7 @@ const BuildingView = ({ building }: { building: Building }) => {
         </View>
 
         {/* User's Registration If Exists */}
+        {/* TODO */}
 
         {/* Open Hours */}
         <HoursAccordion hours={building.open_hours} />

@@ -114,7 +114,7 @@ const reserve = () => {
       </Text>
       <View style={[{ backgroundColor: "#CCC", paddingVertical: 30 }, pickedTime == "" && { opacity: 0.25 }]}>
         <SeatingChartView
-          constant={pickedTime == null}
+          readonly={pickedTime == null}
           seats={mock_seats}
           selectedSeat={selectedSeat}
           setSelectedSeat={setSelectedSeat}

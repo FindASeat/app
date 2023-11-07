@@ -6,17 +6,17 @@ import React from "react";
 
 const SeatingChartView = ({
   seats,
-  constant,
+  readonly,
   selectedSeat,
   setSelectedSeat,
 }: {
   seats: RoomData["seats"];
-  constant?: boolean;
+  readonly?: boolean;
   selectedSeat?: string;
   setSelectedSeat?: Dispatch<SetStateAction<string>>;
 }) => {
   const handleSeatSelect = (row: number, col: number) => {
-    if (constant) return;
+    if (readonly) return;
 
     const seatId = `${row}-${col}`;
     setSelectedSeat(seatId);
