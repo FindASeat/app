@@ -1,19 +1,16 @@
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import BuildingView from "../../../../components/BuildingView";
-import { fetchBuilding } from "../../../firebaseFunctions";
-import { useLocalSearchParams } from "expo-router";
+import { useGlobal } from "../../../../context/GlobalContext";
 import type { Building } from "../../../../types";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const building = () => {
-  const { code } = useLocalSearchParams<{ code: string }>();
+  // const { code } = useLocalSearchParams<{ code: string }>();
   const insets = useSafeAreaInsets();
-  console.log(code);
+  const { selectedBuilding } = useGlobal();
 
-  const [currentBuilding, setBuilding] = useState<Building | null>(null);
-
-  const building: Building = {
+  const mock_build: Building = {
     title: "Test Building Hall",
     code: "TES",
     description: "This is a test building who was created for testing purposes during the development of the app.",
@@ -48,15 +45,6 @@ const building = () => {
     image_url: "https://dailytrojan.com/wp-content/uploads/2022/01/gfsstock_celinevazquez_e-3192-scaled.jpg",
   };
 
-  useEffect(() => {
-    fetchBuilding(code).then(fetchedBuilding => {
-      setBuilding({
-        ...fetchedBuilding,
-        open_hours: { "Mon – Fri": ["8:00AM", "8:30PM"] },
-      });
-    });
-  }, [code]);
-
   if (!building) {
     return (
       <View style={styles.loadingContainer}>
@@ -70,7 +58,7 @@ const building = () => {
       <View style={{ flex: 1 }}>
         <View style={{ height: insets.top, backgroundColor: "#990000" }} />
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-          <BuildingView building={currentBuilding} />
+          <BuildingView building={selectedBuilding} />
         </SafeAreaView>
       </View>
     </SafeAreaProvider>

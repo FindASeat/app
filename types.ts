@@ -1,16 +1,11 @@
 import type { LatLng } from "react-native-maps";
 
-export type MapMarker = {
-  code: string; // building code
-  coordinate: LatLng; // lat/long of building
-
-  total_availability: number; // percentage (0 to 1) of availability of inside & outside
-};
-
 export type Building = {
   title: string; // name of building
   code: string; // building code
   description: string; // description of building (can be from usc maps website)
+
+  coordinate: LatLng; // lat/long of building
 
   open_hours: Record<string, [string, string]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [time (like '8:00 AM'), time (like '5:00 PM'))]
   inside: RoomData;

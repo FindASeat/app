@@ -2,7 +2,6 @@ import { useGlobal } from "../../../context/GlobalContext";
 import { getBuildings } from "../../firebaseFunctions";
 import MapView, { Marker } from "react-native-maps";
 import React, { useEffect, useState } from "react";
-import { MapMarker } from "../../../types";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 
@@ -12,6 +11,7 @@ const map = () => {
   useEffect(() => {
     const fetchBuildings = async () => {
       const buildingsFromDB = await getBuildings();
+      // console.log(JSON.stringify(buildingsFromDB, null, 2));
       setBuildings(buildingsFromDB);
     };
 
@@ -28,7 +28,7 @@ const map = () => {
       }}
       style={StyleSheet.absoluteFill}
     >
-      {buildings.map((building, idx) => (
+      {Object.values(buildings).map((building, idx) => (
         <Marker
           key={idx}
           coordinate={building.coordinate}
@@ -36,14 +36,9 @@ const map = () => {
           pinColor={"#990000"}
           onPress={() => {
             setSelectedBuilding({
-              title: building.title,
-              code: building.code,
-              description: building.description,
-              open_hours: null,
-              inside: building.inside,
-              outside: building.outside,
-              total_availability: null,
-              image_url: null,
+              ...building,
+              open_hours: { "Mon – Fri": ["8:00AM", "8:30PM"] }, // TODO
+              total_availability: 9 / 13, // TODO
             });
             router.push("/(tabs)/(map_screen)/building/" + building.code);
           }}
