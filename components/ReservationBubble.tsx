@@ -5,6 +5,11 @@ import { useGlobal } from '../context/GlobalContext';
 
 const ReservationBubble = ({ reservation, onCancel, showCancel }) => {
   const { user } = useGlobal();
+
+  const handleModification = (reservation) => {
+    // Add your logic here to handle the modification action
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.infoContainer}>
@@ -18,16 +23,32 @@ const ReservationBubble = ({ reservation, onCancel, showCancel }) => {
         </View>
         <View style={styles.verticalInfo}>
           <Text style={styles.label}>Date/Time:</Text>
-           <Text style={styles.value}>{reservation.start} - {reservation.end}</Text>
+          <Text style={styles.value}>
+            {reservation.start} - {reservation.end}
+          </Text>
         </View>
       </View>
       {showCancel && (
-        <TouchableOpacity 
-          style={styles.cancelButton} 
-          onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
-        >
-          <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() =>
+              user &&
+              user.username &&
+              onCancel(reservation.code, user.username, reservation.id)
+            }
+          >
+            <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modificationButton}
+            onPress={() => handleModification(reservation)}
+          >
+            <Text style={styles.modificationButtonText}>
+              Modify Reservation
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -42,7 +63,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: 'column',
     marginBottom: 10,
-  }, 
+  },
   infoContainer: {
     flexDirection: 'row',
   },
@@ -58,17 +79,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+  },
   cancelButton: {
-    backgroundColor: '#990000', // Button background color
+    backgroundColor: '#990000',
     borderRadius: 5,
     padding: 10,
-    marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
+    marginRight: 10,
   },
   cancelButtonText: {
-    
-    color: '#fff', // Button text color
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modificationButton: {
+    backgroundColor: '#ffa500',
+    borderRadius: 5,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    marginLeft: 10,
+  },
+  modificationButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
