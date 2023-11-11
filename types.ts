@@ -7,7 +7,7 @@ export type Building = {
 
   coordinate: LatLng; // lat/long of building
 
-  open_hours: Record<string, "Closed" | [`${string} AM`, `${string} PM`]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [time (like '8:00 AM'), time (like '5:00 PM'))]
+  open_hours: Record<string, "Closed" | [Date, Date]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [Date, Date]
   inside: RoomData;
   outside: RoomData;
 
@@ -25,10 +25,28 @@ export type RoomData = {
   seats: boolean[][]; // array[row][col] of seats (true = available, false = taken)
 };
 
+export type FirebaseBuilding = {
+  title: string;
+  description: string;
+
+  coordinate: LatLng;
+
+  open_hours: Record<string, "Closed" | [string, string]>;
+  inside: FirebaseRoomData;
+  outside: FirebaseRoomData;
+
+  image_url: string;
+};
+
+export type FirebaseRoomData = {
+  cols: number;
+  rows: number;
+};
+
 export type User = {
   usc_id: string;
   name: string;
-  affiliation: "student" | "faculty" | "staff";
+  affiliation: "Student" | "Faculty" | "Staff";
 
   username: string;
   image_url: string | null;
@@ -36,12 +54,33 @@ export type User = {
   reservations: Reservation[];
 };
 
+export type FirebaseUser = {
+  id: string;
+  name: string;
+  affiliation: "Student" | "Faculty" | "Staff";
+
+  image_url: string;
+  password: string;
+};
+
 export type Reservation = {
-  seat_id: string; // should be `${row}-${col}`
+  seat_id: `${number}-${number}`;
   building_code: string;
   area: "inside" | "outside";
-  type: "valid" | "invalid";
+  status: "active" | "completed" | "cancelled";
 
   start_time: Date;
   end_time: Date;
+};
+
+export type FirebaseReservation = {
+  seat: `${"inside" | "outside"}-${number}-${number}`;
+  code: string;
+
+  type: "valid" | "invalid";
+
+  start_time: string;
+  end_time: string;
+
+  user: string;
 };
