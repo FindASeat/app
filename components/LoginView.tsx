@@ -7,7 +7,7 @@ import { validateCredentials, createUser, getUserInfo } from "../app/firebaseFun
 import { useGlobal } from "../context/GlobalContext";
 
 const LoginView = () => {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup"|"guest">("login");
   const [name, setName] = useState("");
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
@@ -24,7 +24,12 @@ const LoginView = () => {
         <View>
           <Text style={styles.logo}>FindASeat</Text>
         </View>
-
+        {/*guest input*/}
+        {mode == "guest" && (
+          <>
+            <TextInput style={styles.inputField} placeholder="Name" value={name} onChangeText={text => setName(text)} />
+          </>
+        )}
         {/* Sign Up Input Fields */}
         {mode == "signup" && (
           <>
@@ -80,10 +85,14 @@ const LoginView = () => {
       } else {
         alert("Failed to create account. Please try again.");
       }
-    }
+    } else if (mode == "guest") {
+      router.replace("/map");
+    } 
   }}
 >
-  <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
+  <Text style={styles.buttonText}>
+    {mode === "login" ? "Log in" : mode === "signup" ? "Sign up" : "Guest"}
+    </Text>
 </TouchableOpacity>
 
 
@@ -93,9 +102,8 @@ const LoginView = () => {
           <Text style={styles.orText}>OR</Text>
           <View style={styles.divider} />
         </View>
-
         {/* Signup */}
-<TouchableOpacity
+  <TouchableOpacity
   style={styles.signupButton}
   onPress={() => {
     if (mode === "login") {
@@ -110,6 +118,25 @@ const LoginView = () => {
   ) : (
     <Text style={styles.signupText}>Log in</Text>
   )}
+</TouchableOpacity>
+        <View style={styles.orContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.orText}>OR</Text>
+          <View style={styles.divider} />
+        </View>
+        
+   <TouchableOpacity
+  style={styles.signupButton}
+  onPress={() => {
+
+      setMode("guest");
+
+  }}
+>
+<Text style={styles.signupText}>
+  {mode === "login" ? "Guest Access" : mode === "signup" ? "Guest Access" : "Sign up"}
+</Text>
+
 </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

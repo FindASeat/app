@@ -22,12 +22,20 @@ const ReservationBubble = ({ reservation, onCancel, showCancel }) => {
         </View>
       </View>
       {showCancel && (
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity 
+          style={styles.cancelButton} 
+          onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
+        >
+          <Text style={styles.cancelButtonText}>Modify Reservation</Text>
+        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.cancelButton} 
           onPress={() => user && user.username && onCancel(reservation.code, user.username, reservation.id)}
         >
           <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
         </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -63,6 +71,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginTop: 20,
+    marginRight: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
