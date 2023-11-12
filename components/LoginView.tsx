@@ -1,7 +1,8 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { validateCredentials, createUser } from "../app/firebaseFunctions";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { validateCredentials, createUser, getBuildings } from "../app/firebaseFunctions";
 import { useGlobal } from "../context/GlobalContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 
 const LoginView = () => {
@@ -10,9 +11,20 @@ const LoginView = () => {
   const [uscId, setUscId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [affiliation, setAffiliation] = useState("");
 
-  const { setUser } = useGlobal();
+  const affiliation = ["Student", "Faculty", "Staff"] as const;
+  const [affiliationIndex, setAffiliationIndex] = useState<number>(0);
+
+  const { setUser, setBuildings } = useGlobal();
+
+  useEffect(() => {
+    const get = async () => {
+      const buildings = await getBuildings();
+      setBuildings(buildings);
+    };
+
+    get().catch(console.error);
+  }, []);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -33,11 +45,11 @@ const LoginView = () => {
               keyboardType="number-pad"
               onChangeText={text => setUscId(text)}
             />
-            <TextInput
-              style={styles.inputField}
-              placeholder="Affiliation"
-              value={affiliation}
-              onChangeText={text => setAffiliation(text)}
+            <SegmentedControl
+              values={affiliation as unknown as string[]}
+              selectedIndex={affiliationIndex}
+              style={{ marginBottom: 15, height: 40 }}
+              onChange={event => setAffiliationIndex(event.nativeEvent.selectedSegmentIndex)}
             />
           </>
         )}
@@ -62,28 +74,33 @@ const LoginView = () => {
           style={styles.loginButton}
           onPress={async () => {
             if (mode == "login") {
-              const isValid = await validateCredentials(username, password);
-              if (isValid) {
-                setUser({
-                  username,
-                  name: name,
-                  usc_id: uscId,
-                  reservations: [],
-                  affiliation: "student",
-                  image_url: "",
-                });
+              const user = await validateCredentials(username, password);
+
+              if (user) {
+                setUser(user);
                 router.replace("/map");
-              } else {
-                alert("Invalid username or password!");
+              } else alert("Invalid username or password!");
+            }
+
+            if (mode == "signup") {
+              if (username === "" || password === "" || name === "" || uscId === "") {
+                alert("Please fill out all fields.");
+                return;
               }
-            } else if (mode == "signup") {
-              const isCreated = await createUser(name, uscId, affiliation, username, password);
-              if (isCreated) {
-                alert("Account created successfully! Please login!");
-                setMode("login");
-              } else {
-                alert("Failed to create account. Please try again.");
-              }
+
+              const user = await createUser(username, {
+                affiliation: affiliation[affiliationIndex],
+                id: uscId,
+                name,
+                password,
+                image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+              });
+
+              if (user) {
+                alert("Account created successfully!");
+                setUser(user);
+                router.replace("/map");
+              } else alert("Failed to create account. Please try again.");
             }
           }}
         >
@@ -105,11 +122,7 @@ const LoginView = () => {
             else if (mode === "signup") setMode("login");
           }}
         >
-          {mode === "login" ? (
-            <Text style={styles.signupText}>Sign up</Text>
-          ) : (
-            <Text style={styles.signupText}>Log in</Text>
-          )}
+          <Text style={styles.signupText}>{mode == "login" ? "Sign up" : "Log in"}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

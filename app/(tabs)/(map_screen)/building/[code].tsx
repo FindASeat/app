@@ -2,7 +2,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-cont
 import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import BuildingView from "../../../../components/BuildingView";
 import { useGlobal } from "../../../../context/GlobalContext";
-import { fetchBuilding } from "../../../firebaseFunctions";
+import { getBuilding } from "../../../firebaseFunctions";
 import type { Building } from "../../../../types";
 import React, { useEffect } from "react";
 
@@ -11,14 +11,8 @@ const building = () => {
   const { selectedBuilding, setSelectedBuilding } = useGlobal();
 
   useEffect(() => {
-    fetchBuilding(selectedBuilding?.code).then(fetchedBuilding => {
-      setSelectedBuilding(prev => ({
-        ...prev,
-        total_availability: fetchedBuilding.total_availability,
-        inside: fetchedBuilding.inside,
-        outside: fetchedBuilding.outside,
-      }));
-    });
+    getBuilding(selectedBuilding!.code).then(b => setSelectedBuilding(b));
+    console.log(selectedBuilding);
   }, []);
 
   return (

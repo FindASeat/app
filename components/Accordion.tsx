@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle, type TextStyle } from "react-native";
 import Icon from "react-native-vector-icons/Octicons";
 import { useState } from "react";
 
@@ -18,16 +18,16 @@ const Accordion = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <TouchableOpacity onPress={toggleExpanded} style={styles.header}>
         <View style={{ justifyContent: "flex-start", flexDirection: "row" }}>
-          <Icon name={iconName} size={20} color="white" style={styles.icon} />
-          <Text style={styles.headerText}>{headerText}</Text>
+          <Icon name={iconName} size={20} color={"white"} style={styles.icon} />
+          <Text style={[styles.headerText]}>{headerText}</Text>
         </View>
-        <Icon name={expanded ? "chevron-up" : "chevron-down"} size={24} color="white" style={styles.icon} />
+        <Icon name={expanded ? "chevron-up" : "chevron-down"} size={24} color={"white"} style={styles.icon} />
       </TouchableOpacity>
 
-      {expanded && <View style={styles.content}>{children}</View>}
+      {expanded && <View style={[styles.content]}>{children}</View>}
     </View>
   );
 };
@@ -36,8 +36,8 @@ export default Accordion;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "black",
-    borderRadius: 5,
+    backgroundColor: "#990000",
+    borderRadius: 7,
     margin: 10,
   },
   icon: {
@@ -54,16 +54,18 @@ const styles = StyleSheet.create({
   headerText: {
     color: "white",
     fontSize: 18,
+    fontWeight: "600",
   },
   statusText: {
     color: "green",
     fontSize: 18,
   },
   content: {
-    padding: 10,
-    backgroundColor: "#444",
-    borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 7,
+    borderBottomRightRadius: 7,
+    backgroundColor: "#550000",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   hoursText: {
     color: "white",

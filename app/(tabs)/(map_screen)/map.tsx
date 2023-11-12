@@ -1,5 +1,5 @@
 import { useGlobal } from "../../../context/GlobalContext";
-import { getBuildings, getUserReservations } from "../../firebaseFunctions";
+import { getBuildings } from "../../firebaseFunctions";
 import MapView, { Marker } from "react-native-maps";
 import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
@@ -9,16 +9,12 @@ const map = () => {
   const { buildings, setSelectedBuilding, setBuildings, user, setUser } = useGlobal();
 
   useEffect(() => {
-    const fetchBuildings = async () => {
-      const buildingsFromDB = await getBuildings();
-      setBuildings(buildingsFromDB);
-
-      const userReservations = await getUserReservations(user?.username);
-      console.log("userReservations: ", userReservations);
-      setUser(prev => ({ ...prev, reservations: userReservations }));
+    const get = async () => {
+      const buildings = await getBuildings();
+      setBuildings(buildings);
     };
 
-    fetchBuildings().catch(console.error);
+    get().catch(console.error);
   }, []);
 
   return (
@@ -35,14 +31,9 @@ const map = () => {
         <Marker
           key={idx}
           coordinate={building.coordinate}
-          // pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
-          pinColor={"#990000"}
+          pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
           onPress={() => {
-            setSelectedBuilding({
-              ...building,
-              open_hours: { "Mon – Thu": ["5:30 AM", "9:30 PM"], Fri: ["5:30 AM", "8:30 PM"], "Sat – Sun": "Closed" }, // TODO
-              total_availability: 9 / 13, // TODO
-            });
+            setSelectedBuilding(building);
             router.push("/(tabs)/(map_screen)/building/" + building.code);
           }}
         />

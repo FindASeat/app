@@ -1,151 +1,69 @@
 import { cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
-import ReservationBubble from "../../components/ReservationBubble";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import ReservationBubble from "../../components/ReservationBubble";
 import { useGlobal } from "../../context/GlobalContext";
 import { useFocusEffect } from "expo-router";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
 const me = () => {
-  const { user } = useGlobal();
-  const username = user?.username;
-  const [name, setName] = useState("");
-  const [validReservations, setValidReservations] = useState([]);
-  const [invalidReservations, setInvalidReservations] = useState([]);
-  const [imageUrl, setImageUrl] = useState("");
-  const [affiliation, setAffiliation] = useState("");
-  const [uscId, setUscId] = useState("");
+  const { user, setUser } = useGlobal();
+  const [res, setRes] = useState([]);
 
   const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
-    await cancelReservation(buildingCode, username, reservationId);
-    const updatedReservations = await getUserReservations(username);
-    const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
-    const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
-    setValidReservations(validRes);
-    setInvalidReservations(invalidRes);
+    // await cancelReservation(buildingCode, username, reservationId);
+    // const updatedReservations = await getUserReservations(username);
+    // const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
+    // const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
+    // setValidReservations(validRes);
+    // setInvalidReservations(invalidRes);
   };
 
-  // TODO: Hardcoded past reservations. We already have all past reservations, so we just need to check against the current time and make sure its "valid"
-  //   const pastReservations = [
-  //   {
-  //     code: "LVL",
-  //     seat: "inside-4-6",
-  //     start: "11/5",
-  //     end: "10:00 AM",
-  //   },
-  //   {
-  //     code: "JFF",
-  //     seat: "outside-2-3",
-  //     start: "10/31",
-  //     end: "12:00 AM",
-  //   },
-  //     {
-  //     code: "VCE",
-  //     seat: "inside-4-6",
-  //     start: "10/23",
-  //     end: "5:00 PM",
-  //   },
-  //   {
-  //     code: "JFF",
-  //     seat: "inside-2-5",
-  //     start: "10/14",
-  //     end: "4:00 PM",
-  //   },
-  //     {
-  //     code: "THH",
-  //     seat: "outside-2-1",
-  //     start: "10/5",
-  //     end: "5:00 PM",
-  //   },
-  //   {
-  //     code: "LVL",
-  //     seat: "outside-2-3",
-  //     start: "9/28",
-  //     end: "3:00 PM",
-  //   },
-  //   {
-  //     code: "LVL",
-  //     seat: "inside-2-1",
-  //     start: "9/14",
-  //     end: "10:00 AM",
-  //   },
-  //   {
-  //     code: "LVL",
-  //     seat: "outside-2-3",
-  //     start: "9/6",
-  //     end: "4:00 PM",
-  //   },
-  //   {
-  //     code: "LVL",
-  //     seat: "outside-0-0",
-  //     start: "8/29",
-  //     end: "3:30 PM",
-  //   },
-  //   {
-  //     code: "LVL",
-  //     seat: "inside-2-1",
-  //     start: "8/15",
-  //     end: "2:00 PM",
-  //   },
-  // ];
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchUserData = async () => {
-        const user = await getUserInfo(username);
-        setName(user.name);
-        setImageUrl(user.image_url);
-        setAffiliation(user.affiliation);
-        setUscId(user.id);
-        const updatedReservations = await getUserReservations(username);
-        const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
-        const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
-        setValidReservations(validRes);
-        setInvalidReservations(invalidRes);
-      };
-      fetchUserData();
-    }, [username])
-  );
+  useEffect(() => {
+    getUserInfo(user.username).then(user => setUser(user));
+    getUserReservations(user.username).then(setRes);
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
-        {imageUrl && <Image source={{ uri: imageUrl }} style={styles.profilePicture} />}
+        <Image source={{ uri: user.image_url }} style={styles.profilePicture} />
         <View>
           <Text style={styles.title}>User Information:</Text>
-          <Text style={styles.name}>Name: {name}</Text>
-          <Text style={styles.name}>Affiliation: {affiliation}</Text>
-          <Text style={styles.name}>USC ID: {uscId}</Text>
+          <Text style={styles.name}>Name: {user.name}</Text>
+          <Text style={styles.name}>Affiliation: {user.affiliation}</Text>
+          <Text style={styles.name}>USC ID: {user.usc_id}</Text>
         </View>
       </View>
-      <Text style={styles.title}>Active Reservations:</Text>
+
+      <Text style={styles.title}>Upcoming Reservation:</Text>
       <ScrollView>
-        {validReservations.map((reservation, index) => (
+        {res.map(r => (
           <ReservationBubble
-            key={index}
-            reservation={reservation}
-            onCancel={cancelAndFetchReservations}
+            key={r.key}
+            reservation={r}
+            // onCancel={cancelAndFetchReservations}
             showCancel={true}
           />
         ))}
-        <Text style={styles.title}>Canceled Reservations:</Text>
-        {invalidReservations.map((reservation, index) => (
+      </ScrollView>
+
+      <Text style={styles.title}>Canceled Reservations:</Text>
+      <ScrollView>
+        {user.cancelled_reservations.map(r => (
+          <ReservationBubble key={r.key} reservation={r} showCancel={false} />
+        ))}
+      </ScrollView>
+
+      <Text style={styles.title}>Past Reservations:</Text>
+      <ScrollView>
+        {user.completed_reservations.map((reservation, index) => (
           <ReservationBubble
             key={index}
             reservation={reservation}
-            onCancel={cancelAndFetchReservations}
+            // onCancel={cancelAndFetchReservations}
             showCancel={false}
           />
         ))}
-        {/* <Text style={styles.title}>Past Reservations:</Text>
-      {/* <Button title="Test Button" onPress={() => testFunction()} /> */}
-        {/* {pastReservations.map((reservation, index) => (
-          <ReservationBubble
-            key={index}
-            reservation={reservation}
-            onCancel={cancelAndFetchReservations}
-            showCancel={false}
-          />
-        ))} */}
       </ScrollView>
     </View>
   );

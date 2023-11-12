@@ -46,7 +46,7 @@ const SeatingChartView = ({
                 disabled={!a}
               >
                 {!a && <Icon name={"x"} size={24} color="white" style={styles.icon} />}
-                {selectedSeat == seatId && <Icon name={"check"} size={24} color="white" style={styles.icon} />}
+                {selectedSeat === seatId && <Icon name={"check"} size={24} color="white" style={styles.icon} />}
               </TouchableOpacity>
             );
           })}

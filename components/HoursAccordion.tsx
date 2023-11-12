@@ -1,23 +1,32 @@
+import type { Temporal } from "@js-temporal/polyfill";
 import { View, Text, StyleSheet } from "react-native";
 import type { Building } from "../types";
 import Accordion from "./Accordion";
 import React from "react";
 
+export function format_time(time: Temporal.PlainTime): string {
+  // Convert the time to AM/PM format and return as string
+  const hour = time.hour % 12 === 0 ? 12 : time.hour % 12;
+  const minute = time.minute.toString().padStart(2, "0");
+  const ampm = time.hour < 12 ? "AM" : "PM";
+  return `${hour}:${minute} ${ampm}`;
+}
+
 const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
   return (
-    <Accordion headerText="Hours" iconName="clock">
+    <Accordion headerText="Hours" iconName="">
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View>
-          {Object.entries(hours).map(([day]) => (
+          {hours.map(([day]) => (
             <Text key={day} style={styles.hoursText}>
               {day}
             </Text>
           ))}
         </View>
         <View style={{ alignItems: "flex-end" }}>
-          {Object.entries(hours).map(([day, time]) => (
-            <Text key={day} style={styles.hoursText}>
-              {typeof time === "string" ? time : `${time[0]} – ${time[1]}`}
+          {hours.map(([day, time]) => (
+            <Text key={day + time} style={styles.hoursText}>
+              {typeof time === "string" ? time : `${format_time(time[0])} – ${format_time(time[1])}`}
             </Text>
           ))}
         </View>

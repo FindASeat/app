@@ -5,22 +5,22 @@ const LocationPicker = ({
   location: locationPicker,
   setLocation: setLocationPicker,
 }: {
-  location: "indoor" | "outdoor";
-  setLocation: Dispatch<SetStateAction<"indoor" | "outdoor">>;
+  location: "inside" | "outside";
+  setLocation: Dispatch<SetStateAction<"inside" | "outside">>;
 }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, locationPicker === "indoor" && styles.selectedButton]}
-        onPress={() => setLocationPicker("indoor")}
+        style={[styles.button, locationPicker === "inside" && styles.selectedButton]}
+        onPress={() => setLocationPicker("inside")}
       >
-        <Text style={[styles.buttonText, locationPicker === "indoor" && { color: "white" }]}>Indoor</Text>
+        <Text style={[styles.buttonText, locationPicker === "inside" && { color: "white" }]}>Indoor</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.button, locationPicker === "outdoor" && styles.selectedButton]}
-        onPress={() => setLocationPicker("outdoor")}
+        style={[styles.button, locationPicker === "outside" && styles.selectedButton]}
+        onPress={() => setLocationPicker("outside")}
       >
-        <Text style={[styles.buttonText, locationPicker === "outdoor" && { color: "white" }]}>Outdoor</Text>
+        <Text style={[styles.buttonText, locationPicker === "outside" && { color: "white" }]}>Outdoor</Text>
       </TouchableOpacity>
     </View>
   );

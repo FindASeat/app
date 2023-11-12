@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import type { LatLng } from "react-native-maps";
 
 export type Building = {
@@ -7,7 +8,7 @@ export type Building = {
 
   coordinate: LatLng; // lat/long of building
 
-  open_hours: Record<string, "Closed" | [Date, Date]>; // key = day/days (like 'Mon' or 'Mon – Thur'), value = [Date, Date]
+  open_hours: [string, "Closed" | "24 Hours" | [Temporal.PlainTime, Temporal.PlainTime]][]; // string = day/days (like 'Mon' or 'Mon – Thur')
   inside: RoomData;
   outside: RoomData;
 
@@ -31,7 +32,7 @@ export type FirebaseBuilding = {
 
   coordinate: LatLng;
 
-  open_hours: Record<string, "Closed" | [string, string]>;
+  open_hours: [string, "Closed" | "24 Hours" | [string, string]][];
   inside: FirebaseRoomData;
   outside: FirebaseRoomData;
 
@@ -49,9 +50,11 @@ export type User = {
   affiliation: "Student" | "Faculty" | "Staff";
 
   username: string;
-  image_url: string | null;
+  image_url: string;
 
-  reservations: Reservation[];
+  active_reservation?: Reservation;
+  completed_reservations: Reservation[];
+  cancelled_reservations: Reservation[];
 };
 
 export type FirebaseUser = {
@@ -64,13 +67,15 @@ export type FirebaseUser = {
 };
 
 export type Reservation = {
+  key: string;
+
   seat_id: `${number}-${number}`;
   building_code: string;
   area: "inside" | "outside";
   status: "active" | "completed" | "cancelled";
 
-  start_time: Date;
-  end_time: Date;
+  start_time: Temporal.PlainDateTime;
+  end_time: Temporal.PlainDateTime;
 };
 
 export type FirebaseReservation = {
@@ -79,8 +84,8 @@ export type FirebaseReservation = {
 
   type: "valid" | "invalid";
 
-  start_time: string;
-  end_time: string;
+  start: string;
+  end: string;
 
   user: string;
 };

@@ -1,57 +1,46 @@
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { Temporal } from "@js-temporal/polyfill";
+import { format_time } from "./HoursAccordion";
 
 const TimePicker = ({
-  openTime,
-  closeTime,
+  times,
   setPickedTime,
   pickedTime,
 }: {
-  openTime: string;
-  closeTime: string;
-  setPickedTime: Dispatch<SetStateAction<string>>;
-  pickedTime: string;
+  times: Temporal.PlainTime[];
+  setPickedTime: Dispatch<SetStateAction<Temporal.PlainTime>>;
+  pickedTime: Temporal.PlainTime;
 }) => {
-  // Function to format the time in 12-hour format with AM/PM
-  const formatTime = (hour, minute) => {
-    const isPM = hour >= 12;
-    const adjustedHour = hour % 12 || 12;
-    // Ensure minutes are formatted as two digits
-    const formattedMinute = minute < 10 ? `0${minute}` : minute;
-    return `${adjustedHour}:${formattedMinute}${isPM ? " PM" : " AM"}`;
-  };
-
-  // Function to generate an array of time intervals
-  const generateTimes = (open, close) => {
-    let [startHour, startMinute] = open.split(":").map(Number);
-    const [endHour, endMinute] = close.split(":").map(Number);
-    let currentTime = new Date(0, 0, 0, startHour, startMinute);
-    const endTime = new Date(0, 0, 0, endHour, endMinute);
-    const times = [];
-
-    while (currentTime <= endTime) {
-      times.push(formatTime(currentTime.getHours(), currentTime.getMinutes()));
-      // Increment by 30 minutes
-      currentTime.setMinutes(currentTime.getMinutes() + 30);
-    }
-    return times;
-  };
-
-  const times = generateTimes(openTime, closeTime);
+  useEffect(() => {
+    if (times.length === 0) return;
+    if (Temporal.PlainTime.compare(pickedTime, times[0]) < 0) setPickedTime(times[0]);
+    if (Temporal.PlainTime.compare(pickedTime, times[times.length - 1]) > 0) setPickedTime(times[times.length - 1]);
+  }, [times]);
 
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {times.map((time, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.timeButton, pickedTime === time && styles.selectedTimeButton]}
-            onPress={() => setPickedTime(time)}
-          >
-            <Text style={[styles.timeText, pickedTime === time && styles.selectedTimeText]}>{time}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {times.length === 0 && (
+        <View style={[styles.timeButton]}>
+          <Text style={[styles.timeText]}>No Available Times</Text>
+        </View>
+      )}
+
+      {times.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {times.map((time, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.timeButton, pickedTime.equals(time) && styles.selectedTimeButton]}
+              onPress={() => setPickedTime(time)}
+            >
+              <Text style={[styles.timeText, pickedTime.equals(time) && styles.selectedTimeText]}>
+                {format_time(time)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 };
