@@ -5,7 +5,8 @@ const stack_layout = () => {
   return (
     <GlobalStateProvider>
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{}} />
+        <Stack.Screen name="login" options={{ headerShown: false, presentation: 'modal' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </GlobalStateProvider>

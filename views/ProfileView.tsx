@@ -1,11 +1,10 @@
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import ReservationBubble from '../../components/ReservationBubble';
-import { get_user_if_login, logout_user } from '../../utils';
-import { useGlobal } from '../../context/GlobalContext';
-import { router } from 'expo-router';
+import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import ReservationBubble from '../components/ReservationBubble';
+import { useGlobal } from '../context/GlobalContext';
+import { get_user_if_login } from '../utils';
 import { useEffect } from 'react';
 
-const me = () => {
+const ProfileView = () => {
   const { user, setUser } = useGlobal();
 
   useEffect(() => {
@@ -70,7 +69,7 @@ const me = () => {
   );
 };
 
-export default me;
+export default ProfileView;
 
 const styles = StyleSheet.create({
   container: {

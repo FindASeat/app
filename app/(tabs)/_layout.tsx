@@ -2,10 +2,14 @@ import LogoutButton from '../../components/LogoutButton';
 import { Tabs } from 'expo-router';
 
 const tab_layout = () => {
+  // TODO: Change Tab Icons
   return (
-    <Tabs>
+    <Tabs backBehavior="initialRoute">
       <Tabs.Screen name="(map_screen)" options={{ tabBarLabel: 'Reserve', headerShown: false }} />
-      <Tabs.Screen name="me" options={{ tabBarLabel: 'Profile', headerTitle: 'Profile', headerRight: LogoutButton }} />
+      <Tabs.Screen
+        name="profile"
+        options={{ tabBarLabel: 'Profile', headerTitle: 'Profile', headerRight: LogoutButton }}
+      />
     </Tabs>
   );
 };

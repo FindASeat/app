@@ -1,11 +1,47 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { validate_credentials, create_user, is_username_taken } from '../firebase/firebase_api';
+import { validate_credentials, create_user, is_username_taken, get_buildings } from '../firebase/firebase_api';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { useGlobal } from '../context/GlobalContext';
+import { get_user_if_login } from '../utils';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  SafeAreaView,
+  Keyboard,
+} from 'react-native';
 
 const LoginView = () => {
+  const { setUser, setBuildings } = useGlobal();
+
+  useEffect(() => {
+    get_buildings().then(setBuildings);
+    get_user_if_login().then(u => {
+      if (!u) return;
+
+      setUser(u);
+      router.replace('/map');
+    });
+  }, []);
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <SubLoginView />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
+  );
+};
+
+export default LoginView;
+
+const SubLoginView = () => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [uscId, setUscId] = useState('');
@@ -176,5 +212,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default LoginView;

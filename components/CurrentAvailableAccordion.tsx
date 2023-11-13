@@ -1,4 +1,4 @@
-import SeatingChartView from './SeatingChartView';
+import SeatingChartView from './SeatingChart';
 import type { RoomData } from '../types';
 import Accordion from './Accordion';
 

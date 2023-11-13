@@ -1,12 +1,39 @@
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
-import CurrentAvailableAccordion from './CurrentAvailableAccordion';
+import { View, Text, TouchableOpacity, ScrollView, Image, SafeAreaView } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import CurrentAvailableAccordion from '../components/CurrentAvailableAccordion';
+import HoursAccordion from '../components/HoursAccordion';
+import { router, useLocalSearchParams } from 'expo-router';
+import { get_building } from '../firebase/firebase_api';
 import Icon from 'react-native-vector-icons/Octicons';
-import HoursAccordion from './HoursAccordion';
+import { useGlobal } from '../context/GlobalContext';
 import type { Building } from '../types';
 import { display_hours } from '../utils';
-import { router } from 'expo-router';
+import { useEffect } from 'react';
 
-const BuildingView = ({ building }: { building: Building }) => {
+const BuildingView = () => {
+  const { code } = useLocalSearchParams() as { code: string | undefined };
+  const { selectedBuilding, setSelectedBuilding } = useGlobal();
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (code) get_building(code).then(setSelectedBuilding);
+    else if (selectedBuilding) get_building(selectedBuilding?.code).then(setSelectedBuilding);
+  }, []);
+
+  return (
+    <SafeAreaProvider>
+      <View style={{ flex: 1 }}>
+        <View style={{ height: insets.top, backgroundColor: '#990000' }} />
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+          {selectedBuilding && <SubBuildingView building={selectedBuilding} />}
+          {!selectedBuilding && <Text>Loading...</Text>}
+        </SafeAreaView>
+      </View>
+    </SafeAreaProvider>
+  );
+};
+
+const SubBuildingView = ({ building }: { building: Building }) => {
   const hours = display_hours(building.open_hours);
 
   return (

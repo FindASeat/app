@@ -87,7 +87,12 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           >
             <Text style={styles.buttonText}>Cancel Reservation</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              // TODO
+            }}
+          >
             <Text style={styles.buttonText}>Modify Reservation</Text>
           </TouchableOpacity>
         </View>
