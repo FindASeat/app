@@ -18,8 +18,8 @@ const SeatingChartView = ({
   | {
       seats: RoomData["seats"];
       readonly: true;
-      selectedSeat?: undefined;
-      setSelectedSeat?: undefined;
+      selectedSeat?: string;
+      setSelectedSeat?: Dispatch<SetStateAction<string>>;
     }) => {
   const handleSeatSelect = (row: number, col: number) => {
     if (readonly) return;
