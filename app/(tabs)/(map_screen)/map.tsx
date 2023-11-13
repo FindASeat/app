@@ -1,6 +1,6 @@
 import { get_user_if_login, is_building_open } from "../../../utils";
+import { get_buildings } from "../../../firebase/firebase_api";
 import { useGlobal } from "../../../context/GlobalContext";
-import { getBuildings } from "../../firebaseFunctions";
 import MapView, { Marker } from "react-native-maps";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
@@ -10,7 +10,7 @@ const map = () => {
   const { buildings, setSelectedBuilding, setBuildings, setUser, user } = useGlobal();
 
   useEffect(() => {
-    if (!buildings) getBuildings().then(setBuildings);
+    if (!buildings) get_buildings().then(setBuildings);
     if (!user) get_user_if_login().then(setUser);
   }, []);
 

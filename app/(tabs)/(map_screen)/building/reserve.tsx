@@ -1,5 +1,5 @@
 import { generate_end_times, generate_start_times, is_building_open } from "../../../../utils";
-import { addReservation, getSeatAvailability } from "../../../firebaseFunctions";
+import { make_reservation, get_availability } from "../../../../firebase/firebase_api";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import SeatingChartView from "../../../../components/SeatingChartView";
 import LocationPicker from "../../../../components/LocationPicker";
@@ -36,7 +36,7 @@ const reserve = () => {
   useEffect(() => {
     if (selectedBuilding) {
       setLoading(true);
-      getSeatAvailability(
+      get_availability(
         {
           code: selectedBuilding.code,
           inside: selectedBuilding.inside,
@@ -194,7 +194,7 @@ const reserve = () => {
           if (!user) return alert("Please login to reserve a seat.");
           if (selectedSeat === "" || !validDT) return alert("Please select a valid time and seat.");
 
-          const res = await addReservation(user.username, {
+          const res = await make_reservation(user.username, {
             area,
             building_code: selectedBuilding.code,
             start_time: pickedDate.toPlainDateTime(pickedStartTime),

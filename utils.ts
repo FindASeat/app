@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserInfo } from "./app/firebaseFunctions";
+import { get_user_data } from "./firebase/firebase_api";
 import { Temporal } from "@js-temporal/polyfill";
 import type { Building } from "./types";
 
@@ -11,7 +11,7 @@ export const get_username = async () => {
 
 export const get_user_if_login = async () => {
   const username = await get_username();
-  if (username) return await getUserInfo(username);
+  if (username) return await get_user_data(username);
   return null;
 };
 

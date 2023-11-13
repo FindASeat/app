@@ -1,4 +1,4 @@
-import { Temporal } from "@js-temporal/polyfill";
+import type { Temporal } from "@js-temporal/polyfill";
 import type { LatLng } from "react-native-maps";
 
 export type Building = {

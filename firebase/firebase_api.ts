@@ -1,7 +1,7 @@
 import { ref, set, child, get, push, remove, update } from "firebase/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Temporal } from "@js-temporal/polyfill";
-import { FIREBASE_DB } from "../firebaseConfig";
+import { FIREBASE_DB } from "./firebase_config";
 import type {
   Building,
   FirebaseBuilding,
@@ -14,17 +14,17 @@ import type {
 
 const db_ref = ref(FIREBASE_DB);
 
-export async function validateCredentials(input_username: string, input_password: string): Promise<User | null> {
+export async function validate_credentials(input_username: string, input_password: string): Promise<User | null> {
   input_username = input_username.toLowerCase();
 
-  const usersSnapshot = await get(child(db_ref, `users`));
-  if (usersSnapshot.exists()) {
-    const users = usersSnapshot.val() as Record<User["username"], FirebaseUser>;
+  const snapshot = await get(child(db_ref, `users`));
+  if (snapshot.exists()) {
+    const users = snapshot.val() as Record<User["username"], FirebaseUser>;
 
     const user = users[input_username];
     if (user && input_password === user.password) {
       await AsyncStorage.setItem("username", input_username);
-      const reservatons = await getUserReservations(input_username);
+      const reservatons = await get_user_reservations(input_username);
 
       return {
         username: input_username,
@@ -42,10 +42,10 @@ export async function validateCredentials(input_username: string, input_password
   return null;
 }
 
-export async function getUserReservations(username: string): Promise<Reservation[]> {
-  const user_reservations = await get(child(db_ref, `reservations/${username}`));
-  if (user_reservations.exists())
-    return Object.entries(user_reservations.val() as Record<string, FirebaseReservation>)
+export async function get_user_reservations(username: string): Promise<Reservation[]> {
+  const snapshot = await get(child(db_ref, `reservations/${username}`));
+  if (snapshot.exists())
+    return Object.entries(snapshot.val() as Record<string, FirebaseReservation>)
       .map(([key, r]) => ({
         key,
         building_code: r.code,
@@ -67,10 +67,10 @@ export async function getUserReservations(username: string): Promise<Reservation
   return [];
 }
 
-export async function createUser(username: string, user: FirebaseUser): Promise<User | null> {
+export async function create_user(username: string, user: FirebaseUser): Promise<User | null> {
   username = username.toLowerCase();
 
-  if (await isUsernameTaken(username)) {
+  if (await is_username_taken(username)) {
     console.error("Username is taken.");
     return null;
   }
@@ -88,7 +88,7 @@ export async function createUser(username: string, user: FirebaseUser): Promise<
   };
 }
 
-export async function isUsernameTaken(username: string): Promise<boolean> {
+export async function is_username_taken(username: string): Promise<boolean> {
   const snapshot = await get(child(db_ref, `users`));
 
   if (snapshot.exists()) {
@@ -99,7 +99,7 @@ export async function isUsernameTaken(username: string): Promise<boolean> {
   return false; // Username is not taken
 }
 
-export async function getBuildings(): Promise<Record<Building["code"], Building>> {
+export async function get_buildings(): Promise<Record<Building["code"], Building>> {
   const snapshot = await get(child(db_ref, "buildings"));
 
   if (snapshot.exists()) {
@@ -107,7 +107,7 @@ export async function getBuildings(): Promise<Record<Building["code"], Building>
     const to_return: Record<Building["code"], Building> = {};
 
     for (const [code, b] of Object.entries(buildings)) {
-      const { inside, outside, total } = await getSeatAvailability(
+      const { inside, outside, total } = await get_availability(
         { code, inside: b.inside, outside: b.outside },
         Temporal.Now.plainDateTimeISO()
       );
@@ -136,7 +136,7 @@ export async function getBuildings(): Promise<Record<Building["code"], Building>
   return {};
 }
 
-export const getSeatAvailability = async (
+export async function get_availability(
   {
     code,
     inside,
@@ -144,7 +144,7 @@ export const getSeatAvailability = async (
   }: { code: string; inside: { rows: number; cols: number }; outside: { rows: number; cols: number } },
   at_time: Temporal.PlainDateTime,
   end_time?: Temporal.PlainDateTime
-): Promise<{ inside: RoomData; outside: RoomData; total: number }> => {
+): Promise<{ inside: RoomData; outside: RoomData; total: number }> {
   const snapshot = await get(child(db_ref, `reservations/${code}`));
   if (!snapshot.exists()) {
     return {
@@ -209,15 +209,15 @@ export const getSeatAvailability = async (
     },
     total: 1 - (inside_count + outside_count) / total_capacity,
   };
-};
+}
 
-export async function getBuilding(code: Building["code"]): Promise<Building | null> {
+export async function get_building(code: Building["code"]): Promise<Building | null> {
   const snapshot = await get(child(db_ref, `buildings/${code}`));
 
   if (snapshot.exists()) {
     const b = snapshot.val() as FirebaseBuilding;
 
-    const { inside, outside, total } = await getSeatAvailability(
+    const { inside, outside, total } = await get_availability(
       { code, inside: b.inside, outside: b.outside },
       Temporal.Now.plainDateTimeISO()
     );
@@ -243,7 +243,7 @@ export async function getBuilding(code: Building["code"]): Promise<Building | nu
   return null;
 }
 
-export async function addReservation(
+export async function make_reservation(
   username: string,
   res: Omit<Reservation, "key" | "created_at">
 ): Promise<Reservation | null> {
@@ -274,7 +274,7 @@ export async function addReservation(
     });
 }
 
-export async function cancelReservation(code: Building["code"], username: string, res_id: Reservation["key"]) {
+export async function cancel_reservation(code: Building["code"], username: string, res_id: Reservation["key"]) {
   username = username.toLowerCase();
 
   const r_code_ref = child(db_ref, `reservations/${code}/${res_id}`);
@@ -284,14 +284,14 @@ export async function cancelReservation(code: Building["code"], username: string
     .then(async () => await remove(r_code_ref).catch(err => alert("Error cancelling reservation. Please try again!")));
 }
 
-export async function getUserInfo(username: string): Promise<User | null> {
+export async function get_user_data(username: string): Promise<User | null> {
   username = username.toLowerCase();
 
   const snapshot = await get(child(db_ref, `users/${username}`));
   if (snapshot.exists()) {
     const user = snapshot.val();
 
-    const reservatons = await getUserReservations(username);
+    const reservatons = await get_user_reservations(username);
 
     return {
       username: username,

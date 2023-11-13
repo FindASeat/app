@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { validate_credentials, create_user, is_username_taken } from "../firebase/firebase_api";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { validateCredentials, createUser, isUsernameTaken } from "../app/firebaseFunctions";
 import { useGlobal } from "../context/GlobalContext";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -65,7 +65,7 @@ const LoginView = () => {
           style={styles.loginButton}
           onPress={async () => {
             if (mode === "login") {
-              const user = await validateCredentials(username, password);
+              const user = await validate_credentials(username, password);
 
               if (user) {
                 setUser(user);
@@ -76,9 +76,9 @@ const LoginView = () => {
             if (mode == "signup") {
               if (username === "" || password === "" || name === "" || uscId === "")
                 return alert("Please fill out all fields.");
-              if (await isUsernameTaken(username)) return alert("Username is already taken.");
+              if (await is_username_taken(username)) return alert("Username is already taken.");
 
-              const user = await createUser(username, {
+              const user = await create_user(username, {
                 affiliation: affiliation[affiliationIndex],
                 id: uscId,
                 name,

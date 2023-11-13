@@ -1,6 +1,6 @@
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from "react-native";
+import { get_buildings } from "../firebase/firebase_api";
 import { useGlobal } from "../context/GlobalContext";
-import { getBuildings } from "./firebaseFunctions";
 import LoginView from "../components/LoginView";
 import { get_user_if_login } from "../utils";
 import { router } from "expo-router";
@@ -10,7 +10,7 @@ const index = () => {
   const { setUser, setBuildings } = useGlobal();
 
   useEffect(() => {
-    getBuildings().then(setBuildings);
+    get_buildings().then(setBuildings);
     get_user_if_login().then(u => {
       if (!u) return;
 

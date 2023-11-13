@@ -1,7 +1,7 @@
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
+import { get_building } from "../../../../firebase/firebase_api";
 import BuildingView from "../../../../components/BuildingView";
 import { useGlobal } from "../../../../context/GlobalContext";
-import { getBuilding } from "../../../firebaseFunctions";
 import { SafeAreaView, View, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -12,8 +12,8 @@ const building = () => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    if (code) getBuilding(code).then(setSelectedBuilding);
-    else if (selectedBuilding) getBuilding(selectedBuilding?.code).then(setSelectedBuilding);
+    if (code) get_building(code).then(setSelectedBuilding);
+    else if (selectedBuilding) get_building(selectedBuilding?.code).then(setSelectedBuilding);
   }, []);
 
   return (

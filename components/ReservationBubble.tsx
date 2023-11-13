@@ -1,5 +1,5 @@
+import { cancel_reservation, get_user_data } from "../firebase/firebase_api";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { cancelReservation, getUserInfo } from "../app/firebaseFunctions";
 import { useGlobal } from "../context/GlobalContext";
 import { Reservation, User } from "../types";
 
@@ -69,8 +69,8 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={async () => {
-            await cancelReservation(res.building_code, user.username, res.key);
-            await getUserInfo(user.username).then(setUser);
+            await cancel_reservation(res.building_code, user.username, res.key);
+            await get_user_data(user.username).then(setUser);
           }}
         >
           <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
