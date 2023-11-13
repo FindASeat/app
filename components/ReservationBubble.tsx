@@ -32,7 +32,7 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <Text style={styles.label}>Date</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.value}>
-              {res.end_time.toLocaleString('en-US', {
+              {res.start_time.toLocaleString('en-US', {
                 day: 'numeric',
                 month: 'long',
               })}

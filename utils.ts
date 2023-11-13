@@ -111,17 +111,11 @@ export const generate_end_times = (
   times: Temporal.PlainTime[],
   picked_start_time: Temporal.PlainTime,
 ): Temporal.PlainTime[] => {
-  return times.reduce((acc, time) => {
-    if (
-      Temporal.PlainTime.compare(time, picked_start_time) >= 0 &&
-      Temporal.PlainTime.compare(time, picked_start_time.add({ hours: 1, minutes: 30 })) <= 0
-    )
-      acc.push(time.add({ minutes: 30 }));
-    return acc;
-  }, [] as Temporal.PlainTime[]);
+  const start_idx = times.findIndex(t => t.equals(picked_start_time));
+  return times.map(t => t.add({ minutes: 30 })).slice(start_idx, start_idx + 4);
 };
 
 export const create_times = (start: Temporal.PlainTime, end: Temporal.PlainTime) => {
-  const length = end.since(start).total({ unit: 'minute' }) / 30;
+  const length = (end.since(start).total({ unit: 'minute' }) + 1) / 30;
   return Array.from({ length }, (_, i) => start.add({ minutes: i * 30 }));
 };

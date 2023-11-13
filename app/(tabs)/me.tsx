@@ -21,17 +21,6 @@ const me = () => {
 
   return (
     <View style={styles.container}>
-      {/* Logout */}
-      <TouchableOpacity
-        style={styles.buttonWrapper}
-        onPress={async () => {
-          await logout_user();
-          router.replace('/');
-        }}
-      >
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
-
       {/* User Profile */}
       <View style={styles.userInfo}>
         <Image source={{ uri: user.image_url }} style={styles.profilePicture} />

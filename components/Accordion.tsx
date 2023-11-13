@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle, type TextStyle } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useState } from 'react';
 

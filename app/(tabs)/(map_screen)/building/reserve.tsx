@@ -43,7 +43,9 @@ const reserve = () => {
           outside: selectedBuilding.outside,
         },
         pickedDate.toPlainDateTime(pickedStartTime),
-        pickedDate.toPlainDateTime(pickedEndTime),
+        Temporal.PlainTime.compare(pickedEndTime, pickedStartTime) < 0
+          ? pickedDate.toPlainDateTime(pickedEndTime).add({ days: 1 })
+          : pickedDate.toPlainDateTime(pickedEndTime),
       )
         .then(building => {
           setSeats(area === 'inside' ? building.inside.seats : building.outside.seats);
@@ -198,7 +200,10 @@ const reserve = () => {
             area,
             building_code: selectedBuilding.code,
             start_time: pickedDate.toPlainDateTime(pickedStartTime),
-            end_time: pickedDate.toPlainDateTime(pickedEndTime),
+            end_time:
+              Temporal.PlainTime.compare(pickedEndTime, pickedStartTime) < 0
+                ? pickedDate.toPlainDateTime(pickedEndTime).add({ days: 1 })
+                : pickedDate.toPlainDateTime(pickedEndTime),
             seat_id: selectedSeat as `${number}-${number}`,
             status: 'active',
           });
