@@ -1,5 +1,5 @@
-import type { Temporal } from "@js-temporal/polyfill";
-import type { LatLng } from "react-native-maps";
+import type { Temporal } from '@js-temporal/polyfill';
+import type { LatLng } from 'react-native-maps';
 
 export type Building = {
   title: string; // name of building
@@ -8,7 +8,7 @@ export type Building = {
 
   coordinate: LatLng; // lat/long of building
 
-  open_hours: [string, "Closed" | "24 Hours" | [Temporal.PlainTime, Temporal.PlainTime]][]; // string = day/days (like 'Mon' or 'Mon – Thur')
+  open_hours: [string, 'Closed' | '24 Hours' | [Temporal.PlainTime, Temporal.PlainTime]][]; // string = day/days (like 'Mon' or 'Mon – Thur')
   inside: RoomData;
   outside: RoomData;
 
@@ -32,7 +32,7 @@ export type FirebaseBuilding = {
 
   coordinate: LatLng;
 
-  open_hours: [string, "Closed" | "24 Hours" | [string, string]][];
+  open_hours: [string, 'Closed' | '24 Hours' | [string, string]][];
   inside: FirebaseRoomData;
   outside: FirebaseRoomData;
 
@@ -47,7 +47,7 @@ export type FirebaseRoomData = {
 export type User = {
   usc_id: string;
   name: string;
-  affiliation: "Student" | "Faculty" | "Staff";
+  affiliation: 'Student' | 'Faculty' | 'Staff';
 
   username: string;
   image_url: string;
@@ -59,7 +59,7 @@ export type User = {
 export type FirebaseUser = {
   id: string;
   name: string;
-  affiliation: "Student" | "Faculty" | "Staff";
+  affiliation: 'Student' | 'Faculty' | 'Staff';
 
   image_url: string;
   password: string;
@@ -70,8 +70,8 @@ export type Reservation = {
 
   seat_id: `${number}-${number}`;
   building_code: string;
-  area: "inside" | "outside";
-  status: "active" | "completed" | "canceled";
+  area: 'inside' | 'outside';
+  status: 'active' | 'completed' | 'canceled';
 
   start_time: Temporal.PlainDateTime;
   end_time: Temporal.PlainDateTime;
@@ -80,10 +80,10 @@ export type Reservation = {
 };
 
 export type FirebaseReservation = {
-  seat: `${"inside" | "outside"}-${number}-${number}`;
+  seat: `${'inside' | 'outside'}-${number}-${number}`;
   code: string;
 
-  type: "valid" | "invalid";
+  type: 'valid' | 'invalid';
 
   start: string;
   end: string;

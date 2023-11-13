@@ -1,9 +1,9 @@
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from "react-native";
-import ReservationBubble from "../../components/ReservationBubble";
-import { get_user_if_login, logout_user } from "../../utils";
-import { useGlobal } from "../../context/GlobalContext";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import ReservationBubble from '../../components/ReservationBubble';
+import { get_user_if_login, logout_user } from '../../utils';
+import { useGlobal } from '../../context/GlobalContext';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 
 const me = () => {
   const { user, setUser } = useGlobal();
@@ -26,7 +26,7 @@ const me = () => {
         style={styles.buttonWrapper}
         onPress={async () => {
           await logout_user();
-          router.replace("/");
+          router.replace('/');
         }}
       >
         <Text style={styles.buttonText}>Logout</Text>
@@ -53,15 +53,15 @@ const me = () => {
         {!user.active_reservation && (
           <View
             style={{
-              backgroundColor: "#f0f0f0",
+              backgroundColor: '#f0f0f0',
               borderRadius: 10,
               borderWidth: 1,
-              borderColor: "#ccc",
+              borderColor: '#ccc',
               padding: 10,
-              flexDirection: "column",
+              flexDirection: 'column',
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>
               No reservation booked. Go to the map!
             </Text>
           </View>
@@ -86,39 +86,39 @@ export default me;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     marginHorizontal: 20,
   },
   title: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   buttonContainer: {
-    flexDirection: "column",
-    justifyContent: "space-around",
+    flexDirection: 'column',
+    justifyContent: 'space-around',
     margin: 20,
   },
   buttonWrapper: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
   },
   addButton: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   profilePicture: {
     width: 50,

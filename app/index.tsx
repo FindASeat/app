@@ -1,10 +1,10 @@
-import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from "react-native";
-import { get_buildings } from "../firebase/firebase_api";
-import { useGlobal } from "../context/GlobalContext";
-import LoginView from "../components/LoginView";
-import { get_user_if_login } from "../utils";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
+import { get_buildings } from '../firebase/firebase_api';
+import { useGlobal } from '../context/GlobalContext';
+import LoginView from '../components/LoginView';
+import { get_user_if_login } from '../utils';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 
 const index = () => {
   const { setUser, setBuildings } = useGlobal();
@@ -15,13 +15,13 @@ const index = () => {
       if (!u) return;
 
       setUser(u);
-      router.replace("/map");
+      router.replace('/map');
     });
   }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <LoginView />
       </SafeAreaView>
     </TouchableWithoutFeedback>

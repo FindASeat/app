@@ -1,5 +1,5 @@
-import { GlobalStateProvider } from "../context/GlobalContext";
-import { Stack } from "expo-router";
+import { GlobalStateProvider } from '../context/GlobalContext';
+import { Stack } from 'expo-router';
 
 const stack_layout = () => {
   return (

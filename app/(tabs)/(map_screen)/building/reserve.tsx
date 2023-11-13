@@ -1,27 +1,27 @@
-import { generate_end_times, generate_start_times, is_building_open } from "../../../../utils";
-import { make_reservation, get_availability } from "../../../../firebase/firebase_api";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import SeatingChartView from "../../../../components/SeatingChartView";
-import LocationPicker from "../../../../components/LocationPicker";
-import { useGlobal } from "../../../../context/GlobalContext";
-import TimePicker from "../../../../components/TimePicker";
-import DatePicker from "../../../../components/DatePicker";
-import Icon from "react-native-vector-icons/Octicons";
-import { useEffect, useMemo, useState } from "react";
-import { Temporal } from "@js-temporal/polyfill";
-import { router } from "expo-router";
+import { generate_end_times, generate_start_times, is_building_open } from '../../../../utils';
+import { make_reservation, get_availability } from '../../../../firebase/firebase_api';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import SeatingChartView from '../../../../components/SeatingChartView';
+import LocationPicker from '../../../../components/LocationPicker';
+import { useGlobal } from '../../../../context/GlobalContext';
+import TimePicker from '../../../../components/TimePicker';
+import DatePicker from '../../../../components/DatePicker';
+import Icon from 'react-native-vector-icons/Octicons';
+import { useEffect, useMemo, useState } from 'react';
+import { Temporal } from '@js-temporal/polyfill';
+import { router } from 'expo-router';
 
 const reserve = () => {
   const { selectedBuilding, user, setUser } = useGlobal();
 
   const [pickedDate, setPickedDate] = useState(Temporal.Now.plainDateISO());
   const [pickedStartTime, setPickedStartTime] = useState(
-    Temporal.Now.plainTimeISO().round({ smallestUnit: "minutes", roundingIncrement: 30, roundingMode: "ceil" })
+    Temporal.Now.plainTimeISO().round({ smallestUnit: 'minutes', roundingIncrement: 30, roundingMode: 'ceil' }),
   );
   const [pickedEndTime, setPickedEndTime] = useState(pickedStartTime.add({ minutes: 30 }));
 
-  const [area, setArea] = useState<"inside" | "outside">("inside");
-  const [selectedSeat, setSelectedSeat] = useState("");
+  const [area, setArea] = useState<'inside' | 'outside'>('inside');
+  const [selectedSeat, setSelectedSeat] = useState('');
   const [loading, setLoading] = useState(true);
 
   const [validDT, setValidDT] = useState(false);
@@ -29,7 +29,7 @@ const reserve = () => {
 
   const times = useMemo(
     () => generate_start_times(selectedBuilding?.open_hours ?? [], pickedDate),
-    [selectedBuilding, pickedDate]
+    [selectedBuilding, pickedDate],
   );
   const end_times = useMemo(() => generate_end_times(times, pickedStartTime), [times, pickedStartTime]);
 
@@ -43,11 +43,11 @@ const reserve = () => {
           outside: selectedBuilding.outside,
         },
         pickedDate.toPlainDateTime(pickedStartTime),
-        pickedDate.toPlainDateTime(pickedEndTime)
+        pickedDate.toPlainDateTime(pickedEndTime),
       )
         .then(building => {
-          setSeats(area === "inside" ? building.inside.seats : building.outside.seats);
-          setSelectedSeat("");
+          setSeats(area === 'inside' ? building.inside.seats : building.outside.seats);
+          setSelectedSeat('');
           setLoading(false);
         })
         .catch(error => console.error(error));
@@ -58,7 +58,7 @@ const reserve = () => {
     setValidDT(
       selectedBuilding
         ? is_building_open(selectedBuilding.open_hours, pickedDate.toPlainDateTime(pickedStartTime))
-        : false
+        : false,
     );
   }, [selectedBuilding, pickedDate, pickedStartTime]);
 
@@ -82,10 +82,10 @@ const reserve = () => {
     <View style={styles.container}>
       <View
         style={{
-          position: "relative",
-          backgroundColor: "#990000",
+          position: 'relative',
+          backgroundColor: '#990000',
           paddingVertical: 10,
-          alignItems: "center",
+          alignItems: 'center',
           marginBottom: 10,
         }}
       >
@@ -93,13 +93,13 @@ const reserve = () => {
         <Text style={styles.title}>Reserve a Seat</Text>
 
         {/* Cancel Button */}
-        <TouchableOpacity style={{ position: "absolute", right: 15, top: 10 }} onPress={() => router.back()}>
+        <TouchableOpacity style={{ position: 'absolute', right: 15, top: 10 }} onPress={() => router.back()}>
           <Icon name="x" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
 
       {/* Date Picker */}
-      <Text style={{ fontSize: 18, fontWeight: "400", color: "#333", paddingBottom: 1, paddingHorizontal: 5 }}>
+      <Text style={{ fontSize: 18, fontWeight: '400', color: '#333', paddingBottom: 1, paddingHorizontal: 5 }}>
         Start Date
       </Text>
       <DatePicker setPickedDate={setPickedDate} pickedDate={pickedDate} />
@@ -108,8 +108,8 @@ const reserve = () => {
       <Text
         style={{
           fontSize: 18,
-          fontWeight: "400",
-          color: "#333",
+          fontWeight: '400',
+          color: '#333',
           paddingBottom: 1,
           paddingHorizontal: 5,
           paddingTop: 20,
@@ -124,8 +124,8 @@ const reserve = () => {
         style={[
           {
             fontSize: 18,
-            fontWeight: "400",
-            color: "#333",
+            fontWeight: '400',
+            color: '#333',
             paddingBottom: 1,
             paddingHorizontal: 5,
             paddingTop: 20,
@@ -144,8 +144,8 @@ const reserve = () => {
         style={[
           {
             fontSize: 18,
-            fontWeight: "400",
-            color: "#333",
+            fontWeight: '400',
+            color: '#333',
             paddingHorizontal: 5,
             paddingTop: 20,
             paddingBottom: 1,
@@ -164,8 +164,8 @@ const reserve = () => {
         style={[
           {
             fontSize: 18,
-            fontWeight: "400",
-            color: "#333",
+            fontWeight: '400',
+            color: '#333',
             paddingHorizontal: 5,
             paddingTop: 20,
             paddingBottom: 1,
@@ -175,7 +175,7 @@ const reserve = () => {
       >
         Pick a Seat
       </Text>
-      <View style={[{ backgroundColor: "#CCC", paddingVertical: 30 }, (!validDT || loading) && { opacity: 0.25 }]}>
+      <View style={[{ backgroundColor: '#CCC', paddingVertical: 30 }, (!validDT || loading) && { opacity: 0.25 }]}>
         <SeatingChartView
           readonly={!validDT || loading}
           seats={seats}
@@ -188,11 +188,11 @@ const reserve = () => {
 
       {/* Reserve button */}
       <TouchableOpacity
-        disabled={!validDT || selectedSeat === ""}
-        style={[styles.reserveButton, selectedSeat === "" && { opacity: 0.25 }]}
+        disabled={!validDT || selectedSeat === ''}
+        style={[styles.reserveButton, selectedSeat === '' && { opacity: 0.25 }]}
         onPress={async () => {
-          if (!user) return alert("Please login to reserve a seat.");
-          if (selectedSeat === "" || !validDT) return alert("Please select a valid time and seat.");
+          if (!user) return alert('Please login to reserve a seat.');
+          if (selectedSeat === '' || !validDT) return alert('Please select a valid time and seat.');
 
           const res = await make_reservation(user.username, {
             area,
@@ -200,12 +200,12 @@ const reserve = () => {
             start_time: pickedDate.toPlainDateTime(pickedStartTime),
             end_time: pickedDate.toPlainDateTime(pickedEndTime),
             seat_id: selectedSeat as `${number}-${number}`,
-            status: "active",
+            status: 'active',
           });
 
           if (res) {
             setUser({ ...user, active_reservation: res });
-            router.push("/(tabs)/(map_screen)/map");
+            router.push('/(tabs)/(map_screen)/map');
           }
         }}
       >
@@ -220,42 +220,42 @@ export default reserve;
 const styles = StyleSheet.create({
   locContainer: {
     paddingVertical: 10,
-    backgroundColor: "#BBB",
+    backgroundColor: '#BBB',
   },
   locButton: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: '#F0F0F0',
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginHorizontal: 5,
     borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
   },
   title: {
     fontSize: 24,
-    fontWeight: "600",
-    color: "white",
-    textAlign: "center",
-    backgroundColor: "#990000",
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'center',
+    backgroundColor: '#990000',
     flexGrow: 1,
   },
   reserveButton: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginHorizontal: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
   },
   buttonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

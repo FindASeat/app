@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet } from "react-native";
-import type { Building } from "../types";
-import { format_time } from "../utils";
-import Accordion from "./Accordion";
+import { View, Text, StyleSheet } from 'react-native';
+import type { Building } from '../types';
+import { format_time } from '../utils';
+import Accordion from './Accordion';
 
-const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
+const HoursAccordion = ({ hours }: { hours: Building['open_hours'] }) => {
   return (
     <Accordion headerText="Hours" iconName="">
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
           {hours.map(([day]) => (
             <Text key={day} style={styles.hoursText}>
@@ -14,10 +14,10 @@ const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
             </Text>
           ))}
         </View>
-        <View style={{ alignItems: "flex-end" }}>
+        <View style={{ alignItems: 'flex-end' }}>
           {hours.map(([day, time]) => (
             <Text key={day + time} style={styles.hoursText}>
-              {typeof time === "string" ? time : `${format_time(time[0])} – ${format_time(time[1])}`}
+              {typeof time === 'string' ? time : `${format_time(time[0])} – ${format_time(time[1])}`}
             </Text>
           ))}
         </View>
@@ -30,7 +30,7 @@ export default HoursAccordion;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "black",
+    backgroundColor: 'black',
     borderRadius: 5,
     margin: 10,
   },
@@ -38,31 +38,31 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 10,
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
   },
   headerText: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
   },
   statusText: {
-    color: "green",
+    color: 'green',
     fontSize: 18,
   },
   content: {
     padding: 10,
-    backgroundColor: "#444",
+    backgroundColor: '#444',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   hoursText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
     marginBottom: 5,
   },

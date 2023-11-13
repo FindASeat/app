@@ -1,10 +1,10 @@
-import { get_user_if_login, is_building_open } from "../../../utils";
-import { get_buildings } from "../../../firebase/firebase_api";
-import { useGlobal } from "../../../context/GlobalContext";
-import MapView, { Marker } from "react-native-maps";
-import { StyleSheet } from "react-native";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { get_user_if_login, is_building_open } from '../../../utils';
+import { get_buildings } from '../../../firebase/firebase_api';
+import { useGlobal } from '../../../context/GlobalContext';
+import MapView, { Marker } from 'react-native-maps';
+import { StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 
 const map = () => {
   const { buildings, setSelectedBuilding, setBuildings, setUser, user } = useGlobal();
@@ -30,16 +30,16 @@ const map = () => {
           coordinate={building.coordinate}
           pinColor={
             !is_building_open(building.open_hours)
-              ? "#990000"
+              ? '#990000'
               : building.total_availability < 0.25
-              ? "#990000"
+              ? '#990000'
               : building.total_availability < 0.5
-              ? "orange"
-              : "green"
+              ? 'orange'
+              : 'green'
           }
           onPress={() => {
             setSelectedBuilding(building);
-            router.push("/(tabs)/(map_screen)/building/" + building.code);
+            router.push('/(tabs)/(map_screen)/building/' + building.code);
           }}
         />
       ))}

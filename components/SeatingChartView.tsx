@@ -1,7 +1,7 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { type Dispatch, type SetStateAction } from "react";
-import Icon from "react-native-vector-icons/Octicons";
-import type { RoomData } from "../types";
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { type Dispatch, type SetStateAction } from 'react';
+import Icon from 'react-native-vector-icons/Octicons';
+import type { RoomData } from '../types';
 
 const SeatingChartView = ({
   seats,
@@ -10,13 +10,13 @@ const SeatingChartView = ({
   setSelectedSeat,
 }:
   | {
-      seats: RoomData["seats"];
+      seats: RoomData['seats'];
       readonly?: false;
       selectedSeat: string;
       setSelectedSeat: Dispatch<SetStateAction<string>>;
     }
   | {
-      seats: RoomData["seats"];
+      seats: RoomData['seats'];
       readonly: true;
       selectedSeat?: string;
       setSelectedSeat?: Dispatch<SetStateAction<string>>;
@@ -44,15 +44,15 @@ const SeatingChartView = ({
                   !a && styles.taken,
                   selectedSeat === seatId && styles.selectedSeat,
                   {
-                    justifyContent: "center",
-                    alignItems: "center",
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   },
                 ]}
                 onPress={() => handleSeatSelect(row, col)}
                 disabled={!a}
               >
-                {!a && <Icon name={"x"} size={24} color="white" style={styles.icon} />}
-                {selectedSeat === seatId && <Icon name={"check"} size={24} color="white" style={styles.icon} />}
+                {!a && <Icon name={'x'} size={24} color="white" style={styles.icon} />}
+                {selectedSeat === seatId && <Icon name={'check'} size={24} color="white" style={styles.icon} />}
               </TouchableOpacity>
             );
           })}
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   seatRow: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginVertical: 5,
   },
   seat: {
@@ -83,12 +83,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   taken: {
-    backgroundColor: "gray",
+    backgroundColor: 'gray',
   },
   open: {
-    backgroundColor: "#FFFFFFE8",
+    backgroundColor: '#FFFFFFE8',
   },
   selectedSeat: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
   },
 });

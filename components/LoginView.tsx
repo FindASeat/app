@@ -1,24 +1,24 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { validate_credentials, create_user, is_username_taken } from "../firebase/firebase_api";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { useGlobal } from "../context/GlobalContext";
-import { router } from "expo-router";
-import { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { validate_credentials, create_user, is_username_taken } from '../firebase/firebase_api';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { useGlobal } from '../context/GlobalContext';
+import { router } from 'expo-router';
+import { useState } from 'react';
 
 const LoginView = () => {
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [name, setName] = useState("");
-  const [uscId, setUscId] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [name, setName] = useState('');
+  const [uscId, setUscId] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const affiliation = ["Student", "Faculty", "Staff"] as const;
+  const affiliation = ['Student', 'Faculty', 'Staff'] as const;
   const [affiliationIndex, setAffiliationIndex] = useState<0 | 1 | 2>(0);
 
   const { setUser } = useGlobal();
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={styles.container}>
         {/* Logo or App Name */}
         <View>
@@ -26,7 +26,7 @@ const LoginView = () => {
         </View>
 
         {/* Sign Up Input Fields */}
-        {mode == "signup" && (
+        {mode == 'signup' && (
           <>
             <TextInput style={styles.inputField} placeholder="Name" value={name} onChangeText={text => setName(text)} />
             <TextInput
@@ -64,37 +64,37 @@ const LoginView = () => {
         <TouchableOpacity
           style={styles.loginButton}
           onPress={async () => {
-            if (mode === "login") {
+            if (mode === 'login') {
               const user = await validate_credentials(username, password);
 
               if (user) {
                 setUser(user);
-                router.replace("/map");
-              } else alert("Invalid username or password!");
+                router.replace('/map');
+              } else alert('Invalid username or password!');
             }
 
-            if (mode == "signup") {
-              if (username === "" || password === "" || name === "" || uscId === "")
-                return alert("Please fill out all fields.");
-              if (await is_username_taken(username)) return alert("Username is already taken.");
+            if (mode == 'signup') {
+              if (username === '' || password === '' || name === '' || uscId === '')
+                return alert('Please fill out all fields.');
+              if (await is_username_taken(username)) return alert('Username is already taken.');
 
               const user = await create_user(username, {
                 affiliation: affiliation[affiliationIndex],
                 id: uscId,
                 name,
                 password,
-                image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg", // TODO maybe allow upload photo
+                image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg', // TODO maybe allow upload photo
               });
 
               if (user) {
-                alert("Account created successfully!");
+                alert('Account created successfully!');
                 setUser(user);
-                router.replace("/map");
-              } else alert("Failed to create account. Please try again.");
+                router.replace('/map');
+              } else alert('Failed to create account. Please try again.');
             }
           }}
         >
-          <Text style={styles.buttonText}>{mode === "login" ? "Log in" : "Sign up"}</Text>
+          <Text style={styles.buttonText}>{mode === 'login' ? 'Log in' : 'Sign up'}</Text>
         </TouchableOpacity>
 
         {/* OR Text */}
@@ -108,11 +108,11 @@ const LoginView = () => {
         <TouchableOpacity
           style={styles.signupButton}
           onPress={async () => {
-            if (mode === "login") setMode("signup");
-            else if (mode === "signup") setMode("login");
+            if (mode === 'login') setMode('signup');
+            else if (mode === 'signup') setMode('login');
           }}
         >
-          <Text style={styles.signupText}>{mode == "login" ? "Sign up" : "Log in"}</Text>
+          <Text style={styles.signupText}>{mode == 'login' ? 'Sign up' : 'Log in'}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -123,56 +123,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: "center",
-    backgroundColor: "#fff",
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   logo: {
     fontSize: 40,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginBottom: 20,
   },
   inputField: {
     height: 45,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 15,
     padding: 10,
   },
   loginButton: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
     height: 45,
     borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   orContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: 15,
   },
   divider: {
     height: 1,
     flex: 1,
-    backgroundColor: "#ccc",
+    backgroundColor: '#ccc',
   },
   orText: {
     marginHorizontal: 10,
   },
   signupButton: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 10,
   },
   signupText: {
-    color: "#990000",
+    color: '#990000',
     fontSize: 16,
   },
 });

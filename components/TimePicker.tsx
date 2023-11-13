@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { Temporal } from "@js-temporal/polyfill";
-import { format_time } from "../utils";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Temporal } from '@js-temporal/polyfill';
+import { format_time } from '../utils';
 
 const TimePicker = ({
   times,
@@ -50,27 +50,27 @@ export default TimePicker;
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,
-    backgroundColor: "#BBB",
+    backgroundColor: '#BBB',
   },
   timeButton: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: '#F0F0F0',
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginHorizontal: 5,
     borderRadius: 10,
     elevation: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   selectedTimeButton: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
   },
   selectedTimeText: {
-    color: "white",
+    color: 'white',
   },
   timeText: {
-    color: "#333",
+    color: '#333',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

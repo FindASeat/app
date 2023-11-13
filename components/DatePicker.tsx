@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { Dispatch, SetStateAction } from "react";
-import { Temporal } from "@js-temporal/polyfill";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Dispatch, SetStateAction } from 'react';
+import { Temporal } from '@js-temporal/polyfill';
 
 const DatePicker = ({
   setPickedDate,
@@ -21,25 +21,25 @@ const DatePicker = ({
             style={[styles.dateButton, pickedDate.equals(time) && styles.selectedDateButton]}
             onPress={() => setPickedDate(time)}
           >
-            <View style={{ alignItems: "center" }}>
+            <View style={{ alignItems: 'center' }}>
               <Text
-                style={[styles.dateText, { fontWeight: "500" }, pickedDate.equals(time) && styles.selectedDateText]}
+                style={[styles.dateText, { fontWeight: '500' }, pickedDate.equals(time) && styles.selectedDateText]}
               >
-                {time.toLocaleString("en-US", { month: "long" })}
+                {time.toLocaleString('en-US', { month: 'long' })}
               </Text>
               <Text
                 style={[
                   styles.dateText,
-                  { fontWeight: "bold", fontSize: 32 },
+                  { fontWeight: 'bold', fontSize: 32 },
                   pickedDate.equals(time) && styles.selectedDateText,
                 ]}
               >
-                {time.toLocaleString("en-US", { day: "numeric" })}
+                {time.toLocaleString('en-US', { day: 'numeric' })}
               </Text>
               <Text
-                style={[styles.dateText, { fontWeight: "500" }, pickedDate.equals(time) && styles.selectedDateText]}
+                style={[styles.dateText, { fontWeight: '500' }, pickedDate.equals(time) && styles.selectedDateText]}
               >
-                {time.toLocaleString("en-US", { weekday: "short" })}
+                {time.toLocaleString('en-US', { weekday: 'short' })}
               </Text>
             </View>
           </TouchableOpacity>
@@ -54,26 +54,26 @@ export default DatePicker;
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,
-    backgroundColor: "#BBB",
+    backgroundColor: '#BBB',
   },
   dateButton: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: '#F0F0F0',
     paddingVertical: 10,
     paddingHorizontal: 10,
     marginHorizontal: 5,
     borderRadius: 10,
     elevation: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   selectedDateButton: {
-    backgroundColor: "#990000",
+    backgroundColor: '#990000',
   },
   selectedDateText: {
-    color: "white",
+    color: 'white',
   },
   dateText: {
-    color: "#333",
+    color: '#333',
     fontSize: 16,
   },
 });
