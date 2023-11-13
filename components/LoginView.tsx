@@ -1,9 +1,9 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { validateCredentials, createUser, getBuildings } from "../app/firebaseFunctions";
+import { validateCredentials, createUser, isUsernameTaken } from "../app/firebaseFunctions";
 import { useGlobal } from "../context/GlobalContext";
-import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
+import { useState } from "react";
 
 const LoginView = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -13,18 +13,9 @@ const LoginView = () => {
   const [password, setPassword] = useState("");
 
   const affiliation = ["Student", "Faculty", "Staff"] as const;
-  const [affiliationIndex, setAffiliationIndex] = useState<number>(0);
+  const [affiliationIndex, setAffiliationIndex] = useState<0 | 1 | 2>(0);
 
-  const { setUser, setBuildings } = useGlobal();
-
-  useEffect(() => {
-    const get = async () => {
-      const buildings = await getBuildings();
-      setBuildings(buildings);
-    };
-
-    get().catch(console.error);
-  }, []);
+  const { setUser } = useGlobal();
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -49,7 +40,7 @@ const LoginView = () => {
               values={affiliation as unknown as string[]}
               selectedIndex={affiliationIndex}
               style={{ marginBottom: 15, height: 40 }}
-              onChange={event => setAffiliationIndex(event.nativeEvent.selectedSegmentIndex)}
+              onChange={event => setAffiliationIndex(event.nativeEvent.selectedSegmentIndex as 0 | 1 | 2)}
             />
           </>
         )}
@@ -73,7 +64,7 @@ const LoginView = () => {
         <TouchableOpacity
           style={styles.loginButton}
           onPress={async () => {
-            if (mode == "login") {
+            if (mode === "login") {
               const user = await validateCredentials(username, password);
 
               if (user) {
@@ -83,17 +74,16 @@ const LoginView = () => {
             }
 
             if (mode == "signup") {
-              if (username === "" || password === "" || name === "" || uscId === "") {
-                alert("Please fill out all fields.");
-                return;
-              }
+              if (username === "" || password === "" || name === "" || uscId === "")
+                return alert("Please fill out all fields.");
+              if (await isUsernameTaken(username)) return alert("Username is already taken.");
 
               const user = await createUser(username, {
                 affiliation: affiliation[affiliationIndex],
                 id: uscId,
                 name,
                 password,
-                image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+                image_url: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg", // TODO maybe allow upload photo
               });
 
               if (user) {
@@ -104,7 +94,7 @@ const LoginView = () => {
             }
           }}
         >
-          <Text style={styles.buttonText}>{mode == "login" ? "Log in" : "Sign up"}</Text>
+          <Text style={styles.buttonText}>{mode === "login" ? "Log in" : "Sign up"}</Text>
         </TouchableOpacity>
 
         {/* OR Text */}

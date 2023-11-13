@@ -52,9 +52,8 @@ export type User = {
   username: string;
   image_url: string;
 
-  active_reservation?: Reservation;
+  active_reservation: Reservation | null;
   completed_reservations: Reservation[];
-  cancelled_reservations: Reservation[];
 };
 
 export type FirebaseUser = {
@@ -72,10 +71,12 @@ export type Reservation = {
   seat_id: `${number}-${number}`;
   building_code: string;
   area: "inside" | "outside";
-  status: "active" | "completed" | "cancelled";
+  status: "active" | "completed" | "canceled";
 
   start_time: Temporal.PlainDateTime;
   end_time: Temporal.PlainDateTime;
+
+  created_at: Temporal.PlainDateTime;
 };
 
 export type FirebaseReservation = {
@@ -88,4 +89,6 @@ export type FirebaseReservation = {
   end: string;
 
   user: string;
+
+  created_at: string;
 };

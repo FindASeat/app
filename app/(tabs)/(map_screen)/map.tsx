@@ -1,20 +1,17 @@
+import { get_user_if_login, is_building_open } from "../../../utils";
 import { useGlobal } from "../../../context/GlobalContext";
 import { getBuildings } from "../../firebaseFunctions";
 import MapView, { Marker } from "react-native-maps";
-import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
 
 const map = () => {
-  const { buildings, setSelectedBuilding, setBuildings, user, setUser } = useGlobal();
+  const { buildings, setSelectedBuilding, setBuildings, setUser, user } = useGlobal();
 
   useEffect(() => {
-    const get = async () => {
-      const buildings = await getBuildings();
-      setBuildings(buildings);
-    };
-
-    get().catch(console.error);
+    if (!buildings) getBuildings().then(setBuildings);
+    if (!user) get_user_if_login().then(setUser);
   }, []);
 
   return (
@@ -27,11 +24,19 @@ const map = () => {
       }}
       style={StyleSheet.absoluteFill}
     >
-      {Object.values(buildings).map((building, idx) => (
+      {Object.values(buildings ?? {}).map((building, idx) => (
         <Marker
           key={idx}
           coordinate={building.coordinate}
-          pinColor={building.total_availability < 0.25 ? "red" : building.total_availability < 0.5 ? "orange" : "green"}
+          pinColor={
+            !is_building_open(building.open_hours)
+              ? "#990000"
+              : building.total_availability < 0.25
+              ? "#990000"
+              : building.total_availability < 0.5
+              ? "orange"
+              : "green"
+          }
           onPress={() => {
             setSelectedBuilding(building);
             router.push("/(tabs)/(map_screen)/building/" + building.code);

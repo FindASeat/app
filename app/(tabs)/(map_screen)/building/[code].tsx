@@ -1,18 +1,19 @@
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
-import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import BuildingView from "../../../../components/BuildingView";
 import { useGlobal } from "../../../../context/GlobalContext";
 import { getBuilding } from "../../../firebaseFunctions";
-import type { Building } from "../../../../types";
-import React, { useEffect } from "react";
+import { SafeAreaView, View, Text } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
 const building = () => {
-  const insets = useSafeAreaInsets();
+  const { code } = useLocalSearchParams() as { code: string | undefined };
   const { selectedBuilding, setSelectedBuilding } = useGlobal();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    getBuilding(selectedBuilding!.code).then(b => setSelectedBuilding(b));
-    console.log(selectedBuilding);
+    if (code) getBuilding(code).then(setSelectedBuilding);
+    else if (selectedBuilding) getBuilding(selectedBuilding?.code).then(setSelectedBuilding);
   }, []);
 
   return (
@@ -20,7 +21,8 @@ const building = () => {
       <View style={{ flex: 1 }}>
         <View style={{ height: insets.top, backgroundColor: "#990000" }} />
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-          <BuildingView building={selectedBuilding} />
+          {selectedBuilding && <BuildingView building={selectedBuilding} />}
+          {!selectedBuilding && <Text>Loading...</Text>}
         </SafeAreaView>
       </View>
     </SafeAreaProvider>

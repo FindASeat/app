@@ -1,11 +1,11 @@
 import { ref, set, child, get, push, remove, update } from "firebase/database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Temporal } from "@js-temporal/polyfill";
 import { FIREBASE_DB } from "../firebaseConfig";
 import type {
   Building,
   FirebaseBuilding,
   FirebaseReservation,
-  FirebaseRoomData,
   FirebaseUser,
   Reservation,
   RoomData,
@@ -23,8 +23,7 @@ export async function validateCredentials(input_username: string, input_password
 
     const user = users[input_username];
     if (user && input_password === user.password) {
-      console.log("User Found: ", user);
-
+      await AsyncStorage.setItem("username", input_username);
       const reservatons = await getUserReservations(input_username);
 
       return {
@@ -32,8 +31,7 @@ export async function validateCredentials(input_username: string, input_password
         name: user.name,
         affiliation: user.affiliation,
         active_reservation: reservatons.find(r => r.status === "active") ?? null,
-        completed_reservations: reservatons.filter(r => r.status === "completed"),
-        cancelled_reservations: reservatons.filter(r => r.status === "cancelled"),
+        completed_reservations: reservatons.filter(r => r.status !== "active"),
         image_url: user.image_url,
         usc_id: user.id,
       };
@@ -47,15 +45,24 @@ export async function validateCredentials(input_username: string, input_password
 export async function getUserReservations(username: string): Promise<Reservation[]> {
   const user_reservations = await get(child(db_ref, `reservations/${username}`));
   if (user_reservations.exists())
-    return Object.entries(user_reservations.val() as Record<string, FirebaseReservation>).map(([key, r]) => ({
-      key,
-      building_code: r.code,
-      start_time: Temporal.PlainDateTime.from(r.start),
-      end_time: Temporal.PlainDateTime.from(r.end),
-      area: r.seat.split("-")[0] as "inside" | "outside",
-      seat_id: r.seat.split("-").slice(1).join("-") as `${number}-${number}`,
-      status: r.type === "invalid" ? "cancelled" : new Date(r.end).getTime() < Date.now() ? "completed" : "active",
-    }));
+    return Object.entries(user_reservations.val() as Record<string, FirebaseReservation>)
+      .map(([key, r]) => ({
+        key,
+        building_code: r.code,
+        created_at: Temporal.PlainDateTime.from(r.created_at),
+        start_time: Temporal.PlainDateTime.from(r.start),
+        end_time: Temporal.PlainDateTime.from(r.end),
+        area: r.seat.split("-")[0] as "inside" | "outside",
+        seat_id: r.seat.split("-").slice(1).join("-") as `${number}-${number}`,
+        status:
+          r.type === "invalid"
+            ? "canceled"
+            : new Date(r.end).getTime() < Date.now()
+            ? "completed"
+            : ("active" as "active" | "completed" | "canceled"),
+      }))
+      .sort((a, b) => Temporal.PlainDateTime.compare(b.created_at, a.created_at))
+      .slice(0, 10);
 
   return [];
 }
@@ -64,18 +71,16 @@ export async function createUser(username: string, user: FirebaseUser): Promise<
   username = username.toLowerCase();
 
   if (await isUsernameTaken(username)) {
-    alert("Username is taken.");
+    console.error("Username is taken.");
     return null;
   }
 
   await set(child(db_ref, `users/${username}`), user).catch(err => console.error("Error creating user: ", err));
-  console.log("User Created: ", user);
 
   return {
     username,
     active_reservation: null,
     completed_reservations: [],
-    cancelled_reservations: [],
     usc_id: user.id,
     name: user.name,
     image_url: user.image_url,
@@ -163,8 +168,8 @@ export const getSeatAvailability = async (
   const outside_capacity = outside.rows * outside.cols;
   const total_capacity = inside_capacity + outside_capacity;
 
-  const inside_seats: boolean[][] = Array.from({ length: inside.rows }, () => Array(inside.cols).fill(true));
-  const outside_seats: boolean[][] = Array.from({ length: outside.rows }, () => Array(outside.cols).fill(true));
+  const inside_seats = Array.from({ length: inside.rows }, () => Array(inside.cols).fill(true)) as boolean[][];
+  const outside_seats = Array.from({ length: outside.rows }, () => Array(outside.cols).fill(true)) as boolean[][];
 
   let inside_count = 0;
   let outside_count = 0;
@@ -180,14 +185,14 @@ export const getSeatAvailability = async (
       Temporal.PlainDateTime.compare(r_start, end_time) < 0 && Temporal.PlainDateTime.compare(r_end, at_time) > 0;
     if (!isOverlapping) continue;
 
-    const [area, row, col] = r.seat.split("-");
-    if (area === "inside" && inside_seats[row][col]) {
+    const [area, row, col] = r.seat.split("-") as ["inside" | "outside", number, number];
+    if (area === "inside" && inside_seats[row]![col]) {
       inside_count++;
-      inside_seats[row][col] = false;
+      inside_seats[row]![col] = false;
     }
-    if (area === "outside" && outside_seats[row][col]) {
+    if (area === "outside" && outside_seats[row]![col]) {
       outside_count++;
-      outside_seats[row][col] = false;
+      outside_seats[row]![col] = false;
     }
   }
 
@@ -238,7 +243,11 @@ export async function getBuilding(code: Building["code"]): Promise<Building | nu
   return null;
 }
 
-export async function addReservation(username: string, res: Omit<Reservation, "key">): Promise<Reservation | null> {
+export async function addReservation(
+  username: string,
+  res: Omit<Reservation, "key" | "created_at">
+): Promise<Reservation | null> {
+  const created_at = Temporal.Now.plainDateTimeISO();
   const f_res: FirebaseReservation = {
     code: res.building_code,
     seat: `${res.area}-${res.seat_id}`,
@@ -246,9 +255,10 @@ export async function addReservation(username: string, res: Omit<Reservation, "k
     end: res.end_time.toString(),
     type: "valid",
     user: username,
+    created_at: created_at.toString(),
   };
 
-  const res_ref = push(child(db_ref, "reservations")).key.replace(/[.#$\/\[\]]/g, "_");
+  const res_ref = push(child(db_ref, "reservations")).key!.replace(/[.#$\/\[\]]/g, "_");
 
   return await update(db_ref, {
     [`reservations/${f_res.code}/${res_ref}`]: f_res,
@@ -256,7 +266,7 @@ export async function addReservation(username: string, res: Omit<Reservation, "k
   })
     .then(() => {
       alert("Reservation added successfully!");
-      return { ...res, key: res_ref };
+      return { ...res, key: res_ref, created_at };
     })
     .catch(err => {
       alert("Error adding reservation! Please try again!");
@@ -269,10 +279,9 @@ export async function cancelReservation(code: Building["code"], username: string
 
   const r_code_ref = child(db_ref, `reservations/${code}/${res_id}`);
   const r_user_ref = child(db_ref, `reservations/${username}/${res_id}`);
-  await remove(r_code_ref).catch(err => console.error("Error cancelling reservation: ", err));
-  await update(r_user_ref, { type: "invalid" }).catch(err => console.error("Error cancelling reservation: ", err));
-
-  console.log(`Reservation ${res_id} has been marked as invalid.`);
+  await update(r_user_ref, { type: "invalid" })
+    .catch(err => console.error("Error cancelling reservation: ", err))
+    .then(async () => await remove(r_code_ref).catch(err => alert("Error cancelling reservation. Please try again!")));
 }
 
 export async function getUserInfo(username: string): Promise<User | null> {
@@ -289,8 +298,7 @@ export async function getUserInfo(username: string): Promise<User | null> {
       name: user.name,
       affiliation: user.affiliation,
       active_reservation: reservatons.find(r => r.status === "active") ?? null,
-      completed_reservations: reservatons.filter(r => r.status === "completed"),
-      cancelled_reservations: reservatons.filter(r => r.status === "cancelled"),
+      completed_reservations: reservatons.filter(r => r.status !== "active"),
       image_url: user.image_url,
       usc_id: user.id,
     };

@@ -1,11 +1,10 @@
 import { Tabs } from "expo-router";
-import React from "react";
 
 const tab_layout = () => {
   return (
     <Tabs>
-      <Tabs.Screen name="(map_screen)" options={{ tabBarLabel: "reserve", headerShown: false }} />
-      <Tabs.Screen name="me" />
+      <Tabs.Screen name="(map_screen)" options={{ tabBarLabel: "Reserve", headerShown: false }} />
+      <Tabs.Screen name="me" options={{ tabBarLabel: "Profile", headerTitle: "Profile" }} />
     </Tabs>
   );
 };

@@ -1,53 +1,13 @@
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import CurrentAvailableAccordion from "./CurrentAvailableAccordion";
-import HoursAccordion, { format_time } from "./HoursAccordion";
 import Icon from "react-native-vector-icons/Octicons";
-import { useGlobal } from "../context/GlobalContext";
-import { Temporal } from "@js-temporal/polyfill";
+import HoursAccordion from "./HoursAccordion";
 import type { Building } from "../types";
+import { display_hours } from "../utils";
 import { router } from "expo-router";
-import React from "react";
-
-export function in_day_range(today: string, range: string): boolean {
-  // Range is one day fully written or multiday separted by '–'
-  const res = range.split(" – ");
-  if (res.length === 1) return range.includes(today);
-
-  // Check if a day is in a range of days
-  const [start, end] = res;
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  const start_idx = days.indexOf(start);
-  const end_idx = days.indexOf(end);
-  const today_idx = days.indexOf(today);
-  return start_idx <= today_idx && today_idx <= end_idx;
-}
 
 const BuildingView = ({ building }: { building: Building }) => {
-  const { user } = useGlobal();
-
-  const display_hours = (): string => {
-    const now = Temporal.Now.plainTimeISO();
-    const today = Temporal.Now.plainDateISO().toLocaleString("en-US", { weekday: "short" });
-
-    // Find the opening hours for today
-    const today_info = building.open_hours.find(([days]) => in_day_range(today, days)) ?? [today, "Closed"];
-
-    if (today_info[1] === "Closed") return "Closed";
-    if (today_info[1] === "24 Hours") return "Open 24 hours";
-
-    const [opening_time, closing_time] = today_info[1];
-    const opening = Temporal.PlainTime.from(opening_time);
-    const closing = Temporal.PlainTime.from(closing_time);
-
-    if (Temporal.PlainTime.compare(now, opening) >= 0 && Temporal.PlainTime.compare(now, closing) < 0)
-      return `Open until ${format_time(closing)}`;
-    if (Temporal.PlainTime.compare(now, opening) < 0) return `Open at ${format_time(opening)}`;
-
-    return "Closed";
-  };
-
-  const hours = display_hours();
+  const hours = display_hours(building.open_hours);
 
   return (
     <View style={{ flex: 1 }}>

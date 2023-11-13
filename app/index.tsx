@@ -1,12 +1,23 @@
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from "react-native";
+import { useGlobal } from "../context/GlobalContext";
+import { getBuildings } from "./firebaseFunctions";
 import LoginView from "../components/LoginView";
-import React from "react";
+import { get_user_if_login } from "../utils";
 import { router } from "expo-router";
+import { useEffect } from "react";
 
 const index = () => {
-  // use local storage to check if user is logged in
-  const logged_in = false;
-  if (logged_in) router.replace("/map");
+  const { setUser, setBuildings } = useGlobal();
+
+  useEffect(() => {
+    getBuildings().then(setBuildings);
+    get_user_if_login().then(u => {
+      if (!u) return;
+
+      setUser(u);
+      router.replace("/map");
+    });
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

@@ -1,16 +1,7 @@
-import type { Temporal } from "@js-temporal/polyfill";
 import { View, Text, StyleSheet } from "react-native";
 import type { Building } from "../types";
+import { format_time } from "../utils";
 import Accordion from "./Accordion";
-import React from "react";
-
-export function format_time(time: Temporal.PlainTime): string {
-  // Convert the time to AM/PM format and return as string
-  const hour = time.hour % 12 === 0 ? 12 : time.hour % 12;
-  const minute = time.minute.toString().padStart(2, "0");
-  const ampm = time.hour < 12 ? "AM" : "PM";
-  return `${hour}:${minute} ${ampm}`;
-}
 
 const HoursAccordion = ({ hours }: { hours: Building["open_hours"] }) => {
   return (

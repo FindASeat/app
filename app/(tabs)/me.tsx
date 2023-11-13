@@ -1,68 +1,80 @@
-import { cancelReservation, getUserInfo, getUserReservations } from "../firebaseFunctions";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from "react-native";
 import ReservationBubble from "../../components/ReservationBubble";
+import { get_user_if_login, logout_user } from "../../utils";
 import { useGlobal } from "../../context/GlobalContext";
-import { useFocusEffect } from "expo-router";
-import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect } from "react";
 
 const me = () => {
   const { user, setUser } = useGlobal();
-  const [res, setRes] = useState([]);
-
-  const cancelAndFetchReservations = async (buildingCode, username, reservationId) => {
-    // await cancelReservation(buildingCode, username, reservationId);
-    // const updatedReservations = await getUserReservations(username);
-    // const invalidRes = updatedReservations.filter(reservation => reservation.type === "invalid");
-    // const validRes = updatedReservations.filter(reservation => reservation.type === "valid");
-    // setValidReservations(validRes);
-    // setInvalidReservations(invalidRes);
-  };
 
   useEffect(() => {
-    getUserInfo(user.username).then(user => setUser(user));
-    getUserReservations(user.username).then(setRes);
-  }, []);
+    if (!user) get_user_if_login().then(setUser);
+  }, [user]);
+
+  if (!user)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
 
   return (
     <View style={styles.container}>
+      {/* Logout */}
+      <TouchableOpacity
+        style={styles.buttonWrapper}
+        onPress={async () => {
+          await logout_user();
+          router.replace("/");
+        }}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
+
+      {/* User Profile */}
       <View style={styles.userInfo}>
         <Image source={{ uri: user.image_url }} style={styles.profilePicture} />
         <View>
           <Text style={styles.title}>User Information:</Text>
-          <Text style={styles.name}>Name: {user.name}</Text>
-          <Text style={styles.name}>Affiliation: {user.affiliation}</Text>
-          <Text style={styles.name}>USC ID: {user.usc_id}</Text>
+          <Text>Name: {user.name}</Text>
+          <Text>Affiliation: {user.affiliation}</Text>
+          <Text>USC ID: {user.usc_id}</Text>
         </View>
       </View>
 
-      <Text style={styles.title}>Upcoming Reservation:</Text>
-      <ScrollView>
-        {res.map(r => (
-          <ReservationBubble
-            key={r.key}
-            reservation={r}
-            // onCancel={cancelAndFetchReservations}
-            showCancel={true}
-          />
-        ))}
-      </ScrollView>
+      {/* Reservations */}
+      <Text style={{ fontSize: 20 }}>Reservations</Text>
 
-      <Text style={styles.title}>Canceled Reservations:</Text>
-      <ScrollView>
-        {user.cancelled_reservations.map(r => (
-          <ReservationBubble key={r.key} reservation={r} showCancel={false} />
-        ))}
-      </ScrollView>
+      {/* Next */}
+      <Text style={styles.title}>Current</Text>
+      <View>
+        {user.active_reservation && <ReservationBubble res={user.active_reservation} user={user} />}
+        {!user.active_reservation && (
+          <View
+            style={{
+              backgroundColor: "#f0f0f0",
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: "#ccc",
+              padding: 10,
+              flexDirection: "column",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#333" }}>
+              No reservation booked. Go to the map!
+            </Text>
+          </View>
+        )}
+      </View>
 
-      <Text style={styles.title}>Past Reservations:</Text>
-      <ScrollView>
-        {user.completed_reservations.map((reservation, index) => (
-          <ReservationBubble
-            key={index}
-            reservation={reservation}
-            // onCancel={cancelAndFetchReservations}
-            showCancel={false}
-          />
+      {/* Past */}
+      <Text style={styles.title}>Previous</Text>
+      <ScrollView style={{ flex: 1 }}>
+        {user.completed_reservations.map(res => (
+          <View key={res.key} style={{ marginVertical: 4 }}>
+            <ReservationBubble res={res} user={user} />
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -75,24 +87,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f0f0",
-    padding: 20,
-  },
-  name: {
-    marginLeft: 20,
-  },
-  aroundname: {
-    backgroundColor: "#990000",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    marginHorizontal: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 15,
   },
   buttonContainer: {
     flexDirection: "column",

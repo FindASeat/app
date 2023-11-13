@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { Temporal } from "@js-temporal/polyfill";
-import { format_time } from "./HoursAccordion";
+import { format_time } from "../utils";
 
 const TimePicker = ({
   times,
@@ -14,8 +14,8 @@ const TimePicker = ({
 }) => {
   useEffect(() => {
     if (times.length === 0) return;
-    if (Temporal.PlainTime.compare(pickedTime, times[0]) < 0) setPickedTime(times[0]);
-    if (Temporal.PlainTime.compare(pickedTime, times[times.length - 1]) > 0) setPickedTime(times[times.length - 1]);
+    if (Temporal.PlainTime.compare(pickedTime, times[0]!) < 0) setPickedTime(times[0]!);
+    if (Temporal.PlainTime.compare(pickedTime, times[times.length - 1]!) > 0) setPickedTime(times[times.length - 1]!);
   }, [times]);
 
   return (

@@ -2,19 +2,25 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { type Dispatch, type SetStateAction } from "react";
 import Icon from "react-native-vector-icons/Octicons";
 import type { RoomData } from "../types";
-import React from "react";
 
 const SeatingChartView = ({
   seats,
   readonly,
   selectedSeat,
   setSelectedSeat,
-}: {
-  seats: RoomData["seats"];
-  readonly?: boolean;
-  selectedSeat?: string;
-  setSelectedSeat?: Dispatch<SetStateAction<string>>;
-}) => {
+}:
+  | {
+      seats: RoomData["seats"];
+      readonly?: false;
+      selectedSeat: string;
+      setSelectedSeat: Dispatch<SetStateAction<string>>;
+    }
+  | {
+      seats: RoomData["seats"];
+      readonly: true;
+      selectedSeat?: undefined;
+      setSelectedSeat?: undefined;
+    }) => {
   const handleSeatSelect = (row: number, col: number) => {
     if (readonly) return;
 

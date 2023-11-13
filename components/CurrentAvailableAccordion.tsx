@@ -1,7 +1,6 @@
 import SeatingChartView from "./SeatingChartView";
 import type { RoomData } from "../types";
 import Accordion from "./Accordion";
-import React from "react";
 
 const CurrentAvailableAccordion = ({ room_info, header }: { header: "Inside" | "Outside"; room_info: RoomData }) => {
   return (
