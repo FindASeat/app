@@ -1,8 +1,7 @@
 import { validate_credentials, create_user, is_username_taken, get_buildings } from '../firebase/firebase_api';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { useGlobal } from '../context/GlobalContext';
-import { get_user_if_login } from '../utils';
-import { useEffect, useState } from 'react';
+import { GlobalProps, useGlobal } from '../context/GlobalContext';
+import { useState } from 'react';
 import { router } from 'expo-router';
 import {
   View,
@@ -17,23 +16,15 @@ import {
   Keyboard,
 } from 'react-native';
 
-const LoginView = () => {
-  const { setUser, setBuildings } = useGlobal();
+const LoginView = ({ routeTo }: { routeTo: string }) => {
+  console.log('login view');
 
-  useEffect(() => {
-    get_buildings().then(setBuildings);
-    get_user_if_login().then(u => {
-      if (!u) return;
-
-      setUser(u);
-      router.replace('/map');
-    });
-  }, []);
+  const { setUser } = useGlobal();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <SubLoginView />
+        <SubLoginView setUser={setUser} routeTo={routeTo} />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -41,7 +32,7 @@ const LoginView = () => {
 
 export default LoginView;
 
-const SubLoginView = () => {
+const SubLoginView = ({ setUser, routeTo }: Pick<GlobalProps, 'setUser'> & { routeTo: string }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [uscId, setUscId] = useState('');
@@ -50,8 +41,6 @@ const SubLoginView = () => {
 
   const affiliation = ['Student', 'Faculty', 'Staff'] as const;
   const [affiliationIndex, setAffiliationIndex] = useState<0 | 1 | 2>(0);
-
-  const { setUser } = useGlobal();
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -105,7 +94,7 @@ const SubLoginView = () => {
 
               if (user) {
                 setUser(user);
-                router.replace('/map');
+                router.replace('/');
               } else alert('Invalid username or password!');
             }
 
@@ -125,7 +114,7 @@ const SubLoginView = () => {
               if (user) {
                 alert('Account created successfully!');
                 setUser(user);
-                router.replace('/map');
+                router.push(routeTo);
               } else alert('Failed to create account. Please try again.');
             }
           }}

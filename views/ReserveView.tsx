@@ -10,8 +10,11 @@ import TimePicker from '../components/TimePicker';
 import DatePicker from '../components/DatePicker';
 import { Temporal } from '@js-temporal/polyfill';
 import { router } from 'expo-router';
+import ErrorView from './ErrorView';
 
 const ReserveView = () => {
+  console.log('reserve view');
+
   const { selectedBuilding, user, setUser } = useGlobal();
 
   const [pickedDate, setPickedDate] = useState(Temporal.Now.plainDateISO());
@@ -64,22 +67,7 @@ const ReserveView = () => {
     );
   }, [selectedBuilding, pickedDate, pickedStartTime]);
 
-  if (!selectedBuilding)
-    return (
-      <View>
-        <Text>Well this is weird...</Text>
-        <Text>We've encountered an issue</Text>
-        <Text>Please try again.</Text>
-      </View>
-    );
-
-  if (!user)
-    return (
-      <View>
-        <Text>Please login to reserve a seat.</Text>
-      </View>
-    );
-
+  if (!selectedBuilding || !user) return <ErrorView />;
   return (
     <View style={styles.container}>
       <View
@@ -95,7 +83,11 @@ const ReserveView = () => {
         <Text style={styles.title}>Reserve a Seat</Text>
 
         {/* Cancel Button */}
-        <TouchableOpacity style={{ position: 'absolute', right: 15, top: 10 }} onPress={() => router.back()}>
+        <TouchableOpacity
+          hitSlop={20}
+          style={{ position: 'absolute', right: 15, top: 10 }}
+          onPress={() => router.back()}
+        >
           <Icon name="x" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -210,7 +202,7 @@ const ReserveView = () => {
 
           if (res) {
             setUser({ ...user, active_reservation: res });
-            router.push('/(tabs)/(map_screen)/map');
+            router.push('/');
           }
         }}
       >

@@ -1,16 +1,9 @@
-import { GlobalStateProvider } from '../context/GlobalContext';
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 
-const stack_layout = () => {
-  return (
-    <GlobalStateProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{}} />
-        <Stack.Screen name="login" options={{ headerShown: false, presentation: 'modal' }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </GlobalStateProvider>
-  );
+const layout = () => {
+  console.log('root layout');
+
+  return <Slot />;
 };
 
-export default stack_layout;
+export default layout;

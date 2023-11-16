@@ -5,6 +5,8 @@ import { get_user_if_login } from '../utils';
 import { useEffect } from 'react';
 
 const ProfileView = () => {
+  console.log('profile view');
+
   const { user, setUser } = useGlobal();
 
   useEffect(() => {
@@ -49,9 +51,7 @@ const ProfileView = () => {
               flexDirection: 'column',
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>
-              No reservation booked. Go to the map!
-            </Text>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>No seat reserved</Text>
           </View>
         )}
       </View>

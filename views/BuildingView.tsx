@@ -1,50 +1,70 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, SafeAreaView } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import CurrentAvailableAccordion from '../components/CurrentAvailableAccordion';
+import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HoursAccordion from '../components/HoursAccordion';
-import { router, useLocalSearchParams } from 'expo-router';
-import { get_building } from '../firebase/firebase_api';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useGlobal } from '../context/GlobalContext';
-import type { Building } from '../types';
+import type { Building, User } from '../types';
 import { display_hours } from '../utils';
-import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 const BuildingView = () => {
-  const { code } = useLocalSearchParams() as { code: string | undefined };
-  const { selectedBuilding, setSelectedBuilding } = useGlobal();
+  console.log('building view');
+
+  const { selectedBuilding, user } = useGlobal();
   const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    if (code) get_building(code).then(setSelectedBuilding);
-    else if (selectedBuilding) get_building(selectedBuilding?.code).then(setSelectedBuilding);
-  }, []);
-
-  return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1 }}>
-        <View style={{ height: insets.top, backgroundColor: '#990000' }} />
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-          {selectedBuilding && <SubBuildingView building={selectedBuilding} />}
-          {!selectedBuilding && <Text>Loading...</Text>}
-        </SafeAreaView>
-      </View>
-    </SafeAreaProvider>
-  );
-};
-
-const SubBuildingView = ({ building }: { building: Building }) => {
-  const hours = display_hours(building.open_hours);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Back Arrow */}
-      <View style={{ backgroundColor: '#990000', paddingVertical: 5, paddingLeft: 10 }}>
-        <TouchableOpacity onPress={() => router.back()}>
+      <View
+        style={{
+          paddingTop: insets.top,
+          backgroundColor: '#990000',
+          alignItems: 'center',
+          position: 'relative',
+          paddingBottom: 43.5,
+          flexDirection: 'row',
+        }}
+      >
+        {/* Back Arrow */}
+        <TouchableOpacity
+          hitSlop={40}
+          style={{ left: 10, position: 'absolute', paddingTop: insets.top, zIndex: 1 }}
+          onPress={() => router.back()}
+        >
           <Icon name="arrow-left" size={30} color="#fff" />
         </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 16,
+            color: 'white',
+            fontWeight: '600',
+            width: '100%',
+            textAlign: 'center',
+            position: 'absolute',
+            paddingTop: insets.top,
+          }}
+        >
+          Building Details
+        </Text>
       </View>
 
+      <View style={{ flex: 1, backgroundColor: '#fff', paddingBottom: user ? 0 : insets.bottom }}>
+        {selectedBuilding && <SubBuildingView building={selectedBuilding} user={user} />}
+        {!selectedBuilding && <Text>Loading...</Text>}
+      </View>
+    </View>
+  );
+};
+
+const SubBuildingView = ({ building, user }: { building: Building; user: User | null }) => {
+  const hours = display_hours(building.open_hours);
+
+  const is_guest = !user;
+  const has_reservation = !!user?.active_reservation;
+
+  return (
+    <>
       <ScrollView style={{ flex: 1 }}>
         {/* Image + Title */}
         <Image
@@ -157,27 +177,25 @@ const SubBuildingView = ({ building }: { building: Building }) => {
         )}
       </ScrollView>
 
-      {/* Action Button If Not Reserved */}
-      {/* User's Registration If Exists */}
-      {/* {!user?.active_reservation && ( */}
+      {/* Action Button */}
       <TouchableOpacity
         style={[
-          {
-            backgroundColor: '#990000',
-            height: 45,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
+          { backgroundColor: '#990000', height: is_guest ? 80 : 45, justifyContent: 'center', alignItems: 'center' },
+          (is_guest || has_reservation) && { opacity: 0.5 },
         ]}
-        // disabled={!!user?.active_reservation}
-        onPress={() => {
-          router.push('/(tabs)/(map_screen)/building/reserve');
-        }}
+        disabled={is_guest || has_reservation}
+        onPress={() => router.push('/reserve')}
       >
-        <Text style={{ fontSize: 16, color: 'white', fontWeight: '700' }}>Reserve a Seat</Text>
+        <Text style={{ fontSize: 16, color: 'white', fontWeight: '700' }}>
+          {is_guest
+            ? 'Login to reserve a seat'
+            : has_reservation
+            ? 'You already have an active reservation'
+            : 'Reserve a Seat'}
+        </Text>
       </TouchableOpacity>
       {/* )} */}
-    </View>
+    </>
   );
 };
 
