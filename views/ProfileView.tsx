@@ -5,8 +5,6 @@ import { get_user_if_login } from '../utils';
 import { useEffect } from 'react';
 
 const ProfileView = () => {
-  console.log('profile view');
-
   const { user, setUser } = useGlobal();
 
   useEffect(() => {

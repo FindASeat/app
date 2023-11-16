@@ -1,4 +1,4 @@
-import { validate_credentials, create_user, is_username_taken, get_buildings } from '../firebase/firebase_api';
+import { validate_credentials, create_user, is_username_taken } from '../firebase/firebase_api';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { GlobalProps, useGlobal } from '../context/GlobalContext';
 import { useState } from 'react';
@@ -16,15 +16,13 @@ import {
   Keyboard,
 } from 'react-native';
 
-const LoginView = ({ routeTo }: { routeTo: string }) => {
-  console.log('login view');
-
+const LoginView = () => {
   const { setUser } = useGlobal();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <SubLoginView setUser={setUser} routeTo={routeTo} />
+        <SubLoginView setUser={setUser} routeTo={'/'} />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

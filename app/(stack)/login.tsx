@@ -1,9 +1,7 @@
 import LoginView from '../../views/LoginView';
 
 const login = () => {
-  console.log('login page');
-
-  return <LoginView routeTo="/" />;
+  return <LoginView />;
 };
 
 export default login;

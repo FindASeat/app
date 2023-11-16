@@ -1,18 +1,27 @@
 import CurrentAvailableAccordion from '../components/CurrentAvailableAccordion';
 import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router, useLocalSearchParams } from 'expo-router';
 import HoursAccordion from '../components/HoursAccordion';
+import { get_building } from '../firebase/firebase_api';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useGlobal } from '../context/GlobalContext';
 import type { Building, User } from '../types';
 import { display_hours } from '../utils';
-import { router } from 'expo-router';
+import { useEffect } from 'react';
+import ErrorView from './ErrorView';
 
 const BuildingView = () => {
-  console.log('building view');
-
-  const { selectedBuilding, user } = useGlobal();
+  const { code } = useLocalSearchParams() as { code: string | undefined };
+  const { selectedBuilding, setSelectedBuilding, user } = useGlobal();
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (code) get_building(code).then(setSelectedBuilding);
+    else if (selectedBuilding) get_building(selectedBuilding?.code).then(setSelectedBuilding);
+  }, []);
+
+  if (!code && !selectedBuilding?.code) return <ErrorView />;
 
   return (
     <View style={{ flex: 1 }}>

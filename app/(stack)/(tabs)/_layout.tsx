@@ -3,13 +3,11 @@ import { useGlobal } from '../../../context/GlobalContext';
 import { Tabs } from 'expo-router';
 
 const tab_layout = () => {
-  // const { user } = useGlobal();
+  const { user } = useGlobal();
 
-  console.log('tab layout');
-
-  // change icons
+  // TODO change icons
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: '#990000', tabBarStyle: { display: 'flex' } }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#990000', tabBarStyle: { display: user ? 'flex' : 'none' } }}>
       <Tabs.Screen name="(map)" options={{ headerShown: false, tabBarLabel: 'Reserve' }} />
       <Tabs.Screen
         name="profile"

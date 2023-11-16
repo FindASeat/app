@@ -1,9 +1,15 @@
-import { Animated, StyleSheet } from 'react-native';
 import { useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
 
-const LoadingView = ({ is_loading, children }: { is_loading: boolean; children: React.ReactNode }) => {
-  console.log('loading view');
-
+const LoadingView = ({
+  is_loading,
+  children,
+  multiplier = 1,
+}: {
+  multiplier?: number;
+  is_loading: boolean;
+  children: React.ReactNode;
+}) => {
   const opacity = useRef(new Animated.Value(0.25)).current;
 
   useEffect(() => {
@@ -16,30 +22,26 @@ const LoadingView = ({ is_loading, children }: { is_loading: boolean; children: 
         }),
         Animated.timing(opacity, {
           toValue: 0.75,
-          duration: 500,
+          duration: 500 * multiplier,
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
           toValue: 0.25,
-          duration: 500,
+          duration: 500 * multiplier,
           useNativeDriver: true,
         }),
       ]),
     );
 
-    console.log('loading view useEffect');
-
     if (is_loading) animation.start();
     else opacity.setValue(1);
 
     return () => {
-      if (animation) {
-        animation.stop();
-      }
+      if (animation) animation.stop();
     };
   }, [is_loading]);
 
-  return <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>{children}</Animated.View>;
+  return <Animated.View style={[{ opacity, width: '100%', height: '100%' }]}>{children}</Animated.View>;
 };
 
 export default LoadingView;

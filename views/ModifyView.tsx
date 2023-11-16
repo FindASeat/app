@@ -13,16 +13,29 @@ import { router } from 'expo-router';
 import ErrorView from './ErrorView';
 
 const ReserveView = () => {
-  const { selectedBuilding, user, setUser } = useGlobal();
+  // get avail for exact seat just before and after time to see if seat is taken by another person
+  // only when current reservation time is overlapping any bit into new times, requires different seat selection logic
 
-  const [pickedDate, setPickedDate] = useState(Temporal.Now.plainDateISO());
-  const [pickedStartTime, setPickedStartTime] = useState(
-    Temporal.Now.plainTimeISO().round({ smallestUnit: 'minutes', roundingIncrement: 30, roundingMode: 'ceil' }),
+  const { selectedBuilding, user, setUser, setSelectedBuilding, buildings } = useGlobal();
+
+  useEffect(() => {
+    if (user && user.active_reservation && buildings)
+      setSelectedBuilding(buildings[user.active_reservation.building_code]!);
+  }, [user?.active_reservation, buildings]);
+
+  const [pickedDate, setPickedDate] = useState(
+    user?.active_reservation?.start_time.toPlainDate() ?? Temporal.Now.plainDateISO(),
   );
-  const [pickedEndTime, setPickedEndTime] = useState(pickedStartTime.add({ minutes: 30 }));
+  const [pickedStartTime, setPickedStartTime] = useState(
+    user?.active_reservation?.start_time.toPlainTime() ??
+      Temporal.Now.plainTimeISO().round({ smallestUnit: 'minutes', roundingIncrement: 30, roundingMode: 'ceil' }),
+  );
+  const [pickedEndTime, setPickedEndTime] = useState(
+    user?.active_reservation?.end_time.toPlainTime() ?? pickedStartTime.add({ minutes: 30 }),
+  );
 
-  const [area, setArea] = useState<'inside' | 'outside'>('inside');
-  const [selectedSeat, setSelectedSeat] = useState('');
+  const [area, setArea] = useState<'inside' | 'outside'>(user?.active_reservation?.area ?? 'inside');
+  const [selectedSeat, setSelectedSeat] = useState(user?.active_reservation?.seat_id ?? '');
   const [loading, setLoading] = useState(true);
 
   const [validDT, setValidDT] = useState(false);
@@ -65,7 +78,7 @@ const ReserveView = () => {
     );
   }, [selectedBuilding, pickedDate, pickedStartTime]);
 
-  if (!selectedBuilding || !user) return <ErrorView />;
+  if (!selectedBuilding || !user || !user.active_reservation) return <ErrorView />;
   return (
     <View style={styles.container}>
       <View
@@ -78,7 +91,7 @@ const ReserveView = () => {
         }}
       >
         {/* Title */}
-        <Text style={styles.title}>Reserve a Seat</Text>
+        <Text style={styles.title}>Modify a Seat</Text>
 
         {/* Cancel Button */}
         <TouchableOpacity
@@ -167,6 +180,7 @@ const ReserveView = () => {
       >
         Pick a Seat
       </Text>
+
       <View style={[{ backgroundColor: '#CCC', paddingVertical: 30 }, (!validDT || loading) && { opacity: 0.25 }]}>
         <SeatingChartView
           readonly={!validDT || loading}
@@ -183,10 +197,9 @@ const ReserveView = () => {
         disabled={!validDT || selectedSeat === ''}
         style={[styles.reserveButton, selectedSeat === '' && { opacity: 0.25 }]}
         onPress={async () => {
-          if (!user) return alert('Please login to reserve a seat.');
-          if (selectedSeat === '' || !validDT) return alert('Please select a valid time and seat.');
+          if (selectedSeat === '' && !validDT) return alert('Please modify your reservation or cancel.');
 
-          const res = await make_reservation(user.username, {
+          const res = await modify_reservation(user.username, user.active_reservation!.key, {
             area,
             building_code: selectedBuilding.code,
             start_time: pickedDate.toPlainDateTime(pickedStartTime),
@@ -200,11 +213,11 @@ const ReserveView = () => {
 
           if (res) {
             setUser({ ...user, active_reservation: res });
-            router.push('/');
+            router.push('/profile');
           }
         }}
       >
-        <Text style={styles.buttonText}>Reserve</Text>
+        <Text style={styles.buttonText}>Modify Reservation</Text>
       </TouchableOpacity>
     </View>
   );

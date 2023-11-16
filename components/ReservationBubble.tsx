@@ -2,6 +2,7 @@ import { cancel_reservation, get_user_data } from '../firebase/firebase_api';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useGlobal } from '../context/GlobalContext';
 import { Reservation, User } from '../types';
+import { router } from 'expo-router';
 
 const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
   const { setUser } = useGlobal();
@@ -90,7 +91,7 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              // TODO
+              router.push('/modify');
             }}
           >
             <Text style={styles.buttonText}>Modify Reservation</Text>
