@@ -7,9 +7,12 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 
 const USCMapView = () => {
+  console.log('MapView.tsx');
   const { buildings, setSelectedBuilding, setBuildings, setUser, user } = useGlobal();
 
   useEffect(() => {
+    console.log('MapView.tsx useEffect');
+
     if (!buildings) get_buildings().then(setBuildings);
     if (!user) get_user_if_login().then(setUser);
   }, []);

@@ -11,11 +11,14 @@ import { display_hours } from '../utils';
 import { useEffect } from 'react';
 
 const BuildingView = () => {
+  console.log('BuildingView.tsx');
+
   const { code } = useLocalSearchParams() as { code: string | undefined };
   const { selectedBuilding, setSelectedBuilding } = useGlobal();
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
+    console.log('BuildingView.tsx useEffect');
     if (code) get_building(code).then(setSelectedBuilding);
     else if (selectedBuilding) get_building(selectedBuilding?.code).then(setSelectedBuilding);
   }, []);

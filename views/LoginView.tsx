@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 
 const LoginView = () => {
+  console.log('LoginView.tsx');
+
   const { setUser, setBuildings } = useGlobal();
 
   useEffect(() => {

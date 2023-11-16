@@ -1,5 +1,9 @@
 import USCMapView from '../../../views/MapView';
 
-const map = () => <USCMapView />;
+const map = () => {
+  console.log('map.tsx');
+
+  return <USCMapView />;
+};
 
 export default map;

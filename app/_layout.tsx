@@ -2,6 +2,8 @@ import { GlobalStateProvider } from '../context/GlobalContext';
 import { Stack } from 'expo-router';
 
 const stack_layout = () => {
+  console.log('root _layout.tsx');
+
   return (
     <GlobalStateProvider>
       <Stack>

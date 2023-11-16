@@ -12,6 +12,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { router } from 'expo-router';
 
 const ReserveView = () => {
+  console.log('ReserveView.tsx');
   const { selectedBuilding, user, setUser } = useGlobal();
 
   const [pickedDate, setPickedDate] = useState(Temporal.Now.plainDateISO());
@@ -34,6 +35,8 @@ const ReserveView = () => {
   const end_times = useMemo(() => generate_end_times(times, pickedStartTime), [times, pickedStartTime]);
 
   useEffect(() => {
+    console.log('ReserveView.tsx useEffect 1');
+
     if (selectedBuilding) {
       setLoading(true);
       get_availability(
@@ -57,6 +60,7 @@ const ReserveView = () => {
   }, [area, selectedBuilding, pickedDate, pickedStartTime, pickedEndTime]);
 
   useEffect(() => {
+    console.log('ReserveView.tsx useEffect 2');
     setValidDT(
       selectedBuilding
         ? is_building_open(selectedBuilding.open_hours, pickedDate.toPlainDateTime(pickedStartTime))

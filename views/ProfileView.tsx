@@ -5,9 +5,12 @@ import { get_user_if_login } from '../utils';
 import { useEffect } from 'react';
 
 const ProfileView = () => {
+  console.log('ProfileView.tsx');
+
   const { user, setUser } = useGlobal();
 
   useEffect(() => {
+    console.log('ProfileView.tsx useEffect');
     if (!user) get_user_if_login().then(setUser);
   }, [user]);
 

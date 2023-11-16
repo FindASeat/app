@@ -2,6 +2,8 @@ import LogoutButton from '../../components/LogoutButton';
 import { Tabs } from 'expo-router';
 
 const tab_layout = () => {
+  console.log('tab_layout.tsx');
+
   // TODO: Change Tab Icons
   return (
     <Tabs backBehavior="initialRoute">
