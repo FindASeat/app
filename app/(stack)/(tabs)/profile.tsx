@@ -1,7 +1,7 @@
 import ProfileView from '../../../views/ProfileView';
 
 const profile = () => {
-  console.log('profile');
+  console.log('profile page');
   return <ProfileView />;
 };
 

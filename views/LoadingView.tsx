@@ -27,6 +27,8 @@ const LoadingView = ({ is_loading, children }: { is_loading: boolean; children: 
       ]),
     );
 
+    console.log('loading view useEffect');
+
     if (is_loading) animation.start();
     else opacity.setValue(1);
 

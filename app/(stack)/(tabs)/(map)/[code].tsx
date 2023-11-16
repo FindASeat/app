@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 
 const building = () => {
-  console.log('building');
+  console.log('building page');
 
   const { code } = useLocalSearchParams() as { code: string | undefined };
   const { selectedBuilding, setSelectedBuilding } = useGlobal();

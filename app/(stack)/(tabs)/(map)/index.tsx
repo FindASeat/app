@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 
 const map = () => {
-  console.log('map');
+  console.log('map page');
 
   const { buildings, setBuildings, user, setUser } = useGlobal();
   const [user_loading, set_user_loading] = useState(true);
