@@ -1,4 +1,7 @@
-Modify
-Only 1 at a time
+Finish Modify Reservation logic
 
-Guest Access
+Fix Profile Design
+Fix Tab Icons
+Vary Seat rows and cols
+Add notification system
+Cancel confirmation
