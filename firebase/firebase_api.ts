@@ -72,10 +72,17 @@ export async function create_user(username: string, user: FirebaseUser): Promise
 
   if (await is_username_taken(username)) {
     console.error('Username is taken.');
-    return null;
+    return Promise.reject(new Error('Username is taken.'));
   }
 
-  await set(child(db_ref, `users/${username}`), user).catch(err => console.error('Error creating user: ', err));
+  try {
+    await set(child(db_ref, `users/${username}`), user);
+  } catch (error) {
+    console.error('Error creating user: ', error);
+    return Promise.reject(error); // Reject the promise with the error
+  }
+
+  // await set(child(db_ref, `users/${username}`), user).catch(err => console.error('Error creating user: ', err));
 
   return {
     username,
@@ -176,6 +183,10 @@ export async function get_availability(
 
   end_time = end_time ?? at_time;
   for (const r of Object.values(reservations)) {
+    if (!r.start || !r.end) {
+      console.warn('Skipping reservation with missing start/end time', r);
+      continue;
+    }
     const r_start = Temporal.PlainDateTime.from(r.start);
     const r_end = Temporal.PlainDateTime.from(r.end);
 
