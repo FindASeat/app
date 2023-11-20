@@ -144,6 +144,7 @@ export async function get_availability(
   }: { code: string; inside: { rows: number; cols: number }; outside: { rows: number; cols: number } },
   at_time: Temporal.PlainDateTime,
   end_time?: Temporal.PlainDateTime,
+  without_user?: string,
 ): Promise<{ inside: RoomData; outside: RoomData; total: number }> {
   const snapshot = await get(child(db_ref, `reservations/${code}`));
   if (!snapshot.exists()) {
@@ -179,7 +180,7 @@ export async function get_availability(
     const r_start = Temporal.PlainDateTime.from(r.start);
     const r_end = Temporal.PlainDateTime.from(r.end);
 
-    if (r.type !== 'valid') continue;
+    if (r.type !== 'valid' || r.user === without_user) continue;
 
     const isOverlapping =
       Temporal.PlainDateTime.compare(r_start, end_time) < 0 && Temporal.PlainDateTime.compare(r_end, at_time) > 0;
@@ -306,4 +307,36 @@ export async function get_user_data(username: string): Promise<User | null> {
 
   console.error(`User with username ${username} does not exist.`);
   return null;
+}
+
+export async function modify_reservation(
+  username: string,
+  res_id: Reservation['key'],
+  modifed_values: Pick<Reservation, 'area' | 'start_time' | 'end_time' | 'seat_id'>,
+): Promise<Reservation | null> {
+  username = username.toLowerCase();
+
+  const snapshot = await get(child(db_ref, `reservations/${username}/${res_id}`));
+  if (!snapshot.exists()) return null;
+
+  const res = snapshot.val() as FirebaseReservation;
+  const modified: FirebaseReservation = {
+    ...res,
+    start: modifed_values.start_time.toString(),
+    end: modifed_values.end_time.toString(),
+    seat: `${modifed_values.area}-${modifed_values.seat_id}`,
+  };
+
+  return await update(db_ref, {
+    [`reservations/${res.code}/${res_id}`]: modified,
+    [`reservations/${username}/${res_id}`]: modified,
+  })
+    .then(() => {
+      alert('Reservation modified successfully!');
+      return { ...modifed_values, building_code: modified.code, key: res_id, status: 'active' } as Reservation;
+    })
+    .catch(err => {
+      alert('Error modifying reservation! Please try again!');
+      return null;
+    });
 }

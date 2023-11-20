@@ -1,6 +1,7 @@
 import { generate_end_times, generate_start_times, is_building_open } from '../utils';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { make_reservation, get_availability } from '../firebase/firebase_api';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SeatingChartView from '../components/SeatingChart';
 import LocationPicker from '../components/LocationPicker';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -14,12 +15,12 @@ import ErrorView from './ErrorView';
 
 const ReserveView = () => {
   const { selectedBuilding, user, setUser } = useGlobal();
+  const insets = useSafeAreaInsets();
 
-  const [pickedDate, setPickedDate] = useState(Temporal.Now.plainDateISO());
-  const [pickedStartTime, setPickedStartTime] = useState(
-    Temporal.Now.plainTimeISO().round({ smallestUnit: 'minutes', roundingIncrement: 30, roundingMode: 'ceil' }),
+  const [pickedStart, setPickedStart] = useState(
+    Temporal.Now.plainDateTimeISO().round({ smallestUnit: 'minutes', roundingIncrement: 30, roundingMode: 'ceil' }),
   );
-  const [pickedEndTime, setPickedEndTime] = useState(pickedStartTime.add({ minutes: 30 }));
+  const [pickedEnd, setPickedEnd] = useState(pickedStart.add({ minutes: 30 }));
 
   const [area, setArea] = useState<'inside' | 'outside'>('inside');
   const [selectedSeat, setSelectedSeat] = useState('');
@@ -29,10 +30,10 @@ const ReserveView = () => {
   const [seats, setSeats] = useState<boolean[][]>([]);
 
   const times = useMemo(
-    () => generate_start_times(selectedBuilding?.open_hours ?? [], pickedDate),
-    [selectedBuilding, pickedDate],
+    () => generate_start_times(selectedBuilding?.open_hours ?? [], pickedStart),
+    [selectedBuilding, pickedStart],
   );
-  const end_times = useMemo(() => generate_end_times(times, pickedStartTime), [times, pickedStartTime]);
+  const end_times = useMemo(() => generate_end_times(times, pickedStart), [times, pickedStart]);
 
   useEffect(() => {
     if (selectedBuilding) {
@@ -43,10 +44,8 @@ const ReserveView = () => {
           inside: selectedBuilding.inside,
           outside: selectedBuilding.outside,
         },
-        pickedDate.toPlainDateTime(pickedStartTime),
-        Temporal.PlainTime.compare(pickedEndTime, pickedStartTime) < 0
-          ? pickedDate.toPlainDateTime(pickedEndTime).add({ days: 1 })
-          : pickedDate.toPlainDateTime(pickedEndTime),
+        pickedStart,
+        pickedEnd,
       )
         .then(building => {
           setSeats(area === 'inside' ? building.inside.seats : building.outside.seats);
@@ -55,15 +54,11 @@ const ReserveView = () => {
         })
         .catch(error => console.error(error));
     }
-  }, [area, selectedBuilding, pickedDate, pickedStartTime, pickedEndTime]);
+  }, [area, selectedBuilding, pickedStart, pickedEnd]);
 
   useEffect(() => {
-    setValidDT(
-      selectedBuilding
-        ? is_building_open(selectedBuilding.open_hours, pickedDate.toPlainDateTime(pickedStartTime))
-        : false,
-    );
-  }, [selectedBuilding, pickedDate, pickedStartTime]);
+    setValidDT(selectedBuilding ? is_building_open(selectedBuilding.open_hours, pickedStart) : false);
+  }, [selectedBuilding, pickedStart]);
 
   if (!selectedBuilding || !user) return <ErrorView />;
   return (
@@ -74,7 +69,6 @@ const ReserveView = () => {
           backgroundColor: '#990000',
           paddingVertical: 10,
           alignItems: 'center',
-          marginBottom: 10,
         }}
       >
         {/* Title */}
@@ -90,122 +84,123 @@ const ReserveView = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Date Picker */}
-      <Text style={{ fontSize: 18, fontWeight: '400', color: '#333', paddingBottom: 1, paddingHorizontal: 5 }}>
-        Start Date
-      </Text>
-      <DatePicker setPickedDate={setPickedDate} pickedDate={pickedDate} />
+      <ScrollView style={{ paddingTop: 10 }}>
+        {/* Date Picker */}
+        <Text style={{ fontSize: 18, fontWeight: '400', color: '#333', paddingBottom: 1, paddingHorizontal: 5 }}>
+          Start Date
+        </Text>
+        <DatePicker setPickedDate={setPickedStart} pickedDate={pickedStart} />
 
-      {/* Start Time picker */}
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: '400',
-          color: '#333',
-          paddingBottom: 1,
-          paddingHorizontal: 5,
-          paddingTop: 20,
-        }}
-      >
-        Start Time
-      </Text>
-      <TimePicker times={times} setPickedTime={setPickedStartTime} pickedTime={pickedStartTime} />
-
-      {/* End Time picker */}
-      <Text
-        style={[
-          {
+        {/* Start Time picker */}
+        <Text
+          style={{
             fontSize: 18,
             fontWeight: '400',
             color: '#333',
             paddingBottom: 1,
             paddingHorizontal: 5,
             paddingTop: 20,
-          },
-          !validDT && { opacity: 0.25 },
-        ]}
-      >
-        End Time
-      </Text>
-      <View style={[!validDT && { opacity: 0.25 }]}>
-        <TimePicker times={end_times} setPickedTime={setPickedEndTime} pickedTime={pickedEndTime} />
-      </View>
+          }}
+        >
+          Start Time
+        </Text>
+        <TimePicker times={times} setPickedTime={setPickedStart} pickedTime={pickedStart} />
 
-      {/* Location Picker */}
-      <Text
-        style={[
-          {
-            fontSize: 18,
-            fontWeight: '400',
-            color: '#333',
-            paddingHorizontal: 5,
-            paddingTop: 20,
-            paddingBottom: 1,
-          },
-          !validDT && { opacity: 0.25 },
-        ]}
-      >
-        Location
-      </Text>
-      <View style={[styles.locContainer, !validDT && { opacity: 0.25 }]}>
-        <LocationPicker location={area} setLocation={setArea} />
-      </View>
+        {/* End Time picker */}
+        <Text
+          style={[
+            {
+              fontSize: 18,
+              fontWeight: '400',
+              color: '#333',
+              paddingBottom: 1,
+              paddingHorizontal: 5,
+              paddingTop: 20,
+            },
+            !validDT && { opacity: 0.25 },
+          ]}
+        >
+          End Time
+        </Text>
+        <View style={[!validDT && { opacity: 0.25 }]}>
+          <TimePicker times={end_times} setPickedTime={setPickedEnd} pickedTime={pickedEnd} />
+        </View>
 
-      {/* Seat Grid */}
-      <Text
-        style={[
-          {
-            fontSize: 18,
-            fontWeight: '400',
-            color: '#333',
-            paddingHorizontal: 5,
-            paddingTop: 20,
-            paddingBottom: 1,
-          },
-          !validDT && { opacity: 0.25 },
-        ]}
-      >
-        Pick a Seat
-      </Text>
-      <View style={[{ backgroundColor: '#CCC', paddingVertical: 30 }, (!validDT || loading) && { opacity: 0.25 }]}>
-        <SeatingChartView
-          readonly={!validDT || loading}
-          seats={seats}
-          selectedSeat={selectedSeat}
-          setSelectedSeat={setSelectedSeat}
-        />
-      </View>
+        {/* Location Picker */}
+        <Text
+          style={[
+            {
+              fontSize: 18,
+              fontWeight: '400',
+              color: '#333',
+              paddingHorizontal: 5,
+              paddingTop: 20,
+              paddingBottom: 1,
+            },
+            !validDT && { opacity: 0.25 },
+          ]}
+        >
+          Location
+        </Text>
+        <View style={[styles.locContainer, !validDT && { opacity: 0.25 }]}>
+          <LocationPicker location={area} setLocation={setArea} />
+        </View>
 
-      {/* TODO: If we have time do a seat confirmation with day and time */}
+        {/* Seat Grid */}
+        <Text
+          style={[
+            {
+              fontSize: 18,
+              fontWeight: '400',
+              color: '#333',
+              paddingHorizontal: 5,
+              paddingTop: 20,
+              paddingBottom: 1,
+            },
+            !validDT && { opacity: 0.25 },
+          ]}
+        >
+          Pick a Seat
+        </Text>
+        <View style={[{ backgroundColor: '#CCC', paddingVertical: 30 }, (!validDT || loading) && { opacity: 0.25 }]}>
+          <SeatingChartView
+            readonly={!validDT || loading}
+            seats={seats}
+            selectedSeat={selectedSeat}
+            setSelectedSeat={setSelectedSeat}
+          />
+        </View>
 
-      {/* Reserve button */}
-      <TouchableOpacity
-        disabled={!validDT || selectedSeat === ''}
-        style={[styles.reserveButton, selectedSeat === '' && { opacity: 0.25 }]}
-        onPress={async () => {
-          if (!user) return alert('Please login to reserve a seat.');
-          if (selectedSeat === '' || !validDT) return alert('Please select a valid time and seat.');
+        {/* TODO: If we have time do a seat confirmation with day and time */}
 
-          const res = await make_reservation(user.username, {
-            area,
-            building_code: selectedBuilding.code,
-            start_time: pickedDate.toPlainDateTime(pickedStartTime),
-            end_time:
-              Temporal.PlainTime.compare(pickedEndTime, pickedStartTime) < 0
-                ? pickedDate.toPlainDateTime(pickedEndTime).add({ days: 1 })
-                : pickedDate.toPlainDateTime(pickedEndTime),
-            seat_id: selectedSeat as `${number}-${number}`,
-            status: 'active',
-          });
+        {/* Reserve button */}
+        <TouchableOpacity
+          disabled={!validDT || selectedSeat === ''}
+          style={[styles.reserveButton, selectedSeat === '' && { opacity: 0.25 }]}
+          onPress={async () => {
+            if (!user) return alert('Please login to reserve a seat.');
+            if (selectedSeat === '' || !validDT) return alert('Please select a valid time and seat.');
 
-          if (res) {
-            setUser({ ...user, active_reservation: res });
-            router.push('/');
-          }
-        }}
-      >
-        <Text style={styles.buttonText}>Reserve</Text>
-      </TouchableOpacity>
+            const res = await make_reservation(user.username, {
+              area,
+              building_code: selectedBuilding.code,
+              start_time: pickedStart,
+              end_time: pickedEnd,
+              seat_id: selectedSeat as `${number}-${number}`,
+              status: 'active',
+            });
+
+            if (res) {
+              setUser({ ...user, active_reservation: res });
+              router.push('/');
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>Reserve</Text>
+        </TouchableOpacity>
+
+        <View style={{ marginBottom: insets.bottom }} />
+      </ScrollView>
     </View>
   );
 };

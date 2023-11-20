@@ -8,14 +8,15 @@ const TimePicker = ({
   setPickedTime,
   pickedTime,
 }: {
-  times: Temporal.PlainTime[];
-  setPickedTime: Dispatch<SetStateAction<Temporal.PlainTime>>;
-  pickedTime: Temporal.PlainTime;
+  times: Temporal.PlainDateTime[];
+  setPickedTime: Dispatch<SetStateAction<Temporal.PlainDateTime>>;
+  pickedTime: Temporal.PlainDateTime;
 }) => {
   useEffect(() => {
     if (times.length === 0) return;
-    if (Temporal.PlainTime.compare(pickedTime, times[0]!) < 0) setPickedTime(times[0]!);
-    if (Temporal.PlainTime.compare(pickedTime, times[times.length - 1]!) > 0) setPickedTime(times[times.length - 1]!);
+    if (Temporal.PlainDateTime.compare(pickedTime, times[0]!) < 0) setPickedTime(times[0]!);
+    if (Temporal.PlainDateTime.compare(pickedTime, times[times.length - 1]!) > 0)
+      setPickedTime(times[times.length - 1]!);
   }, [times]);
 
   return (

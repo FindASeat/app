@@ -21,7 +21,7 @@ export const logout_user = async () => {
 
 // for buildings
 
-export const format_time = (time: Temporal.PlainTime): string => {
+export const format_time = (time: Temporal.PlainTime | Temporal.PlainDateTime): string => {
   // Convert the time to AM/PM format and return as string
   const hour = time.hour % 12 === 0 ? 12 : time.hour % 12;
   const minute = time.minute.toString().padStart(2, '0');
@@ -83,39 +83,39 @@ export const is_building_open = (
 
 export const generate_start_times = (
   hours: Building['open_hours'],
-  picked_date: Temporal.PlainDate,
-): Temporal.PlainTime[] => {
-  const weekday = picked_date.toLocaleString('en-US', { weekday: 'short' });
+  picked_start: Temporal.PlainDateTime,
+): Temporal.PlainDateTime[] => {
+  const weekday = picked_start.toLocaleString('en-US', { weekday: 'short' });
   const [_, range] = hours.find(([days]) => in_day_range(weekday, days)) ?? ['', 'Closed'];
 
   if (range === 'Closed') return [];
 
-  const same_day = picked_date.equals(Temporal.Now.plainDateISO()) ?? true;
+  const same_day = picked_start.toPlainDate().equals(Temporal.Now.plainDateISO());
   const now = same_day
-    ? Temporal.Now.plainTimeISO().round({
+    ? Temporal.Now.plainDateTimeISO().round({
         smallestUnit: 'minutes',
         roundingIncrement: 30,
         roundingMode: 'ceil',
       })
-    : Temporal.PlainTime.from('00:00:00');
+    : picked_start.withPlainTime('00:00:00');
 
-  if (range === '24 Hours') return create_times(now, Temporal.PlainTime.from('23:59:59'));
+  if (range === '24 Hours') return create_times(now, picked_start.withPlainTime('23:59:59'));
 
   let [start, end] = range;
-  if (Temporal.PlainTime.compare(now, start) > 0 && same_day) start = now;
+  if (Temporal.PlainTime.compare(now, start) > 0 && same_day) start = now.toPlainTime();
 
-  return create_times(start, end);
+  return create_times(picked_start.withPlainTime(start), picked_start.withPlainTime(end));
 };
 
 export const generate_end_times = (
-  times: Temporal.PlainTime[],
-  picked_start_time: Temporal.PlainTime,
-): Temporal.PlainTime[] => {
+  times: Temporal.PlainDateTime[],
+  picked_start_time: Temporal.PlainDateTime,
+): Temporal.PlainDateTime[] => {
   const start_idx = times.findIndex(t => t.equals(picked_start_time));
-  return times.map(t => t.add({ minutes: 30 })).slice(start_idx, start_idx + 4);
+  return times.slice(start_idx, start_idx + 4).map(t => t.add({ minutes: 30 }));
 };
 
-export const create_times = (start: Temporal.PlainTime, end: Temporal.PlainTime) => {
+export const create_times = (start: Temporal.PlainDateTime, end: Temporal.PlainDateTime) => {
   const length = (end.since(start).total({ unit: 'minute' }) + 1) / 30;
   return Array.from({ length }, (_, i) => start.add({ minutes: i * 30 }));
 };

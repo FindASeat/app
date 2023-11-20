@@ -1,7 +1,7 @@
 import ModifyView from '../../views/ModifyView';
 
-const reserve = () => {
+const modify = () => {
   return <ModifyView />;
 };
 
-export default reserve;
+export default modify;
