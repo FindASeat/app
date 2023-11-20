@@ -1,12 +1,12 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, TouchableHighlight, Text } from 'react-native';
 import { get_user_if_login, is_building_open } from '../utils';
+import LoadingWrapper from '../components/LoadingWrapper';
 import { get_buildings } from '../firebase/firebase_api';
 import { useGlobal } from '../context/GlobalContext';
 import MapView, { Marker } from 'react-native-maps';
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import LoadingView from './LoadingView';
 import { router } from 'expo-router';
 
 const USCMapView = () => {
@@ -27,7 +27,7 @@ const USCMapView = () => {
   return (
     <>
       <Header />
-      <LoadingView is_loading={!buildings}>
+      <LoadingWrapper is_loading={!buildings}>
         <MapView
           region={{
             latitude: 34.021,
@@ -58,7 +58,7 @@ const USCMapView = () => {
             />
           ))}
         </MapView>
-      </LoadingView>
+      </LoadingWrapper>
       {!user && !user_loading && (
         <TouchableHighlight
           underlayColor={'#990000'}
