@@ -21,21 +21,21 @@ const ProfileView = () => {
   return (
     <View style={styles.container}>
       {/* User Profile */}
-      <View style={styles.userInfo}>
-        <Image source={{ uri: user.image_url }} style={styles.profilePicture} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 15, paddingTop: 10 }}>
+        <Image
+          source={{ uri: user.image_url }}
+          style={{ width: 100, height: 100, borderRadius: 50, marginRight: 10 }}
+        />
         <View>
-          <Text style={styles.title}>User Information:</Text>
-          <Text>Name: {user.name}</Text>
-          <Text>Affiliation: {user.affiliation}</Text>
-          <Text>USC ID: {user.usc_id}</Text>
+          <Text style={{ fontSize: 24, fontWeight: '600' }}>{user.name}</Text>
+          <Text style={{ fontSize: 16, fontWeight: '500' }}>{user.affiliation}</Text>
+          <Text style={{ fontSize: 16, fontWeight: '500' }}>USCID {user.usc_id}</Text>
         </View>
       </View>
 
       {/* Reservations */}
-      <Text style={{ fontSize: 20 }}>Reservations</Text>
-
       {/* Next */}
-      <Text style={styles.title}>Current</Text>
+      <Text style={{ paddingBottom: 5, fontSize: 18, fontWeight: 'bold' }}>Current Reservation</Text>
       <View>
         {user.active_reservation && <ReservationBubble res={user.active_reservation} user={user} />}
         {!user.active_reservation && (
@@ -47,21 +47,37 @@ const ProfileView = () => {
               borderColor: '#ccc',
               padding: 10,
               flexDirection: 'column',
+              marginBottom: 10,
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>No seat reserved</Text>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>No active reservation</Text>
           </View>
         )}
       </View>
 
       {/* Past */}
-      <Text style={styles.title}>Previous</Text>
+      <Text style={{ paddingBottom: 5, fontSize: 18, fontWeight: 'bold' }}>Previous Reservations</Text>
       <ScrollView style={{ flex: 1 }}>
         {user.completed_reservations.map(res => (
           <View key={res.key} style={{ marginVertical: 4 }}>
             <ReservationBubble res={res} user={user} />
           </View>
         ))}
+        {user.completed_reservations.length === 0 && (
+          <View
+            style={{
+              marginVertical: 4,
+              backgroundColor: '#f0f0f0',
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: '#ccc',
+              padding: 10,
+              flexDirection: 'column',
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#333' }}>No past reservations</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -74,42 +90,5 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f0f0f0',
     marginHorizontal: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    margin: 20,
-  },
-  buttonWrapper: {
-    backgroundColor: '#990000',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  addButton: {
-    backgroundColor: '#990000',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profilePicture: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
   },
 });

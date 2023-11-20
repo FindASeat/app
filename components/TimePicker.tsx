@@ -23,7 +23,7 @@ const TimePicker = ({
     <View style={styles.container}>
       {times.length === 0 && (
         <View style={[styles.timeButton]}>
-          <Text style={[styles.timeText]}>No Available Times</Text>
+          <Text style={[styles.timeText]}>Not available on this day</Text>
         </View>
       )}
 
