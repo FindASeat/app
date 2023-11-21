@@ -55,9 +55,9 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <Text style={styles.label}>Seat</Text>
           <Text style={styles.value}>
             <Text style={{ fontSize: 15 }}>R</Text>
-            {res.seat_id.split('-')[0]}
+            {+res.seat_id.split('-')[0]! + 1}
             <Text style={{ fontSize: 15 }}> C</Text>
-            {res.seat_id.split('-')[1]}
+            {+res.seat_id.split('-')[1]! + 1}
           </Text>
         </View>
 

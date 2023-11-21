@@ -6,8 +6,8 @@ const DatePicker = ({
   setPickedDate,
   pickedDate,
 }: {
-  setPickedDate: Dispatch<SetStateAction<Temporal.PlainDate>>;
-  pickedDate: Temporal.PlainDate;
+  setPickedDate: Dispatch<SetStateAction<Temporal.PlainDateTime>>;
+  pickedDate: Temporal.PlainDateTime;
 }) => {
   const today = Temporal.Now.plainDateISO();
   const the_week = Array.from({ length: 7 }, (_, i) => today.add({ days: i }));
@@ -18,12 +18,16 @@ const DatePicker = ({
         {the_week.map((time, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.dateButton, pickedDate.equals(time) && styles.selectedDateButton]}
-            onPress={() => setPickedDate(time)}
+            style={[styles.dateButton, pickedDate.toPlainDate().equals(time) && styles.selectedDateButton]}
+            onPress={() => setPickedDate(time.toPlainDateTime())}
           >
             <View style={{ alignItems: 'center' }}>
               <Text
-                style={[styles.dateText, { fontWeight: '500' }, pickedDate.equals(time) && styles.selectedDateText]}
+                style={[
+                  styles.dateText,
+                  { fontWeight: '500' },
+                  pickedDate.toPlainDate().equals(time) && styles.selectedDateText,
+                ]}
               >
                 {time.toLocaleString('en-US', { month: 'long' })}
               </Text>
@@ -31,13 +35,17 @@ const DatePicker = ({
                 style={[
                   styles.dateText,
                   { fontWeight: 'bold', fontSize: 32 },
-                  pickedDate.equals(time) && styles.selectedDateText,
+                  pickedDate.toPlainDate().equals(time) && styles.selectedDateText,
                 ]}
               >
                 {time.toLocaleString('en-US', { day: 'numeric' })}
               </Text>
               <Text
-                style={[styles.dateText, { fontWeight: '500' }, pickedDate.equals(time) && styles.selectedDateText]}
+                style={[
+                  styles.dateText,
+                  { fontWeight: '500' },
+                  pickedDate.toPlainDate().equals(time) && styles.selectedDateText,
+                ]}
               >
                 {time.toLocaleString('en-US', { weekday: 'short' })}
               </Text>

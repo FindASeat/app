@@ -8,21 +8,22 @@ const TimePicker = ({
   setPickedTime,
   pickedTime,
 }: {
-  times: Temporal.PlainTime[];
-  setPickedTime: Dispatch<SetStateAction<Temporal.PlainTime>>;
-  pickedTime: Temporal.PlainTime;
+  times: Temporal.PlainDateTime[];
+  setPickedTime: Dispatch<SetStateAction<Temporal.PlainDateTime>>;
+  pickedTime: Temporal.PlainDateTime;
 }) => {
   useEffect(() => {
     if (times.length === 0) return;
-    if (Temporal.PlainTime.compare(pickedTime, times[0]!) < 0) setPickedTime(times[0]!);
-    if (Temporal.PlainTime.compare(pickedTime, times[times.length - 1]!) > 0) setPickedTime(times[times.length - 1]!);
+    if (Temporal.PlainDateTime.compare(pickedTime, times[0]!) < 0) setPickedTime(times[0]!);
+    if (Temporal.PlainDateTime.compare(pickedTime, times[times.length - 1]!) > 0)
+      setPickedTime(times[times.length - 1]!);
   }, [times]);
 
   return (
     <View style={styles.container}>
       {times.length === 0 && (
         <View style={[styles.timeButton]}>
-          <Text style={[styles.timeText]}>No Available Times</Text>
+          <Text style={[styles.timeText]}>Not available on this day</Text>
         </View>
       )}
 
