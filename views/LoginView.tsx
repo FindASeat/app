@@ -86,6 +86,7 @@ const SubLoginView = ({ setUser, routeTo }: Pick<GlobalProps, 'setUser'> & { rou
         {/* Login Button */}
         <TouchableOpacity
           style={styles.loginButton}
+          testID='loginbutton'
           onPress={async () => {
             if (mode === 'login') {
               const user = await validate_credentials(username, password);
