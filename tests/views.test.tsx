@@ -1,15 +1,39 @@
-
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, cleanup } from '@testing-library/react-native';
+import { GlobalContext } from '../context/GlobalContext';
 import LoginView from '../views/LoginView';
 
+const MockGlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <GlobalContext.Provider
+      value={{
+        user: null,
+        setUser: jest.fn(),
+        buildings: null,
+        setBuildings: jest.fn(),
+        selectedBuilding: null,
+        setSelectedBuilding: jest.fn(),
+      }}
+    >
+      {children}
+    </GlobalContext.Provider>
+  );
+};
+
 describe('LoginView Component', () => {
-  it("should go to home page", () => {
-    const page = render(<LoginView/>)
+  afterEach(cleanup); // dont think these make a diff
+  afterAll(done => done()); // dont think these make a diff
+
+  it('should go to home page', () => {
+    const page = render(
+      <MockGlobalStateProvider>
+        <LoginView />
+      </MockGlobalStateProvider>,
+    );
     const loginButton = page.getByTestId('loginbutton');
-    expect(false).toBeTruthy();
-  })
-})
+    expect(loginButton).toBeTruthy();
+  });
+});
+
 // import FindASeat from '../path/to/FindASeat';
 
 // describe('FindASeat App Tests', () => {

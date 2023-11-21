@@ -1,7 +1,8 @@
 import { type Dispatch, type SetStateAction, createContext, useState, useContext } from 'react';
 import type { Building, User } from '../types';
 
-const GlobalContext = createContext<GlobalProps>({
+// only exported for testing purposes
+export const GlobalContext = createContext<GlobalProps>({
   buildings: null,
   setBuildings: () => {},
   selectedBuilding: null,
