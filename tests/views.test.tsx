@@ -1,7 +1,10 @@
-import { render, cleanup } from '@testing-library/react-native';
+import { render, cleanup, fireEvent, waitFor } from '@testing-library/react-native';
 import { GlobalContext } from '../context/GlobalContext';
 import LoginView from '../views/LoginView';
-
+import USCMapView from '../views/MapView';
+import BuildingView from '../views/BuildingView';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import ReserveView from '../views/ReserveView';
 const MockGlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <GlobalContext.Provider
@@ -34,125 +37,199 @@ describe('LoginView Component', () => {
   });
 });
 
-// import FindASeat from '../path/to/FindASeat';
 
-// describe('FindASeat App Tests', () => {
-//   // Mock data or setup as needed
+describe('Launch Default Screen', () => {
+  afterEach(cleanup); // dont think these make a diff
+  afterAll(done => done()); // dont think these make a diff
 
-//   // Test Case: Launch Default Screen
-//   test('Default screen is the Map tab', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     const defaultTab = getByTestId('map-tab'); // Replace with the actual test ID
-//     expect(defaultTab).toBeTruthy();
-//   });
+  it('should launch map page', () => {
+    const page = render(
+      <SafeAreaProvider>
+      <MockGlobalStateProvider>
+        <USCMapView />
+      </MockGlobalStateProvider>,
+      </SafeAreaProvider>
+    );
+    const map = page.getByTestId('map-tab');
+    expect(map).toBeTruthy();
+  });
+});
+  // Test Case: Verify Map Display
+describe('MapDisplay', () => {
+  test('Map displays at least 10 buildings with available seats', async () => {
+    const page = render(
+      <SafeAreaProvider>
+      <MockGlobalStateProvider>
+        <USCMapView />
+      </MockGlobalStateProvider>,
+      </SafeAreaProvider>
+    );
+  
+    await waitFor(() => {
+      const map = page.getByTestId('map-tab');
+      expect(map).toBeTruthy();
+  
+      const buildings = page.getAllByTestId(/^marker-/);
+      expect(buildings.length).toBeGreaterThanOrEqual(10);
+    });
+  });
+});
 
-//   // Test Case: Verify Map Display
-//   test('Map displays at least 10 buildings with available seats', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('map-tab')); // Switch to Map tab
-//     const buildings = getByTestId('building-marker'); // Replace with the actual test ID
-//     expect(buildings.length).toBeGreaterThanOrEqual(10);
-//   });
+  // Test Case: Building Selection
+  const testBuildingCode = 'SAL';
+  test('Users can click on a building to view the booking page', () => {
+    const page = render(
+      <SafeAreaProvider>
+      <MockGlobalStateProvider>
+        <USCMapView />
+      </MockGlobalStateProvider>,
+      </SafeAreaProvider>
+    );
+  
+    // Find the Marker with the testID based on the building code
+    const buildingMarker = page.getByTestId(`marker-${testBuildingCode}`);
+    fireEvent.press(buildingMarker);
+  
+    // Assuming your booking page has a testID set as 'booking-page'
+    const bookingPage = page.getByTestId('booking-page');
+    expect(bookingPage).toBeTruthy();
+  });
+  // Test Case: Verify Building Description
+  test('Building description is displayed on the booking page', () => {
+    const page = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <USCMapView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
+    const page1 = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <BuildingView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
+  
+    // Find the Marker with the testID based on the building code
+    const buildingMarker = page.getByTestId(`marker-${testBuildingCode}`);
+    fireEvent.press(buildingMarker);
+  
+    // Assuming your building description has a testID set as 'building-description'
+    const buildingDescription =  page1.getByTestId('building-description');
+    expect(buildingDescription).toBeTruthy();
+  });
 
-//   // Test Case: Building Selection
-//   test('Users can click on a building to view the booking page', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('building-marker')); // Replace with the actual test ID
-//     const bookingPage = getByTestId('booking-page'); // Replace with the actual test ID
-//     expect(bookingPage).toBeTruthy();
-//   });
 
-//   // Test Case: Verify Building Description
-//   test('Building description is displayed on the booking page', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('building-marker')); // Replace with the actual test ID
-//     const buildingDescription = getByTestId('building-description'); // Replace with the actual test ID
-//     expect(buildingDescription).toBeTruthy();
-//   });
+  // Test Case: Reservation Time Slots
+  test('Time slots are displayed in 30-minute intervals', () => {
+    const page = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <USCMapView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
+    const page1 = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <BuildingView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
 
-//   // Test Case: Reservation Time Slots
-//   test('Time slots are displayed in 30-minute intervals', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('building-marker')); // Replace with the actual test ID
-//     const timeSlots = getByTestId('reservation-time-slot'); // Replace with the actual test ID
-//     // Add assertions for 30-minute intervals
-//     // e.g., expect(timeSlots[0]).toHaveTextContent('9:00 AM');
-//     // and so on...
-//   });
+    const timeSlots = page.getAllByTestId('reservation-time-slot');
+    const r = page1.getByTestId('reserve');
+    fireEvent.press(r);
+  
+    const firstTimeSlotText = timeSlots[0]?.props?.children; 
+    expect(firstTimeSlotText).toContain('9:00 AM');
 
-//   // Test Case: Seat Availability Update
-//   test('Seat availability updates when a user makes a reservation', async () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('building-marker')); // Replace with the actual test ID
-//     const reserveButton = getByTestId('reserve-button'); // Replace with the actual test ID
-//     fireEvent.press(reserveButton);
-//     // Add assertions or queries to check seat availability update
-//     await waitFor(() => expect(getByTestId('seat-availability')).toHaveTextContent('Updated availability'));
-//   });
+    const secondTimeSlotText = timeSlots[1]?.props?.children; 
+    expect(secondTimeSlotText).toContain('9:30 AM');
+  });
 
-//   // Test Case: Multiple Active Reservations
-//   test('Users cannot have more than one active reservation at the same time', () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('building-marker')); // Replace with the actual test ID
-//     const reserveButton = getByTestId('reserve-button'); // Replace with the actual test ID
-//     fireEvent.press(reserveButton);
-//     const reserveAnotherButton = getByTestId('reserve-another-button'); // Replace with the actual test ID
-//     fireEvent.press(reserveAnotherButton);
-//     // Add assertions or queries to check if the system prevents a second active reservation
-//     expect(getByTestId('error-message')).toHaveTextContent('Cannot make another reservation');
-//   });
+  // Test Case: Seat Availability Update
+  test('Seat availability updates when a user makes a reservation', async () => {
+    const page = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <USCMapView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
+    fireEvent.press(page.getByTestId('building-marker'));
+    const reserveButton = page.getByTestId('reserve-button'); 
+    fireEvent.press(reserveButton);
+  
+    expect(page.getByTestId('seat-availability'));
+  });
 
-//   // Test Case: Seat Reservation Conflict
-//   test('A seat cannot be reserved by more than one user at the same time', async () => {
-//     // Similar to the above test case, but simulate simultaneous reservations with different user accounts
-//   });
+  // Test Case: Multiple Active Reservations
+  test('Users cannot have more than one active reservation at the same time', () => {
+    const page = render(
+      <SafeAreaProvider>
+        <MockGlobalStateProvider>
+          <USCMapView />
+        </MockGlobalStateProvider>
+      </SafeAreaProvider>
+    );
+    fireEvent.press(page.getByTestId('building-marker')); 
+    const reserveButton = page.getByTestId('reserve-button');
+    fireEvent.press(reserveButton);
+    const reserveAnotherButton = page.getByTestId('reserve-another-button'); 
+    fireEvent.press(reserveAnotherButton);
 
-//   // Test Case: Maximum Reservation Duration
-//   test('Longest reservation for one seat is limited to 2 hours', async () => {
-//     // Similar to the above test case, but make a reservation with a duration exceeding 2 hours
-//     // Add assertions or queries to check if the system rejects or limits the reservation
-//   });
+    expect(page.getByTestId('error-message'));
+  });
 
-//   // Test Case: View Upcoming Reservations
-//   test('Upcoming reservations are displayed on the Profile tab', async () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('profile-tab')); // Replace with the actual test ID
-//     const upcomingReservations = getByTestId('upcoming-reservations'); // Replace with the actual test ID
-//     // Add assertions or queries to check if at least one upcoming reservation is displayed
-//     expect(upcomingReservations.length).toBeGreaterThanOrEqual(1);
-//   });
+  // Test Case: Seat Reservation Conflict
+  test('A seat cannot be reserved by more than one user at the same time', async () => {
 
-//   // Test Case: View Reservation History
-//   test('Users can view their reservation history', async () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('profile-tab')); // Replace with the actual test ID
-//     const reservationHistory = getByTestId('reservation-history'); // Replace with the actual test ID
-//     // Add assertions or queries to check if at least 10 past reservations are displayed
-//     expect(reservationHistory.length).toBeGreaterThanOrEqual(10);
-//   });
+  });
 
-//   // Test Case: Change Upcoming Reservation
-//   test('Users can successfully change their upcoming reservation', async () => {
-//     // Similar to the above test cases, but simulate changing a reservation and verify the update
-//   });
+  // Test Case: Maximum Reservation Duration
+  test('Longest reservation for one seat is limited to 2 hours', async () => {
+  
+  });
 
-//   // Test Case: Cancel Upcoming Reservation
-//   test('Users can successfully cancel their upcoming reservation', async () => {
-//     // Similar to the above test cases, but simulate canceling a reservation and verify the update
-//   });
+  // Test Case: View Upcoming Reservations
+  test('Upcoming reservations are displayed on the Profile tab', async () => {
+    const { getByTestId } = render(<USCMapView/>);
+    fireEvent.press(getByTestId('profile-tab'));
+    const upcomingReservations = getByTestId('upcoming-reservations'); 
+  
+   // expect(upcomingReservations.length).toBeGreaterThanOrEqual(1);
+  });
 
-//   // Test Case: Reservation History Order
-//   test('Reservation history is ordered by the time of initial creation', async () => {
-//     // Similar to the above test cases, but check if the reservation history is ordered correctly
-//   });
+  // Test Case: View Reservation History
+  test('Users can view their reservation history', async () => {
+    const { getByTestId } = render(<USCMapView />);
+    fireEvent.press(getByTestId('profile-tab')); 
+    const reservationHistory = getByTestId('reservation-history'); 
 
-//   // Test Case: Logout Functionality
-//   test('Users can successfully log out', async () => {
-//     const { getByTestId } = render(<FindASeat />);
-//     fireEvent.press(getByTestId('profile-tab')); // Replace with the actual test ID
-//     const logoutButton = getByTestId('logout-button'); // Replace with the actual test ID
-//     fireEvent.press(logoutButton);
-//     // Add assertions or queries to check if the app prompts for login and hides user information
-//     expect(getByTestId('login-prompt')).toBeTruthy();
-//   });
-// });
+   // expect(reservationHistory.length).toBeGreaterThanOrEqual(10);
+  });
+
+  // Test Case: Change Upcoming Reservation
+  test('Users can successfully change their upcoming reservation', async () => {
+  });
+
+  // Test Case: Cancel Upcoming Reservation
+  test('Users can successfully cancel their upcoming reservation', async () => {
+  
+  });
+
+  // Test Case: Reservation History Order
+  test('Reservation history is ordered by the time of initial creation', async () => {
+  });
+
+  // Test Case: Logout Functionality
+  test('Users can successfully log out', async () => {
+    const { getByTestId } = render(<USCMapView />);
+    fireEvent.press(getByTestId('profile-tab')); 
+    const logoutButton = getByTestId('logout-button'); 
+    fireEvent.press(logoutButton);
+    expect(getByTestId('login-prompt')).toBeTruthy();
+  });
+

@@ -24,7 +24,7 @@ const BuildingView = () => {
   if (!code && !selectedBuilding?.code) return <ErrorView />;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View testID='booking-page' style={{ flex: 1 }}>
       <View
         style={{
           paddingTop: insets.top,
@@ -102,7 +102,7 @@ const SubBuildingView = ({ building, user }: { building: Building; user: User | 
             }}
           >
             {/* Open/Closed */}
-            <View
+            <View testID='building-description'
               style={[
                 {
                   padding: 10,
@@ -188,6 +188,7 @@ const SubBuildingView = ({ building, user }: { building: Building; user: User | 
 
       {/* Action Button */}
       <TouchableOpacity
+        testID='reserve'
         style={[
           { backgroundColor: '#990000', height: is_guest ? 80 : 45, justifyContent: 'center', alignItems: 'center' },
           (is_guest || has_reservation) && { opacity: 0.5 },

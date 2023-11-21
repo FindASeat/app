@@ -29,6 +29,7 @@ const USCMapView = () => {
       <Header />
       <LoadingWrapper is_loading={!buildings}>
         <MapView
+          testID='map-tab'
           region={{
             latitude: 34.021,
             longitude: -118.2863,
@@ -42,6 +43,7 @@ const USCMapView = () => {
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               key={idx}
               coordinate={building.coordinate}
+              testID={`marker-${building.code}`}
               pinColor={
                 !is_building_open(building.open_hours)
                   ? '#990000'
