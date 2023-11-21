@@ -1,3 +1,5 @@
+import type { FirebaseUser, FirebaseBuilding } from '../types';
+import { get, set, DataSnapshot } from 'firebase/database';
 import {
   validate_credentials,
   get_user_reservations,
@@ -6,8 +8,6 @@ import {
   get_buildings,
   get_building,
 } from '../firebase/firebase_api';
-import { get, set, DataSnapshot } from 'firebase/database';
-import { FirebaseUser, FirebaseBuilding } from '../types';
 
 jest.mock('firebase/database');
 const mockedGet = get as jest.MockedFunction<typeof get>;
