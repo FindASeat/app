@@ -1,6 +1,7 @@
+import { cancelAllScheduledNotificationsAsync, scheduleNotificationAsync } from 'expo-notifications';
 import { generate_end_times, generate_start_times, is_building_open } from '../utils';
-import { modify_reservation, get_availability } from '../firebase/firebase_api';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { modify_reservation, get_availability } from '../firebase/firebase_api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SeatingChartView from '../components/SeatingChart';
 import LocationPicker from '../components/LocationPicker';
@@ -207,6 +208,16 @@ const ModifyView = () => {
             });
 
             if (res) {
+              await cancelAllScheduledNotificationsAsync();
+              scheduleNotificationAsync({
+                content: {
+                  title: `Your reservation has started at ${res.building_code}`,
+                  body: `Ends at ${res.end_time.toLocaleString('en-US', { timeStyle: 'medium' })}`,
+                },
+                trigger: {
+                  date: new Date(res.start_time.toString()),
+                },
+              });
               setUser({ ...user, active_reservation: res });
               router.push('/profile');
             }

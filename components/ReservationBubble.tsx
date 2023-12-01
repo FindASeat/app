@@ -1,4 +1,5 @@
 import { cancel_reservation, get_user_data } from '../firebase/firebase_api';
+import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useGlobal } from '../context/GlobalContext';
 import { Reservation, User } from '../types';
@@ -82,6 +83,7 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={async () => {
+              await cancelAllScheduledNotificationsAsync();
               await cancel_reservation(res.building_code, user.username, res.key);
               await get_user_data(user.username).then(setUser);
             }}
