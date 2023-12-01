@@ -3,6 +3,7 @@ import { generate_end_times, generate_start_times, is_building_open } from '../u
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { modify_reservation, get_availability } from '../firebase/firebase_api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ReservationBubble from '../components/ReservationBubble';
 import SeatingChartView from '../components/SeatingChart';
 import LocationPicker from '../components/LocationPicker';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -191,7 +192,34 @@ const ModifyView = () => {
           />
         </View>
 
-        {/* TODO: If we have time do a seat confirmation with day and time */}
+        {/* Reservation Confirmation */}
+        <Text
+          style={[
+            {
+              fontSize: 18,
+              fontWeight: '400',
+              color: '#333',
+              paddingHorizontal: 5,
+              paddingTop: 20,
+              paddingBottom: 1,
+            },
+            !validDT && { opacity: 0.25 },
+          ]}
+        >
+          Confirmation
+        </Text>
+        <View style={[{ backgroundColor: '#CCC', padding: 20 }, (!validDT || loading) && { opacity: 0.25 }]}>
+          <ReservationBubble
+            res={{
+              area,
+              building_code: selectedBuilding.code,
+              start_time: pickedStart,
+              end_time: pickedEnd,
+              seat_id: selectedSeat as `${number}-${number}`,
+            }}
+            readonly
+          />
+        </View>
 
         {/* Reserve button */}
         <TouchableOpacity
@@ -212,7 +240,10 @@ const ModifyView = () => {
               scheduleNotificationAsync({
                 content: {
                   title: `Your reservation has started at ${res.building_code}`,
-                  body: `Ends at ${res.end_time.toLocaleString('en-US', { timeStyle: 'medium' })}`,
+                  body: `Ends at ${res.end_time.toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })}. Manage in the app.`,
                 },
                 trigger: {
                   date: new Date(res.start_time.toString()),

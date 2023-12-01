@@ -2,10 +2,17 @@ import { cancel_reservation, get_user_data } from '../firebase/firebase_api';
 import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useGlobal } from '../context/GlobalContext';
+import { Temporal } from '@js-temporal/polyfill';
 import { Reservation, User } from '../types';
 import { router } from 'expo-router';
 
-const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
+const ReservationBubble = ({
+  res,
+  user,
+  readonly,
+}:
+  | { res: Reservation; user: User; readonly: false }
+  | { res: Partial<Omit<Reservation, 'key' | 'created_at'>>; user?: User; readonly: true }) => {
   const { setUser } = useGlobal();
 
   return (
@@ -17,15 +24,19 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <Text style={styles.label}>When</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={[styles.value]}>
-              {res.start_time.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-              })}
+              {res.start_time
+                ? res.start_time.toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })
+                : '???'}
               {' – '}
-              {res.end_time.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-              })}
+              {res.end_time
+                ? res.end_time.toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })
+                : '???'}
             </Text>
           </View>
         </View>
@@ -34,10 +45,12 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <Text style={styles.label}>Date</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.value}>
-              {res.start_time.toLocaleString('en-US', {
-                day: 'numeric',
-                month: 'long',
-              })}
+              {res.start_time
+                ? res.start_time.toLocaleString('en-US', {
+                    day: 'numeric',
+                    month: 'long',
+                  })
+                : '???'}
             </Text>
           </View>
         </View>
@@ -48,7 +61,7 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
         {/* Building Location */}
         <View style={styles.item}>
           <Text style={styles.label}>Location</Text>
-          <Text style={styles.value}>{res.building_code}</Text>
+          <Text style={styles.value}>{res.building_code ?? '???'}</Text>
         </View>
 
         {/* Seat ID */}
@@ -56,29 +69,35 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           <Text style={styles.label}>Seat</Text>
           <Text style={styles.value}>
             <Text style={{ fontSize: 15 }}>R</Text>
-            {+res.seat_id.split('-')[0]! + 1}
+            {res.seat_id ? +res.seat_id.split('-')[0]! + 1 : '?'}
             <Text style={{ fontSize: 15 }}> C</Text>
-            {+res.seat_id.split('-')[1]! + 1}
+            {res.seat_id ? +res.seat_id.split('-')[1]! + 1 : '?'}
           </Text>
         </View>
 
         {/* Seat Area */}
         <View style={styles.item}>
           <Text style={styles.label}>Area</Text>
-          <Text style={styles.value}>{res.area === 'inside' ? 'Inside' : 'Outside'}</Text>
+          <Text style={styles.value}>{res.area ? (res.area === 'inside' ? 'Inside' : 'Outside') : '???'}</Text>
         </View>
 
         {/* Status */}
         <View style={styles.item}>
           <Text style={styles.label}>Status</Text>
           <Text style={styles.value}>
-            {res.status === 'completed' ? 'Finished' : res.status === 'active' ? 'Active' : 'Canceled'}
+            {res.status
+              ? res.status === 'completed'
+                ? 'Finished'
+                : res.status === 'active'
+                ? 'Active'
+                : 'Canceled'
+              : 'Pending'}
           </Text>
         </View>
       </View>
 
       {/* Button Actions */}
-      {res.status === 'active' && (
+      {!readonly && res.status === 'active' && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -90,14 +109,16 @@ const ReservationBubble = ({ res, user }: { res: Reservation; user: User }) => {
           >
             <Text style={styles.buttonText}>Cancel Reservation</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              router.push('/modify');
-            }}
-          >
-            <Text style={styles.buttonText}>Modify Reservation</Text>
-          </TouchableOpacity>
+          {!(Temporal.PlainDateTime.compare(Temporal.Now.plainDateTimeISO(), res.start_time) >= 0) && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                router.push('/modify');
+              }}
+            >
+              <Text style={styles.buttonText}>Modify Reservation</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
