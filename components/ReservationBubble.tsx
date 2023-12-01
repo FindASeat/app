@@ -1,10 +1,11 @@
 import { cancel_reservation, get_user_data } from '../firebase/firebase_api';
 import { cancelAllScheduledNotificationsAsync } from 'expo-notifications';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { useGlobal } from '../context/GlobalContext';
 import { Temporal } from '@js-temporal/polyfill';
 import { Reservation, User } from '../types';
 import { router } from 'expo-router';
+import { useState } from 'react';
 
 const ReservationBubble = ({
   res,
@@ -12,8 +13,26 @@ const ReservationBubble = ({
   readonly,
 }:
   | { res: Reservation; user: User; readonly: false }
-  | { res: Partial<Omit<Reservation, 'key' | 'created_at'>>; user?: User; readonly: true }) => {
+  | { res: Partial<Omit<Reservation, 'created_at'>>; user?: User; readonly: true }) => {
   const { setUser } = useGlobal();
+
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleCancel = async () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    // Add your cancel reservation logic here
+    await cancelAllScheduledNotificationsAsync();
+    await cancel_reservation(res.building_code!, user?.username!, res.key!);
+    await get_user_data(user?.username!).then(setUser);
+    setShowConfirmation(false);
+  };
+
+  const handleCancelCancel = () => {
+    setShowConfirmation(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -96,17 +115,9 @@ const ReservationBubble = ({
         </View>
       </View>
 
-      {/* Button Actions */}
       {!readonly && res.status === 'active' && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={async () => {
-              await cancelAllScheduledNotificationsAsync();
-              await cancel_reservation(res.building_code, user.username, res.key);
-              await get_user_data(user.username).then(setUser);
-            }}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
             <Text style={styles.buttonText}>Cancel Reservation</Text>
           </TouchableOpacity>
           {!(Temporal.PlainDateTime.compare(Temporal.Now.plainDateTimeISO(), res.start_time) >= 0) && (
@@ -121,6 +132,22 @@ const ReservationBubble = ({
           )}
         </View>
       )}
+
+      <Modal visible={showConfirmation} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Are you sure you want to cancel this reservation?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={[styles.modalButton, styles.confirmButton]} onPress={handleConfirmCancel}>
+                <Text style={styles.modalButtonText}>I wish to confirm.</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={handleCancelCancel}>
+                <Text style={styles.modalButtonText}>Changed my mind.</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -169,6 +196,44 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  modalButton: {
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    borderRadius: 5,
+    width: 100,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    fontWeight: 'bold',
+  },
+  confirmButton: {
+    backgroundColor: 'green',
+  },
+  cancelButton: {
+    backgroundColor: 'red',
   },
 });
 
